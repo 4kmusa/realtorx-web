@@ -1,0 +1,780 @@
+import React, { useState, useEffect } from 'react';
+import { PageId, Language, DealerUser, DealerLead, DealerDeal, CommissionLedgerEntry, SiteVisitRecord } from '../types';
+import { RealtorXLogo } from '../components/RealtorXLogo';
+import {
+  ShieldCheck,
+  Percent,
+  TrendingUp,
+  Users,
+  Briefcase,
+  DollarSign,
+  Calendar,
+  CheckSquare,
+  User,
+  LogOut,
+  ArrowRight,
+  MessageCircle,
+  Plus,
+  Building2,
+  Award,
+  AlertTriangle,
+  Lock,
+  Download,
+  CreditCard,
+  Clock,
+  Sparkles,
+  ChevronRight,
+  CheckCircle2
+} from 'lucide-react';
+
+interface DealerPortalPageProps {
+  onNavigate: (page: PageId, extraId?: string) => void;
+  language: Language;
+}
+
+export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate, language }) => {
+  // Check if dealer oath is accepted
+  const [hasAcceptedOath, setHasAcceptedOath] = useState<boolean>(() => {
+    return localStorage.getItem('realtorx_dealer_oath_accepted') === 'true';
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return localStorage.getItem('realtorx_dealer_logged_in') === 'true';
+  });
+
+  const [emailInput, setEmailInput] = useState('tariq.realtor@bahriatown.com');
+  const [passwordInput, setPasswordInput] = useState('••••••••••');
+  const [activeTab, setActiveTab] = useState<'target' | 'leads' | 'deals' | 'ledger' | 'payouts' | 'visits' | 'tasks' | 'profile'>('target');
+
+  // Dealer Profile
+  const [dealer, setDealer] = useState<DealerUser>({
+    id: 'rx-dlr-042',
+    name: 'Tariq Mahmood',
+    email: 'tariq.realtor@bahriatown.com',
+    phone: '+92 300 8472910',
+    cnic: '42101-2948190-1',
+    agencyName: 'Mahmood Estate &amp; Builders',
+    bahriaRegNo: 'BTK-REG-2041-A',
+    bankName: 'Meezan Bank Limited',
+    iban: 'PK44MEZN0001092849102901',
+    oathAccepted: hasAcceptedOath,
+    oathAcceptedDate: '2026-01-15',
+    targetQuarterPkr: 50000000, // 5 Crore
+    achievedQuarterPkr: 38000000 // 3.8 Crore
+  });
+
+  // Leads
+  const [leads, setLeads] = useState<DealerLead[]>([
+    { id: 'ld-1', name: 'Dr. Shahzad Hasan', phone: '+92 300 1122334', budgetPkr: 25000000, interestedCategory: 'Luxury Villa', precinct: 'Precinct 10-A', status: 'Hot', createdDate: '2026-02-20', notes: 'Looking for ready possession villa for family relocation' },
+    { id: 'ld-2', name: 'Naveed Mughal (Overseas - UK)', phone: '+44 7911 123456', budgetPkr: 15000000, interestedCategory: 'Residential Plot', precinct: 'Precinct 15-B', status: 'Site Visit Booked', createdDate: '2026-02-22', notes: 'Brother will visit the plot on Saturday 11am' },
+    { id: 'ld-3', name: 'Haji Abdul Qayyum', phone: '+92 321 8899001', budgetPkr: 40000000, interestedCategory: 'Commercial Shop', precinct: 'Midway Commercial B', status: 'Follow-up', createdDate: '2026-02-18', notes: 'Inquired about rental yield on ground floor shop' },
+    { id: 'ld-4', name: 'Sarmad Iqbal', phone: '+92 333 4567890', budgetPkr: 8500000, interestedCategory: 'Apartment', precinct: 'Bahria Heights 2', status: 'New', createdDate: '2026-02-25', notes: 'First-time buyer, requires 2-bed installment plan' }
+  ]);
+
+  // Deals
+  const [deals, setDeals] = useState<DealerDeal[]>([
+    { id: 'dd-1', dealCode: 'DEAL-BTK-9901', propertyTitle: '200 Sq. Yards Villa #44', clientName: 'Kamran Akhtar', salePricePkr: 24500000, dealerCommissionPkr: 294000, platformSharePkr: 196000, status: 'Under Transfer', closeDate: '2026-02-14' },
+    { id: 'dd-2', dealCode: 'DEAL-BTK-8419', propertyTitle: '125 Sq. Yards Plot #112', clientName: 'Mrs. Farzana Begum', salePricePkr: 7200000, dealerCommissionPkr: 86400, platformSharePkr: 57600, status: 'Disbursed', closeDate: '2026-01-28' },
+    { id: 'dd-3', dealCode: 'DEAL-BTK-7104', propertyTitle: 'Midway Commercial Office #304', clientName: 'Apex Logistics Ltd', salePricePkr: 18000000, dealerCommissionPkr: 216000, platformSharePkr: 144000, status: 'Approved', closeDate: '2026-02-02' }
+  ]);
+
+  // Commission Ledger
+  const [ledger, setLedger] = useState<CommissionLedgerEntry[]>([
+    { id: 'led-1', date: '2026-02-14', type: 'Credit', description: '60% Commission - DEAL-BTK-9901 (Villa 44)', dealCode: 'DEAL-BTK-9901', amountPkr: 294000, balanceAfterPkr: 596400 },
+    { id: 'led-2', date: '2026-02-05', type: 'Payout', description: 'IBFT Payout to Meezan Bank A/C ...2901', amountPkr: 250000, balanceAfterPkr: 302400 },
+    { id: 'led-3', date: '2026-02-02', type: 'Credit', description: '60% Commission - DEAL-BTK-7104 (Midway)', dealCode: 'DEAL-BTK-7104', amountPkr: 216000, balanceAfterPkr: 552400 },
+    { id: 'led-4', date: '2026-01-28', type: 'Credit', description: '60% Commission - DEAL-BTK-8419 (Plot 112)', dealCode: 'DEAL-BTK-8419', amountPkr: 86400, balanceAfterPkr: 336400 }
+  ]);
+
+  // Site visits assigned
+  const [visits] = useState<SiteVisitRecord[]>([
+    { id: 'v-1', propertyTitle: 'Precinct 15-B Plot 214', precinct: 'Precinct 15-B', date: '2026-03-01', timeSlot: '11:00 AM', agentName: 'Tariq Mahmood', agentPhone: '+92 300 8472910', status: 'Scheduled' },
+    { id: 'v-2', propertyTitle: 'Midway Commercial Office', precinct: 'Midway B', date: '2026-03-02', timeSlot: '04:00 PM', agentName: 'Tariq Mahmood', agentPhone: '+92 300 8472910', status: 'Scheduled' }
+  ]);
+
+  // Tasks
+  const [tasks, setTasks] = useState([
+    { id: 'tsk-1', title: 'Submit Allotment verification files at Bahria Transfer Office', due: 'Today, 2:00 PM', priority: 'High', done: false },
+    { id: 'tsk-2', title: 'Collect Pay Order for Token on Villa 44 from client', due: 'Tomorrow, 11:00 AM', priority: 'Urgent', done: false },
+    { id: 'tsk-3', title: 'Share video walk-through with Overseas client Naveed', due: 'Friday, 5:00 PM', priority: 'Medium', done: true }
+  ]);
+
+  const [newLeadModalOpen, setNewLeadModalOpen] = useState(false);
+  const [leadFormName, setLeadFormName] = useState('');
+  const [leadFormPhone, setLeadFormPhone] = useState('');
+  const [leadFormBudget, setLeadFormBudget] = useState('15000000');
+  const [leadFormCategory, setLeadFormCategory] = useState('Luxury Villa');
+
+  const availableBalance = ledger.length > 0 ? ledger[0].balanceAfterPkr : 0;
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggedIn(true);
+    localStorage.setItem('realtorx_dealer_logged_in', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('realtorx_dealer_logged_in');
+  };
+
+  const handleAddLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leadFormName || !leadFormPhone) return;
+
+    const newLead: DealerLead = {
+      id: `ld-${Date.now()}`,
+      name: leadFormName,
+      phone: leadFormPhone,
+      budgetPkr: Number(leadFormBudget) || 10000000,
+      interestedCategory: leadFormCategory,
+      precinct: 'Bahria Town Karachi',
+      status: 'New',
+      createdDate: new Date().toISOString().split('T')[0],
+      notes: 'Added via Dealer Portal'
+    };
+
+    setLeads([newLead, ...leads]);
+    setNewLeadModalOpen(false);
+    setLeadFormName('');
+    setLeadFormPhone('');
+  };
+
+  // Check if oath is accepted when rendered
+  useEffect(() => {
+    const oathStatus = localStorage.getItem('realtorx_dealer_oath_accepted') === 'true';
+    setHasAcceptedOath(oathStatus);
+  }, []);
+
+  return (
+    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-slate-100">
+      
+      {/* 1. NOT LOGGED IN: Dealer Login Form */}
+      {!isLoggedIn ? (
+        <div className="max-w-md mx-auto py-12">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+            
+            <div className="text-center space-y-2">
+              <div className="flex justify-center mb-2">
+                <RealtorXLogo size="sm" showSubtitle={false} />
+              </div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 px-2.5 py-0.5 rounded-full">
+                <Percent className="w-3 h-3" />
+                <span>60% Dealer Share Fraternity</span>
+              </div>
+              <h1 className="text-2xl font-bold text-white font-heading">
+                Dealer &amp; Agent Portal
+              </h1>
+              <p className="text-xs text-slate-400">
+                Log in to manage your Bahria Town leads, deal commissions, and ERPNext transaction records.
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-[#2490EF]" />
+                  <span>Dealer Email</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF] transition-colors"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-[#F5A623]" />
+                  <span>Password</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#F5A623] transition-colors font-mono"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 shadow-lg transition-all flex items-center justify-center gap-2"
+              >
+                <span>Log In to Dealer Portal</span>
+                <ArrowRight className="w-4 h-4 text-slate-950" />
+              </button>
+
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={() => onNavigate('become-dealer')}
+                  className="text-xs text-[#2490EF] hover:underline"
+                >
+                  New agent? Apply to Become a Dealer (40/60 Split)
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      ) : !hasAcceptedOath ? (
+        /* 2. SPECIAL REQUIREMENT: Oath Mandatory Check */
+        <div className="max-w-2xl mx-auto py-12">
+          <div className="bg-slate-900/90 border border-amber-500/40 rounded-3xl p-8 sm:p-10 shadow-2xl text-center space-y-6">
+            <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-mono uppercase tracking-widest text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/60">
+                Action Required Before Portal Access
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading">
+                The Realtor X Oath is Mandatory
+              </h2>
+              <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+                Before accessing customer leads, inventory prices, and guaranteed 60% commission payouts, every partner must take and sign <strong>The Realtor X Founding Member Oath</strong> to bind themselves to honest practice and client protection.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-400 max-w-md mx-auto">
+              “I will always place ethics before personal gain. I will never intentionally mislead, exploit or damage the trust of this community.”
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => onNavigate('oath')}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>Take The Oath Now</span>
+                <ArrowRight className="w-4 h-4 text-slate-950" />
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-800"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* 3. AUTHENTICATED DEALER DASHBOARD */
+        <div className="space-y-8">
+          
+          {/* Header Banner */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] text-slate-950 flex items-center justify-center text-xl font-black font-heading shadow-md">
+                TM
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl sm:text-2xl font-bold text-white font-heading">
+                    {dealer.name}
+                  </h1>
+                  <span className="text-[10px] font-mono bg-[#28A745]/20 text-[#28A745] border border-[#28A745]/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>Oath Sworn Custodian</span>
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 flex flex-wrap items-center gap-3 mt-1 font-mono">
+                  <span>{dealer.agencyName}</span>
+                  <span>•</span>
+                  <span>Reg: {dealer.bahriaRegNo}</span>
+                  <span>•</span>
+                  <span className="text-[#F5A623] font-bold">60% Dealer Share</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 self-stretch md:self-auto">
+              <div className="bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 text-right">
+                <span className="text-[10px] text-slate-400 font-mono block">Available Commission</span>
+                <span className="text-base font-mono font-black text-emerald-400">
+                  PKR {availableBalance.toLocaleString()}
+                </span>
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="px-3.5 py-2.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors flex items-center gap-1.5"
+                title="Log Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Dashboard Navigation Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none">
+            {[
+              { id: 'target', label: 'Target vs Achieved', icon: TrendingUp },
+              { id: 'leads', label: 'My Leads', icon: Users, count: leads.length },
+              { id: 'deals', label: 'My Deals', icon: Briefcase, count: deals.length },
+              { id: 'ledger', label: 'Commission Ledger', icon: DollarSign },
+              { id: 'payouts', label: 'Payouts', icon: CreditCard },
+              { id: 'visits', label: 'Site Visits', icon: Calendar, count: visits.length },
+              { id: 'tasks', label: 'Tasks', icon: CheckSquare, count: tasks.filter(t => !t.done).length },
+              { id: 'profile', label: 'Profile', icon: User }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-[#F5A623] to-[#FFA500] text-slate-950 font-bold shadow-md shadow-[#F5A623]/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && (
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      isActive ? 'bg-slate-950 text-[#F5A623]' : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* TAB 1: Target vs Achieved */}
+          {activeTab === 'target' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* Target Card */}
+                <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                  <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Quarterly Target</span>
+                  <div className="text-2xl sm:text-3xl font-mono font-bold text-white">
+                    PKR {(dealer.targetQuarterPkr / 10000000).toFixed(1)} Crore
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Q1 2026 sales volume target set with Realtor X Bahria Chapter.
+                  </p>
+                </div>
+
+                {/* Achieved Card */}
+                <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#28A745]">Achieved Volume</span>
+                  <div className="text-2xl sm:text-3xl font-mono font-bold text-emerald-400">
+                    PKR {(dealer.achievedQuarterPkr / 10000000).toFixed(2)} Crore
+                  </div>
+                  <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-emerald-500 h-full rounded-full"
+                      style={{ width: `${(dealer.achievedQuarterPkr / dealer.targetQuarterPkr) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-mono text-slate-400 block text-right">
+                    {((dealer.achievedQuarterPkr / dealer.targetQuarterPkr) * 100).toFixed(0)}% Achieved
+                  </span>
+                </div>
+
+                {/* Rank & 60% Commission Earned */}
+                <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#F5A623]">Custodian Rank</span>
+                  <div className="text-2xl sm:text-3xl font-mono font-bold text-[#F5A623] flex items-center gap-2">
+                    <Award className="w-7 h-7" />
+                    <span>#3 in Bahria</span>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Eligible for Q1 Gold Custodian recognition at the Annual Realtor X Assembly.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: My Leads */}
+          {activeTab === 'leads' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-bold text-white font-heading">
+                    Active Client Leads &amp; Inquiries
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Assigned and acquired buyer leads for Bahria Town Karachi.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setNewLeadModalOpen(true)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-950 bg-[#F5A623] hover:brightness-110 flex items-center gap-1.5 transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Lead</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {leads.map(lead => (
+                  <div key={lead.id} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                        lead.status === 'Hot' ? 'bg-rose-950/60 text-rose-400 border border-rose-800/50' :
+                        lead.status === 'Site Visit Booked' ? 'bg-sky-950/60 text-sky-400 border border-sky-800/50' :
+                        'bg-slate-800 text-slate-300'
+                      }`}>
+                        {lead.status}
+                      </span>
+                      <span className="text-xs font-mono text-slate-400">{lead.createdDate}</span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-base font-bold text-white">{lead.name}</h4>
+                      <p className="text-xs text-slate-400 font-mono mt-0.5">{lead.phone}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-800 font-mono">
+                      <div>
+                        <span className="text-slate-500 block">Category:</span>
+                        <span className="text-slate-200">{lead.interestedCategory}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block">Budget:</span>
+                        <span className="text-[#F5A623] font-bold">PKR {(lead.budgetPkr / 10000000).toFixed(2)} Cr</span>
+                      </div>
+                    </div>
+
+                    {lead.notes && (
+                      <p className="text-xs text-slate-400 italic bg-slate-950 p-2.5 rounded-xl border border-slate-800/80">
+                        "{lead.notes}"
+                      </p>
+                    )}
+
+                    <div className="pt-2 flex items-center justify-between text-xs">
+                      <span className="text-slate-500 font-mono">{lead.precinct}</span>
+                      <a
+                        href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=Hello%20${lead.name},%20Tariq%20from%20Realtor%20X%20here.`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5 transition-colors"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>WhatsApp Lead</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: My Deals (40/60 split breakdown) */}
+          {activeTab === 'deals' && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-white font-heading">
+                Deals &amp; 40/60 Split Summary
+              </h2>
+              <div className="space-y-3">
+                {deals.map(dl => (
+                  <div key={dl.id} className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs text-[#F5A623] font-bold">{dl.dealCode}</span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50">
+                          {dl.status}
+                        </span>
+                      </div>
+                      <h4 className="text-base font-bold text-white">{dl.propertyTitle}</h4>
+                      <p className="text-xs text-slate-400">
+                        Client: <strong className="text-slate-200">{dl.clientName}</strong> · Closed: {dl.closeDate}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-6 text-xs font-mono">
+                      <div className="text-right">
+                        <span className="text-slate-500 block">Property Sale</span>
+                        <span className="text-white font-bold">PKR {(dl.salePricePkr / 10000000).toFixed(2)} Cr</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-emerald-400 block font-bold">Your Share (60%)</span>
+                        <span className="text-emerald-400 text-sm font-bold">PKR {dl.dealerCommissionPkr.toLocaleString()}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-slate-500 block">RealtorX Share (40%)</span>
+                        <span className="text-slate-400">PKR {dl.platformSharePkr.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: Commission Ledger */}
+          {activeTab === 'ledger' && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-white font-heading">
+                Commission Accounting Ledger
+              </h2>
+              <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/80">
+                <table className="w-full text-left text-xs font-sans">
+                  <thead className="bg-slate-950 text-slate-400 uppercase font-mono border-b border-slate-800">
+                    <tr>
+                      <th className="p-4">Date</th>
+                      <th className="p-4">Type</th>
+                      <th className="p-4">Description</th>
+                      <th className="p-4">Amount (PKR)</th>
+                      <th className="p-4">Balance (PKR)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 font-mono">
+                    {ledger.map(entry => (
+                      <tr key={entry.id} className="hover:bg-slate-850/50">
+                        <td className="p-4 text-slate-400">{entry.date}</td>
+                        <td className="p-4">
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-sans font-semibold ${
+                            entry.type === 'Credit' ? 'bg-emerald-950/60 text-emerald-400' : 'bg-rose-950/60 text-rose-400'
+                          }`}>
+                            {entry.type}
+                          </span>
+                        </td>
+                        <td className="p-4 font-sans text-slate-200">{entry.description}</td>
+                        <td className={`p-4 font-bold ${
+                          entry.type === 'Credit' ? 'text-emerald-400' : 'text-rose-400'
+                        }`}>
+                          {entry.type === 'Credit' ? '+' : '-'} PKR {entry.amountPkr.toLocaleString()}
+                        </td>
+                        <td className="p-4 font-bold text-white">
+                          PKR {entry.balanceAfterPkr.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: Payouts */}
+          {activeTab === 'payouts' && (
+            <div className="space-y-6">
+              <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-4">
+                <h3 className="text-xl font-bold text-white font-heading">
+                  Request Commission Payout
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Instant withdrawal to your verified bank account via 1Link/Raast upon deal clearance.
+                </p>
+
+                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Linked Bank:</span>
+                    <span className="text-white">{dealer.bankName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">IBAN:</span>
+                    <span className="text-emerald-400">{dealer.iban}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Available Balance:</span>
+                    <span className="text-white font-bold">PKR {availableBalance.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => alert(`Payout request of PKR ${availableBalance.toLocaleString()} submitted to Realtor X Accounts.`)}
+                  className="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-[#28A745] to-[#20c997] hover:brightness-110 shadow-lg transition-all"
+                >
+                  Request Full Withdrawal
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: Site Visits */}
+          {activeTab === 'visits' && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-white font-heading">
+                Scheduled Bahria Site Tours
+              </h2>
+              <div className="space-y-3">
+                {visits.map(v => (
+                  <div key={v.id} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-sky-950/60 text-sky-400 border border-sky-800/50">
+                        {v.status}
+                      </span>
+                      <h4 className="text-base font-bold text-white">{v.propertyTitle}</h4>
+                      <p className="text-xs text-slate-400">{v.precinct}</p>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-xs font-mono">
+                      <div>
+                        <div className="text-white font-bold">{v.date}</div>
+                        <div className="text-slate-400">{v.timeSlot}</div>
+                      </div>
+                      <button
+                        onClick={() => alert('Tour marked as completed in ERPNext!')}
+                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200"
+                      >
+                        Complete Visit
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 7: Tasks */}
+          {activeTab === 'tasks' && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-white font-heading">
+                Operational Tasks &amp; Reminders
+              </h2>
+              <div className="space-y-3">
+                {tasks.map(t => (
+                  <div
+                    key={t.id}
+                    onClick={() => {
+                      setTasks(tasks.map(item => item.id === t.id ? { ...item, done: !item.done } : item));
+                    }}
+                    className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                      t.done ? 'bg-slate-950/60 border-slate-800/60 text-slate-500 line-through' : 'bg-slate-900/80 border-slate-800 text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${
+                        t.done ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'border-slate-700'
+                      }`}>
+                        {t.done && <CheckCircle2 className="w-4 h-4" />}
+                      </div>
+                      <span className="text-sm font-medium">{t.title}</span>
+                    </div>
+                    <span className="text-xs font-mono text-slate-400">{t.due}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 8: Profile */}
+          {activeTab === 'profile' && (
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6">
+              <h2 className="text-xl font-bold text-white font-heading">
+                Dealer Accreditation &amp; Governance
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+                <div>
+                  <span className="text-slate-500 block text-xs">Dealer Name:</span>
+                  <div className="text-white font-bold">{dealer.name}</div>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-xs">Agency Name:</span>
+                  <div className="text-white">{dealer.agencyName}</div>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-xs">Bahria Registration Number:</span>
+                  <div className="text-white font-mono">{dealer.bahriaRegNo}</div>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-xs">CNIC Number:</span>
+                  <div className="text-white font-mono">{dealer.cnic}</div>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-xs">RealtorX Oath Status:</span>
+                  <div className="text-emerald-400 font-semibold flex items-center gap-1">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Sworn &amp; Accepted ({dealer.oathAcceptedDate})</span>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-xs">Commission Split Rate:</span>
+                  <div className="text-[#F5A623] font-bold">60% To Dealer / 40% To Platform</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Add Lead Modal */}
+          {newLeadModalOpen && (
+            <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-4 shadow-2xl">
+                <h3 className="text-lg font-bold text-white font-heading">Add Buyer Lead</h3>
+                <form onSubmit={handleAddLead} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-300">Client Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={leadFormName}
+                      onChange={(e) => setLeadFormName(e.target.value)}
+                      placeholder="e.g. Asim Raza"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-300">Phone / WhatsApp</label>
+                    <input
+                      type="text"
+                      required
+                      value={leadFormPhone}
+                      onChange={(e) => setLeadFormPhone(e.target.value)}
+                      placeholder="+92 300 1234567"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-300">Category</label>
+                    <select
+                      value={leadFormCategory}
+                      onChange={(e) => setLeadFormCategory(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white"
+                    >
+                      <option value="Luxury Villa">Luxury Villa</option>
+                      <option value="Residential Plot">Residential Plot</option>
+                      <option value="Commercial Shop">Commercial Shop</option>
+                      <option value="Apartment">Apartment</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-300">Budget (PKR)</label>
+                    <input
+                      type="number"
+                      value={leadFormBudget}
+                      onChange={(e) => setLeadFormBudget(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono"
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setNewLeadModalOpen(false)}
+                      className="px-4 py-2 text-xs text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 text-xs font-bold text-slate-950 bg-[#F5A623] rounded-xl hover:brightness-110"
+                    >
+                      Save Lead
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+        </div>
+      )}
+
+    </div>
+  );
+};

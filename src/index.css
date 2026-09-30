@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Poppins", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Poppins", "Inter", sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", serif;
+  --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    background-color: #0A1628;
+    color: #F8FAFC;
+  }
+
+  body {
+    background-color: #0A1628;
+    color: #F8FAFC;
+    min-height: 100vh;
+  }
+}
+
+.font-urdu {
+  font-family: "Noto Nastaliq Urdu", serif;
+  line-height: 2.2;
+}
+
+@media print {
+  body {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+/* Print styles for Oath Certificate */
+@media print {
+  /* Hide navbar, footer, and action buttons */
+  header,
+  footer,
+  nav,
+  button:not(.print-keep) {
+    display: none !important;
+  }
+
+  /* Full page white background */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Remove shadows and backgrounds for print */
+  .rounded-3xl,
+  .rounded-2xl {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Ensure content uses full page */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Page settings */
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+}
+

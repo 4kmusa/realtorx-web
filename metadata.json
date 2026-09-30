@@ -1,0 +1,6 @@
+{
+  "name": "RealtorX Culture & Founding Oath Portal",
+  "description": "The foundational culture, manifesto, founding member oath, and behavioral code for RealtorX with ready ERPNext integration for web and mobile.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
