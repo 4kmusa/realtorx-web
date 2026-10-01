@@ -1,647 +1,733 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageId, Language } from '../types';
-import { RealtorXLogo } from '../components/RealtorXLogo';
+import { useAuth } from '../context/AuthContext';
 import {
-  UserPlus,
-  Percent,
+  User,
+  CreditCard,
+  Calendar,
+  Phone,
+  Mail,
+  MapPin,
+  FileText,
+  Building2,
+  Banknote,
+  Briefcase,
   ShieldCheck,
+  Loader2,
+  AlertCircle,
   CheckCircle2,
-  Award,
   ArrowRight,
   ArrowLeft,
-  Upload,
-  Video,
-  FileCheck,
-  Building,
-  CreditCard,
-  Users,
+  Sparkles,
   Check,
-  FileText
 } from 'lucide-react';
 
 interface BecomeDealerPageProps {
-  onNavigate: (page: PageId) => void;
+  onNavigate: (page: PageId, extraId?: string) => void;
   language: Language;
 }
 
-export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate, language }) => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
 
-  // Form states across the 8 steps
-  // Step 1: Basic Info
-  const [fullName, setFullName] = useState('');
-  const [cnic, setCnic] = useState('');
-  const [dob, setDob] = useState('1988-06-15');
-  const [gender, setGender] = useState('Male');
+// Phone formatter
+const formatPhoneNumber = (phone: string): string => {
+  let cleaned = phone.replace(/[\s\-()]/g, '');
+  if (cleaned.startsWith('+')) return cleaned;
+  if (cleaned.startsWith('00')) return '+' + cleaned.slice(2);
+  if (cleaned.startsWith('0') && cleaned.length === 11) return '+92' + cleaned.slice(1);
+  if (cleaned.startsWith('3') && cleaned.length === 10) return '+92' + cleaned;
+  if (cleaned.startsWith('0')) return '+92' + cleaned.slice(1);
+  return '+92' + cleaned;
+};
 
-  // Step 2: Contact
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [city, setCity] = useState('Karachi');
-  const [address, setAddress] = useState('Bahria Town Karachi');
+export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }) => {
+  const { user, isAuthenticated, updateUserRole } = useAuth();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Step 3: Bank Details
-  const [bankName, setBankName] = useState('Meezan Bank Limited');
-  const [accountTitle, setAccountTitle] = useState('');
-  const [iban, setIban] = useState('');
-  const [branchCode, setBranchCode] = useState('0102');
+  const [formData, setFormData] = useState({
+    // Step 1
+    full_name: '',
+    cnic_number: '',
+    date_of_birth: '',
+    gender: 'Male',
+    cnic_expiry_date: '',
+    // Step 2
+    phone: '',
+    email: '',
+    city: 'Karachi',
+    office_address: '',
+    service_radius_km: '25',
+    // Step 3
+    bank_name: '',
+    account_number: '',
+    iban: '',
+    company_type: 'Individual',
+    gst_registered: 'No',
+    reference_name_1: '',
+    // Step 4
+    terms_and_conditions: false,
+  });
 
-  // Step 4: Reference
-  const [referenceName, setReferenceName] = useState('Haji Farooq');
-  const [referenceContact, setReferenceContact] = useState('+92 300 9988776');
-  const [referenceRelation, setReferenceRelation] = useState('Senior Dealer - Bahria Precinct 1');
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isAuthenticated) onNavigate('login');
+    if (user?.is_dealer) onNavigate('dealer');
+  }, [isAuthenticated, user, onNavigate]);
 
-  // Step 5: Video KYC
-  const [kycFileUploaded, setKycFileUploaded] = useState(false);
-  const [kycType, setKycType] = useState<'video' | 'selfie'>('video');
-
-  // Step 6: The Oath Acceptance
-  const [oathAccepted, setOathAccepted] = useState(true);
-
-  // Step 7: Terms & Conditions
-  const [agreedTerms, setAgreedTerms] = useState(true);
-  const [agreedZeroPoaching, setAgreedZeroPoaching] = useState(true);
-
-  // Step 8: Final Submission
-  const [submitted, setSubmitted] = useState(false);
-  const [erpDocId, setErpDocId] = useState('');
-
-  const totalSteps = 8;
-
-  const handleNext = () => {
-    if (currentStep === 1 && (!fullName || !cnic)) {
-      alert('Please fill out your Full Name and CNIC.');
-      return;
+  // Pre-fill from user
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        full_name: user.full_name || '',
+        phone: user.phone || '',
+        email: user.email || '',
+      }));
     }
-    if (currentStep === 2 && (!phone || !email)) {
-      alert('Please fill out your Phone and Email.');
-      return;
+  }, [user]);
+
+  // Update field helper
+  const updateField = (field: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Step validation
+  const validateStep = (step: number): boolean => {
+    setError(null);
+
+    if (step === 1) {
+      if (!formData.full_name.trim()) {
+        setError('Full name is required');
+        return false;
+      }
+      if (!formData.cnic_number.trim()) {
+        setError('CNIC number is required');
+        return false;
+      }
+      if (!formData.date_of_birth) {
+        setError('Date of birth is required');
+        return false;
+      }
     }
-    if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 300, behavior: 'smooth' });
+
+    if (step === 2) {
+      if (!formData.phone.trim()) {
+        setError('Phone number is required');
+        return false;
+      }
+      if (!formData.city.trim()) {
+        setError('City is required');
+        return false;
+      }
+    }
+
+    if (step === 3) {
+      if (!formData.bank_name.trim()) {
+        setError('Bank name is required');
+        return false;
+      }
+      if (!formData.account_number.trim()) {
+        setError('Account number is required');
+        return false;
+      }
+    }
+
+    if (step === 4) {
+      if (!formData.terms_and_conditions) {
+        setError('You must accept the Terms & Conditions');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Next step
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, 4));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-      window.scrollTo({ top: 300, behavior: 'smooth' });
+  // Previous step
+  const prevStep = () => {
+    setError(null);
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Final submission
+  const handleFinalSubmit = async () => {
+    if (!validateStep(4)) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const payload = {
+        ...formData,
+        phone: formatPhoneNumber(formData.phone),
+        user_email: user?.email,
+      };
+
+      const response = await fetch(
+        `${ERPNEXT_URL}/api/method/realtorx.api.become_dealer`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || result.exception) {
+        throw new Error(
+          result.exception || result.message || 'Failed to create dealer'
+        );
+      }
+
+      // Update user role in frontend
+      updateUserRole('Dealer');
+
+      // Redirect to Oath page (session flag set)
+      sessionStorage.setItem('realtorx_dealer_flow', 'true');
+      sessionStorage.setItem('realtorx_dealer_id', result.message?.dealer_id || '');
+
+      // Wait a bit then navigate
+      setTimeout(() => {
+        onNavigate('oath');
+      }, 500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to submit. Please try again.');
+      setLoading(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!oathAccepted) {
-      alert('You must accept The RealtorX Oath.');
-      return;
-    }
-    if (!agreedTerms || !agreedZeroPoaching) {
-      alert('Please agree to the Terms & Conditions and Zero-Poaching policy.');
-      return;
-    }
-
-    const docId = `RX-DLR-${Math.floor(1000 + Math.random() * 9000)}`;
-    setErpDocId(docId);
-    setSubmitted(true);
-
-    // Persist oath acceptance in localStorage
-    localStorage.setItem('realtorx_dealer_oath_accepted', 'true');
-    localStorage.setItem('realtorx_dealer_oath_name', fullName);
-  };
+  // Steps config
+  const steps = [
+    { num: 1, title: 'Personal Info', icon: User },
+    { num: 2, title: 'Contact Details', icon: Phone },
+    { num: 3, title: 'Bank & Business', icon: Banknote },
+    { num: 4, title: 'Terms & Oath', icon: ShieldCheck },
+  ];
 
   return (
-    <div className="py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-slate-100">
-      
+    <div className="py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1 rounded-full">
-          <Percent className="w-3.5 h-3.5" />
-          <span>40/60 Fair Commission Fraternity</span>
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1.5 rounded-full mb-4">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Dealer Registration</span>
         </div>
-
-        <h1 className="text-3xl sm:text-5xl font-bold text-white font-heading">
-          Become a Realtor X Custodian Dealer
+        <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-3">
+          Become a Dealer
         </h1>
-
-        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-          Join Bahria Town Karachi's ethical real estate network. Guaranteed 60% dealer commission split, verified property inventories, and institutional ERPNext backend synchronization.
+        <p className="text-sm text-slate-400 max-w-xl mx-auto">
+          Join Realtor X as a partner dealer with <strong className="text-[#F5A623]">60% commission split</strong>. Complete 4 steps to get started.
         </p>
       </div>
 
-      {/* 40/60 Split Guarantee Box */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-          <div className="text-3xl font-black text-[#F5A623] font-mono mb-2">60%</div>
-          <h3 className="font-heading font-bold text-white text-base">To The Closing Dealer</h3>
-          <p className="text-xs text-slate-400 mt-1">
-            You bring the client and effort; you deserve the lion’s share. Immediate payout upon Bahria transfer.
-          </p>
-        </div>
+      {/* Progress Indicator */}
+      <div className="mb-10">
+        <div className="flex items-center justify-between">
+          {steps.map((step, idx) => {
+            const Icon = step.icon;
+            const isActive = currentStep === step.num;
+            const isCompleted = currentStep > step.num;
 
-        <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-          <div className="text-3xl font-black text-[#2490EF] font-mono mb-2">40%</div>
-          <h3 className="font-heading font-bold text-white text-base">To Realtor X Platform</h3>
-          <p className="text-xs text-slate-400 mt-1">
-            Funds verified title searches, ERPNext transaction infrastructure, professional photography, and legal advisory.
-          </p>
-        </div>
-
-        <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-          <div className="text-3xl font-black text-[#28A745] font-mono mb-2">100%</div>
-          <h3 className="font-heading font-bold text-white text-base">Verified Co-Brokering</h3>
-          <p className="text-xs text-slate-400 mt-1">
-            Zero back-channel poaching. All co-broker agreements are legally protected and stored on ERPNext.
-          </p>
-        </div>
-      </div>
-
-      {/* 8-Step Progress Stepper */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl">
-        <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-none gap-2">
-          {[
-            '1. Basic Info',
-            '2. Contact',
-            '3. Bank',
-            '4. Reference',
-            '5. Video KYC',
-            '6. The Oath',
-            '7. Terms',
-            '8. Submit'
-          ].map((stepName, idx) => {
-            const stepNum = idx + 1;
-            const isCompleted = stepNum < currentStep || submitted;
-            const isCurrent = stepNum === currentStep && !submitted;
             return (
-              <div
-                key={idx}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
-                  isCurrent
-                    ? 'bg-[#F5A623] text-slate-950 font-bold shadow-md shadow-[#F5A623]/20'
-                    : isCompleted
-                    ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50'
-                    : 'bg-slate-800/50 text-slate-500'
-                }`}
-              >
-                {isCompleted ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                ) : (
-                  <span className="font-mono">{stepNum}</span>
+              <React.Fragment key={step.num}>
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                      isCompleted
+                        ? 'bg-[#28A745] text-white'
+                        : isActive
+                        ? 'bg-[#2490EF] text-white ring-4 ring-[#2490EF]/20'
+                        : 'bg-slate-800 text-slate-500'
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <Check className="w-6 h-6" />
+                    ) : (
+                      <Icon className="w-5 h-5" />
+                    )}
+                  </div>
+                  <span
+                    className={`text-[10px] sm:text-xs mt-2 font-mono uppercase tracking-wider text-center ${
+                      isActive
+                        ? 'text-[#2490EF] font-bold'
+                        : isCompleted
+                        ? 'text-[#28A745]'
+                        : 'text-slate-500'
+                    }`}
+                  >
+                    {step.title}
+                  </span>
+                </div>
+                {idx < steps.length - 1 && (
+                  <div
+                    className={`h-0.5 flex-1 mx-2 transition-colors ${
+                      currentStep > step.num ? 'bg-[#28A745]' : 'bg-slate-800'
+                    }`}
+                  />
                 )}
-                <span>{stepName.split('. ')[1]}</span>
-              </div>
+              </React.Fragment>
             );
           })}
         </div>
       </div>
 
-      {/* Form Container */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
-        {submitted ? (
-          <div className="text-center py-10 space-y-6 animate-fadeIn">
-            <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
-              <CheckCircle2 className="w-10 h-10" />
+      {/* Form Card */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/70 border border-slate-800">
+        {/* STEP 1: Personal Info */}
+        {currentStep === 1 && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                <User className="w-5 h-5 text-[#2490EF]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white font-heading">
+                  Step 1 — Personal Information
+                </h2>
+                <p className="text-xs text-slate-400">Your basic identity details</p>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <span className="text-xs font-mono uppercase tracking-widest text-emerald-400">
-                Dealer Record Registered in ERPNext
-              </span>
-              <h2 className="text-3xl font-bold text-white font-heading">
-                Application Approved, Custodian {fullName}!
-              </h2>
-              <p className="text-sm text-slate-300 max-w-lg mx-auto">
-                Your dealer record has been generated on the Realtor X ERPNext node. Your guaranteed 60% commission split is activated.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 inline-block font-mono text-sm text-[#F5A623]">
-              ERPNext Dealer ID: {erpDocId}
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-              <button
-                onClick={() => onNavigate('dealer')}
-                className="px-6 py-3 rounded-xl text-sm font-semibold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 shadow-lg flex items-center gap-2"
-              >
-                <span>Enter Dealer Portal</span>
-                <ArrowRight className="w-4 h-4 text-slate-950" />
-              </button>
-
-              <button
-                onClick={() => onNavigate('properties')}
-                className="px-5 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-slate-800"
-              >
-                Browse Bahria Inventory
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            
-            {/* STEP 1: Basic Info */}
-            {currentStep === 1 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 1: Personal &amp; Identity Information</h3>
-                  <p className="text-xs text-slate-400 mt-1">Official identity details matching your Government CNIC card.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Full Legal Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Tariq Mahmood"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">CNIC Number (13 digits) *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="42101-1234567-1"
-                      value={cnic}
-                      onChange={(e) => setCnic(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Date of Birth</label>
-                    <input
-                      type="date"
-                      value={dob}
-                      onChange={(e) => setDob(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Gender</label>
-                    <select
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Full Name *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    required
+                    value={formData.full_name}
+                    onChange={(e) => updateField('full_name', e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  />
                 </div>
               </div>
-            )}
 
-            {/* STEP 2: Contact */}
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 2: Contact &amp; Office Coordinates</h3>
-                  <p className="text-xs text-slate-400 mt-1">Direct contact numbers for customer lead dispatching.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Mobile Phone / WhatsApp *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="+92 300 1234567"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Official Email *</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="realtor@agency.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Operating City</label>
-                    <input
-                      type="text"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Office / Precinct Address</label>
-                    <input
-                      type="text"
-                      placeholder="Office 12, Midway Commercial B, Bahria Town Karachi"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  CNIC Number *
+                </label>
+                <div className="relative">
+                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    required
+                    value={formData.cnic_number}
+                    onChange={(e) => updateField('cnic_number', e.target.value)}
+                    placeholder="42101-1234567-1"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  />
                 </div>
               </div>
-            )}
 
-            {/* STEP 3: Bank Details */}
-            {currentStep === 3 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 3: Bank Details for Commission Payouts</h3>
-                  <p className="text-xs text-slate-400 mt-1">Your 60% commission is disbursed automatically to this IBAN.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Bank Name</label>
-                    <input
-                      type="text"
-                      value={bankName}
-                      onChange={(e) => setBankName(e.target.value)}
-                      placeholder="Meezan Bank / HBL / Bank Alfalah"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Account Title</label>
-                    <input
-                      type="text"
-                      value={accountTitle || fullName}
-                      onChange={(e) => setAccountTitle(e.target.value)}
-                      placeholder="e.g. Tariq Mahmood"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-medium text-slate-300">IBAN (24 Characters)</label>
-                    <input
-                      type="text"
-                      value={iban}
-                      onChange={(e) => setIban(e.target.value)}
-                      placeholder="PK44MEZN0001092849102901"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Date of Birth *
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="date"
+                    required
+                    value={formData.date_of_birth}
+                    onChange={(e) => updateField('date_of_birth', e.target.value)}
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]"
+                  />
                 </div>
               </div>
-            )}
 
-            {/* STEP 4: Reference */}
-            {currentStep === 4 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 4: Professional Reference</h3>
-                  <p className="text-xs text-slate-400 mt-1">A senior dealer or recognized Bahria Town realtor who can vouch for your professional ethics.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Reference Name</label>
-                    <input
-                      type="text"
-                      value={referenceName}
-                      onChange={(e) => setReferenceName(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Reference Contact</label>
-                    <input
-                      type="text"
-                      value={referenceContact}
-                      onChange={(e) => setReferenceContact(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-300">Relation / Agency</label>
-                    <input
-                      type="text"
-                      value={referenceRelation}
-                      onChange={(e) => setReferenceRelation(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 5: Video KYC Upload */}
-            {currentStep === 5 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 5: Video KYC &amp; Verification</h3>
-                  <p className="text-xs text-slate-400 mt-1">Upload a 10-second selfie video stating: "I agree to RealtorX ethics and the 40/60 split."</p>
-                </div>
-
-                <div className="p-8 border-2 border-dashed border-slate-700 hover:border-[#2490EF] rounded-3xl bg-slate-950/60 text-center space-y-4">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto text-[#2490EF]">
-                    <Video className="w-8 h-8" />
-                  </div>
-
-                  <div>
-                    <h4 className="text-base font-bold text-white">Record or Upload KYC Video</h4>
-                    <p className="text-xs text-slate-400 mt-1">MP4, MOV, or WEBM up to 25MB.</p>
-                  </div>
-
-                  <div className="flex justify-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setKycFileUploaded(true)}
-                      className="px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#2490EF] hover:bg-[#1f7ecf] transition-all flex items-center gap-2"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span>{kycFileUploaded ? 'Video Attached (kyc_statement.mp4)' : 'Attach Video File'}</span>
-                    </button>
-                  </div>
-
-                  {kycFileUploaded && (
-                    <div className="text-xs text-emerald-400 flex items-center justify-center gap-1.5 font-mono">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>KYC Video successfully staged for ERPNext review.</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* STEP 6: The Oath Acceptance */}
-            {currentStep === 6 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 6: The RealtorX Oath Acceptance</h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Every authorized dealer must bind themselves to The Oath.
-                  </p>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-4">
-                  <div className="text-sm font-serif italic text-amber-300">
-                    “I will always place ethics before personal gain. I will respect every member regardless of their size, experience or background. I will never intentionally mislead, exploit or damage the trust of this community.”
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-2">
-                    <input
-                      type="checkbox"
-                      id="oathCheck"
-                      checked={oathAccepted}
-                      onChange={(e) => setOathAccepted(e.target.checked)}
-                      className="w-5 h-5 rounded border-slate-700 bg-slate-900 text-[#F5A623] focus:ring-0 cursor-pointer"
-                    />
-                    <label htmlFor="oathCheck" className="text-xs font-medium text-white cursor-pointer">
-                      I solemnly accept and affirm <strong>The RealtorX Founding Member Oath</strong>.
-                    </label>
-                  </div>
-
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => onNavigate('oath')}
-                      className="text-xs text-[#2490EF] hover:underline"
-                    >
-                      Read full ceremonial oath text &rarr;
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 7: Terms & Conditions */}
-            {currentStep === 7 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 7: Terms, Conditions &amp; Zero Poaching</h3>
-                  <p className="text-xs text-slate-400 mt-1">Our covenant protecting co-brokers and platform integrity.</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      id="splitCheck"
-                      checked={agreedTerms}
-                      onChange={(e) => setAgreedTerms(e.target.checked)}
-                      className="w-5 h-5 rounded border-slate-700 bg-slate-900 text-[#2490EF] cursor-pointer mt-0.5"
-                    />
-                    <label htmlFor="splitCheck" className="text-xs text-slate-300 cursor-pointer">
-                      <strong className="text-white block mb-0.5">40/60 Commission Split Agreement</strong>
-                      I agree that 60% of all closed transaction brokerage fees go directly to me as the closing dealer, and 40% is retained by Realtor X for verification, platform services, and title search.
-                    </label>
-                  </div>
-
-                  <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      id="poachCheck"
-                      checked={agreedZeroPoaching}
-                      onChange={(e) => setAgreedZeroPoaching(e.target.checked)}
-                      className="w-5 h-5 rounded border-slate-700 bg-slate-900 text-[#2490EF] cursor-pointer mt-0.5"
-                    />
-                    <label htmlFor="poachCheck" className="text-xs text-slate-300 cursor-pointer">
-                      <strong className="text-white block mb-0.5">Strict Zero-Poaching Guarantee</strong>
-                      I covenant never to bypass another RealtorX dealer or custodian after receiving an introduction or property inventory sheet. Any breach results in instant revocation and forfeiture.
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 8: Final Review & Submit */}
-            {currentStep === 8 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white font-heading">Step 8: Review &amp; Submit to ERPNext</h3>
-                  <p className="text-xs text-slate-400 mt-1">Verify your application details before registering your dealer node.</p>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-                  <div>
-                    <span className="text-slate-500 block">Dealer Name:</span>
-                    <span className="text-white font-bold">{fullName || 'Tariq Mahmood'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">CNIC:</span>
-                    <span className="text-white">{cnic || '42101-1234567-1'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">Phone:</span>
-                    <span className="text-white">{phone || '+92 300 1234567'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">Bank:</span>
-                    <span className="text-white">{bankName}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">Commission Split:</span>
-                    <span className="text-[#F5A623] font-bold">60% Dealer / 40% Realtor X</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">The Oath:</span>
-                    <span className="text-emerald-400 font-bold">Affirmed &amp; Signed</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-sky-950/30 border border-sky-800/40 text-xs text-sky-300 flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 shrink-0" />
-                  <span>Your profile will be immediately registered in the ERPNext Dealer doctype at http://172.23.173.190:8000.</span>
-                </div>
-              </div>
-            )}
-
-            {/* Navigation Buttons */}
-            <div className="pt-6 border-t border-slate-800 flex items-center justify-between">
-              {currentStep > 1 ? (
-                <button
-                  type="button"
-                  onClick={handlePrev}
-                  className="px-5 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 flex items-center gap-1.5 transition-colors"
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Gender *
+                </label>
+                <select
+                  value={formData.gender}
+                  onChange={(e) => updateField('gender', e.target.value)}
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]"
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Previous</span>
-                </button>
-              ) : <div />}
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
+              </div>
 
-              {currentStep < totalSteps ? (
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="px-6 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-[#2490EF] hover:brightness-110 flex items-center gap-1.5 transition-all"
-                >
-                  <span>Next Step</span>
-                  <ArrowRight className="w-4 h-4 text-slate-950" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="px-8 py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 shadow-lg flex items-center gap-2 transition-all cursor-pointer"
-                >
-                  <CheckCircle2 className="w-5 h-5 text-slate-950" />
-                  <span>Submit Application to ERPNext</span>
-                </button>
-              )}
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  CNIC Expiry Date
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="date"
+                    value={formData.cnic_expiry_date}
+                    onChange={(e) => updateField('cnic_expiry_date', e.target.value)}
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]"
+                  />
+                </div>
+              </div>
             </div>
-
           </div>
         )}
-      </div>
 
+        {/* STEP 2: Contact Details */}
+        {currentStep === 2 && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                <Phone className="w-5 h-5 text-[#2490EF]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white font-heading">
+                  Step 2 — Contact Details
+                </h2>
+                <p className="text-xs text-slate-400">How clients can reach you</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Phone *
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => updateField('phone', e.target.value)}
+                    placeholder="03XX XXXXXXX"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Local ya international (+92) — dono chalenge
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="email"
+                    value={formData.email}
+                    disabled
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-400 cursor-not-allowed"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  City *
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    required
+                    value={formData.city}
+                    onChange={(e) => updateField('city', e.target.value)}
+                    placeholder="Karachi"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Service Radius (km)
+                </label>
+                <input
+                  type="number"
+                  value={formData.service_radius_km}
+                  onChange={(e) => updateField('service_radius_km', e.target.value)}
+                  placeholder="25"
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Office Address
+                </label>
+                <div className="relative">
+                  <FileText className="absolute left-3 top-3.5 w-4 h-4 text-slate-500" />
+                  <textarea
+                    rows={3}
+                    value={formData.office_address}
+                    onChange={(e) => updateField('office_address', e.target.value)}
+                    placeholder="Enter your office address"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: Bank & Business */}
+        {currentStep === 3 && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                <Banknote className="w-5 h-5 text-[#2490EF]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white font-heading">
+                  Step 3 — Bank & Business
+                </h2>
+                <p className="text-xs text-slate-400">For commission payouts</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Bank Name *
+                </label>
+                <div className="relative">
+                  <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    required
+                    value={formData.bank_name}
+                    onChange={(e) => updateField('bank_name', e.target.value)}
+                    placeholder="Meezan Bank / HBL / UBL"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Account Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.account_number}
+                  onChange={(e) => updateField('account_number', e.target.value)}
+                  placeholder="Enter your account number"
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  IBAN
+                </label>
+                <input
+                  type="text"
+                  value={formData.iban}
+                  onChange={(e) => updateField('iban', e.target.value)}
+                  placeholder="PK36MEZN0001234567890123"
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Company Type
+                </label>
+                <select
+                  value={formData.company_type}
+                  onChange={(e) => updateField('company_type', e.target.value)}
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]"
+                >
+                  <option>Individual</option>
+                  <option>Company</option>
+                  <option>Partnership</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  GST Registered
+                </label>
+                <select
+                  value={formData.gst_registered}
+                  onChange={(e) => updateField('gst_registered', e.target.value)}
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]"
+                >
+                  <option>No</option>
+                  <option>Yes</option>
+                </select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
+                  Reference Name
+                </label>
+                <div className="relative">
+                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    value={formData.reference_name_1}
+                    onChange={(e) => updateField('reference_name_1', e.target.value)}
+                    placeholder="Who referred you to Realtor X?"
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: Terms & Oath */}
+        {currentStep === 4 && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-[#F5A623]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white font-heading">
+                  Step 4 — Terms & Oath
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Final step — accept terms and take the Realtor X Oath
+                </p>
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2">
+              <h3 className="text-sm font-bold text-white mb-3">Review Your Details</h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="text-slate-400">Full Name:</div>
+                <div className="text-white text-right">{formData.full_name}</div>
+                <div className="text-slate-400">CNIC:</div>
+                <div className="text-white text-right font-mono">{formData.cnic_number}</div>
+                <div className="text-slate-400">Phone:</div>
+                <div className="text-white text-right">{formData.phone}</div>
+                <div className="text-slate-400">City:</div>
+                <div className="text-white text-right">{formData.city}</div>
+                <div className="text-slate-400">Bank:</div>
+                <div className="text-white text-right">{formData.bank_name}</div>
+              </div>
+            </div>
+
+            {/* Terms Checkbox */}
+            <button
+              type="button"
+              onClick={() => updateField('terms_and_conditions', !formData.terms_and_conditions)}
+              className={`w-full p-4 rounded-xl border transition-all flex items-start gap-3 text-left ${
+                formData.terms_and_conditions
+                  ? 'bg-[#28A745]/10 border-[#28A745]/40'
+                  : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 ${
+                  formData.terms_and_conditions
+                    ? 'bg-[#28A745] border-[#28A745]'
+                    : 'border-slate-600'
+                }`}
+              >
+                {formData.terms_and_conditions && (
+                  <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
+                )}
+              </div>
+              <div className="text-sm text-slate-300 leading-relaxed">
+                I accept the <strong className="text-white">Realtor X Terms & Conditions</strong>,
+                commission structure (60% dealer / 40% company), and understand that
+                final activation requires taking the Founding Member Oath.
+              </div>
+            </button>
+
+            {/* Info Box */}
+            <div className="p-4 rounded-xl bg-[#F5A623]/5 border border-[#F5A623]/30 flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-[#F5A623] shrink-0 mt-0.5" />
+              <div className="text-xs text-slate-300 leading-relaxed">
+                <strong className="text-[#F5A623]">Next Step:</strong> After registration,
+                you'll be redirected to take the <strong>Realtor X Founding Member Oath</strong>.
+                Once taken, your dealer account will be fully activated.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="mt-5 p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-2 text-xs text-red-300">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Navigation Buttons */}
+        <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between gap-3">
+          {currentStep > 1 ? (
+            <button
+              type="button"
+              onClick={prevStep}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Previous
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onNavigate('profile')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Profile
+            </button>
+          )}
+
+          {currentStep < 4 ? (
+            <button
+              type="button"
+              onClick={nextStep}
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-lg shadow-md transition-all"
+            >
+              Continue
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleFinalSubmit}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 rounded-lg shadow-md transition-all disabled:opacity-60"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  Complete Registration
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

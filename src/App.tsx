@@ -26,6 +26,7 @@ import { DealerPortalPage } from './pages/DealerPortalPage';
 import { SignupPage } from './pages/SignupPage';
 import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { BecomeCustomerPage } from './pages/BecomeCustomerPage';
 
 // Culture components
 import { MembersDirectory } from './components/MembersDirectory';
@@ -220,6 +221,8 @@ function AppContent() {
         return <LoginPage onNavigate={handleNavigate} language={language} />;
       case 'profile':
         return <ProfilePage onNavigate={handleNavigate} language={language} />;
+          case 'become-customer':
+        return <BecomeCustomerPage onNavigate={handleNavigate} language={language} />;
       case 'community':
         return (
           <MembersDirectory

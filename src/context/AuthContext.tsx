@@ -31,6 +31,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateUserRole: (role: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -68,7 +69,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       typeof r === 'string' ? r : r.role
     );
 
-    // Default role for new signups
     if (roles.length === 0) roles.push('Website User');
 
     return {
@@ -102,8 +102,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       );
 
       if (!response.ok) {
-        // 403 = not logged in via session, but user might be stored locally
-        // Keep existing user if we have one stored
         return;
       }
 
@@ -112,7 +110,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!email || email === 'Guest') return;
 
-      // Fetch full details
       const userResponse = await fetch(
         `${ERPNEXT_URL}/api/resource/User/${encodeURIComponent(email)}`,
         {
@@ -129,9 +126,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(authUser);
       saveUserToStorage(authUser);
     } catch (error) {
-      // Silent fail — localStorage user remains active
       console.warn('Session refresh skipped:', error);
     }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // Manually update user role in localStorage
+  // (Bypasses session cookie issue on cross-origin)
+  // ═══════════════════════════════════════════════════════
+  const updateUserRole = (role: string) => {
+    if (!user) return;
+
+    const updatedUser: AuthUser = {
+      ...user,
+      roles: [...new Set([...user.roles, role])],
+      is_customer: role === 'Customer' ? true : user.is_customer,
+      is_dealer: role === 'Dealer' ? true : user.is_dealer,
+    };
+
+    setUser(updatedUser);
+    saveUserToStorage(updatedUser);
   };
 
   // ═══════════════════════════════════════════════════════
@@ -204,7 +218,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const result = await response.json();
 
-      // Both "Logged In" and "No App" mean authentication succeeded
       const authSuccess =
         response.ok &&
         (result.message === 'Logged In' ||
@@ -218,7 +231,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
       }
 
-      // Build AuthUser from login response
       const authUser: AuthUser = {
         email: email,
         full_name: result.full_name || email,
@@ -259,7 +271,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // ═══════════════════════════════════════════════════════
-  // On mount — try to refresh, but keep localStorage user
+  // On mount — try to refresh
   // ═══════════════════════════════════════════════════════
   useEffect(() => {
     (async () => {
@@ -279,6 +291,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         logout,
         refreshUser,
+        updateUserRole,
       }}
     >
       {children}
