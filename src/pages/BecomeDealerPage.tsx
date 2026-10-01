@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageId, Language } from '../types';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -9,7 +9,6 @@ import {
   Mail,
   MapPin,
   FileText,
-  Building2,
   Banknote,
   Briefcase,
   ShieldCheck,
@@ -20,6 +19,11 @@ import {
   ArrowLeft,
   Sparkles,
   Check,
+  Video,
+  Upload,
+  X,
+  Play,
+  Info,
 } from 'lucide-react';
 
 interface BecomeDealerPageProps {
@@ -39,6 +43,15 @@ const formatPhoneNumber = (phone: string): string => {
   if (cleaned.startsWith('0')) return '+92' + cleaned.slice(1);
   return '+92' + cleaned;
 };
+
+// Format file size
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+};
+
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 MB
 
 export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }) => {
   const { user, isAuthenticated, updateUserRole } = useAuth();
@@ -67,6 +80,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     gst_registered: 'No',
     reference_name_1: '',
     // Step 4
+    video_kyc_file: null as File | null,
+    // Step 5
     terms_and_conditions: false,
   });
 
@@ -135,6 +150,13 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     }
 
     if (step === 4) {
+      if (!formData.video_kyc_file) {
+        setError('Video KYC file is required. Please upload your video.');
+        return false;
+      }
+    }
+
+    if (step === 5) {
       if (!formData.terms_and_conditions) {
         setError('You must accept the Terms & Conditions');
         return false;
@@ -147,7 +169,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   // Next step
   const nextStep = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4));
+      setCurrentStep((prev) => Math.min(prev + 1, 5));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -159,17 +181,82 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Video file handler
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setError(null);
+
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
+    if (!validTypes.includes(file.type)) {
+      setError('Please upload MP4, WebM, or MOV video format only.');
+      return;
+    }
+
+    // Validate file size
+    if (file.size > MAX_VIDEO_SIZE) {
+      setError(
+        `Video size (${formatFileSize(file.size)}) exceeds the maximum allowed size (${formatFileSize(MAX_VIDEO_SIZE)}). Please compress or shorten the video.`
+      );
+      return;
+    }
+
+    updateField('video_kyc_file', file);
+  };
+
   // Final submission
   const handleFinalSubmit = async () => {
-    if (!validateStep(4)) return;
+    if (!validateStep(5)) return;
 
     setLoading(true);
     setError(null);
 
     try {
+      // Step 1: Upload video file first (if exists)
+      let videoFileUrl = '';
+
+      if (formData.video_kyc_file) {
+        const videoFormData = new FormData();
+        videoFormData.append('file', formData.video_kyc_file);
+        videoFormData.append('is_private', '1');
+        videoFormData.append('folder', 'Home/Video KYC');
+
+        const uploadResponse = await fetch(`${ERPNEXT_URL}/api/method/upload_file`, {
+          method: 'POST',
+          credentials: 'include',
+          body: videoFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload Video KYC. Please try again.');
+        }
+
+        const uploadResult = await uploadResponse.json();
+        videoFileUrl = uploadResult.message?.file_url || '';
+        console.log('✅ Video uploaded:', videoFileUrl);
+      }
+
+      // Step 2: Create Dealer record
       const payload = {
-        ...formData,
+        full_name: formData.full_name,
+        cnic_number: formData.cnic_number,
+        date_of_birth: formData.date_of_birth,
+        gender: formData.gender,
+        cnic_expiry_date: formData.cnic_expiry_date,
         phone: formatPhoneNumber(formData.phone),
+        email: formData.email,
+        city: formData.city,
+        office_address: formData.office_address,
+        service_radius_km: formData.service_radius_km,
+        bank_name: formData.bank_name,
+        account_number: formData.account_number,
+        iban: formData.iban,
+        company_type: formData.company_type,
+        gst_registered: formData.gst_registered,
+        reference_name_1: formData.reference_name_1,
+        video_kyc_url: videoFileUrl,
         user_email: user?.email,
       };
 
@@ -191,14 +278,13 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         );
       }
 
-      // Update user role in frontend
+      // Update user role
       updateUserRole('Dealer');
 
-      // Redirect to Oath page (session flag set)
+      // Redirect to Oath
       sessionStorage.setItem('realtorx_dealer_flow', 'true');
       sessionStorage.setItem('realtorx_dealer_id', result.message?.dealer_id || '');
 
-      // Wait a bit then navigate
       setTimeout(() => {
         onNavigate('oath');
       }, 500);
@@ -210,10 +296,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
   // Steps config
   const steps = [
-    { num: 1, title: 'Personal Info', icon: User },
-    { num: 2, title: 'Contact Details', icon: Phone },
-    { num: 3, title: 'Bank & Business', icon: Banknote },
-    { num: 4, title: 'Terms & Oath', icon: ShieldCheck },
+    { num: 1, title: 'Personal', icon: User },
+    { num: 2, title: 'Contact', icon: Phone },
+    { num: 3, title: 'Bank', icon: Banknote },
+    { num: 4, title: 'Video KYC', icon: Video },
+    { num: 5, title: 'Oath', icon: ShieldCheck },
   ];
 
   return (
@@ -228,7 +315,9 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           Become a Dealer
         </h1>
         <p className="text-sm text-slate-400 max-w-xl mx-auto">
-          Join Realtor X as a partner dealer with <strong className="text-[#F5A623]">60% commission split</strong>. Complete 4 steps to get started.
+          Join Realtor X as a partner dealer with{' '}
+          <strong className="text-[#F5A623]">60% commission split</strong>. Complete 5 steps to get
+          started.
         </p>
       </div>
 
@@ -244,7 +333,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               <React.Fragment key={step.num}>
                 <div className="flex flex-col items-center flex-1">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all ${
                       isCompleted
                         ? 'bg-[#28A745] text-white'
                         : isActive
@@ -253,13 +342,13 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                     }`}
                   >
                     {isCompleted ? (
-                      <Check className="w-6 h-6" />
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6" />
                     ) : (
-                      <Icon className="w-5 h-5" />
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </div>
                   <span
-                    className={`text-[10px] sm:text-xs mt-2 font-mono uppercase tracking-wider text-center ${
+                    className={`text-[9px] sm:text-xs mt-2 font-mono uppercase tracking-wider text-center ${
                       isActive
                         ? 'text-[#2490EF] font-bold'
                         : isCompleted
@@ -272,7 +361,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 </div>
                 {idx < steps.length - 1 && (
                   <div
-                    className={`h-0.5 flex-1 mx-2 transition-colors ${
+                    className={`h-0.5 flex-1 mx-1 transition-colors ${
                       currentStep > step.num ? 'bg-[#28A745]' : 'bg-slate-800'
                     }`}
                   />
@@ -384,7 +473,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         )}
 
-        {/* STEP 2: Contact Details */}
+        {/* STEP 2: Contact */}
         {currentStep === 2 && (
           <div className="space-y-5">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
@@ -592,8 +681,126 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         )}
 
-        {/* STEP 4: Terms & Oath */}
+        {/* STEP 4: Video KYC */}
         {currentStep === 4 && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
+                <Video className="w-5 h-5 text-[#F5A623]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white font-heading">
+                  Step 4 — Video KYC
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Upload a short video for identity verification
+                </p>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="p-4 rounded-xl bg-[#F5A623]/5 border border-[#F5A623]/30">
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-[#F5A623] shrink-0 mt-0.5" />
+                <div className="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                  <p className="font-bold text-[#F5A623] mb-2">
+                    Video KYC Requirements:
+                  </p>
+                  <ul className="space-y-1 list-disc list-inside ml-1">
+                    <li>
+                      Duration: <strong className="text-white">1-2 minutes</strong>
+                    </li>
+                    <li>
+                      Max file size: <strong className="text-white">50 MB</strong>
+                    </li>
+                    <li>
+                      Format: <strong className="text-white">MP4, WebM, MOV</strong>
+                    </li>
+                    <li>Camera stable rakhein, chehra clear dikhe</li>
+                    <li>
+                      Apna naam, CNIC number aur address bolein
+                    </li>
+                    <li>Quiet environment mein record karein</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Upload / Preview */}
+            {!formData.video_kyc_file ? (
+              <label className="block p-10 rounded-2xl border-2 border-dashed border-slate-700 hover:border-[#2490EF]/50 bg-slate-950/50 transition-all cursor-pointer group">
+                <input
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                />
+                <div className="text-center space-y-3">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Upload className="w-8 h-8 text-[#2490EF]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white mb-1">
+                      Click to Upload Video
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      MP4, WebM, or MOV · Max 50 MB
+                    </p>
+                  </div>
+                </div>
+              </label>
+            ) : (
+              <div className="p-5 rounded-2xl bg-[#28A745]/5 border border-[#28A745]/30">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#28A745]/15 border border-[#28A745]/30 flex items-center justify-center shrink-0">
+                    <Play className="w-6 h-6 text-[#28A745]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">
+                          {formData.video_kyc_file.name}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {formatFileSize(formData.video_kyc_file.size)} · Ready to upload
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => updateField('video_kyc_file', null)}
+                        className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg transition-colors shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-3">
+                      <CheckCircle2 className="w-4 h-4 text-[#28A745]" />
+                      <span className="text-xs text-[#28A745] font-medium">
+                        Video validated successfully
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Info about live recording */}
+            <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-start gap-3">
+                <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  <strong className="text-white">How to record:</strong> Apne mobile ya PC ka
+                  camera app kholein, video record karein, phir yahan upload karein. Video
+                  recorder browser support jald hi aa raha hai.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: Terms & Oath */}
+        {currentStep === 5 && (
           <div className="space-y-5">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
               <div className="w-10 h-10 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
@@ -601,7 +808,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">
-                  Step 4 — Terms & Oath
+                  Step 5 — Terms & Oath
                 </h2>
                 <p className="text-xs text-slate-400">
                   Final step — accept terms and take the Realtor X Oath
@@ -616,20 +823,28 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="text-slate-400">Full Name:</div>
                 <div className="text-white text-right">{formData.full_name}</div>
                 <div className="text-slate-400">CNIC:</div>
-                <div className="text-white text-right font-mono">{formData.cnic_number}</div>
+                <div className="text-white text-right font-mono">
+                  {formData.cnic_number}
+                </div>
                 <div className="text-slate-400">Phone:</div>
                 <div className="text-white text-right">{formData.phone}</div>
                 <div className="text-slate-400">City:</div>
                 <div className="text-white text-right">{formData.city}</div>
                 <div className="text-slate-400">Bank:</div>
                 <div className="text-white text-right">{formData.bank_name}</div>
+                <div className="text-slate-400">Video KYC:</div>
+                <div className="text-[#28A745] text-right font-semibold">
+                  ✅ {formData.video_kyc_file?.name || 'Uploaded'}
+                </div>
               </div>
             </div>
 
             {/* Terms Checkbox */}
             <button
               type="button"
-              onClick={() => updateField('terms_and_conditions', !formData.terms_and_conditions)}
+              onClick={() =>
+                updateField('terms_and_conditions', !formData.terms_and_conditions)
+              }
               className={`w-full p-4 rounded-xl border transition-all flex items-start gap-3 text-left ${
                 formData.terms_and_conditions
                   ? 'bg-[#28A745]/10 border-[#28A745]/40'
@@ -648,9 +863,10 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 )}
               </div>
               <div className="text-sm text-slate-300 leading-relaxed">
-                I accept the <strong className="text-white">Realtor X Terms & Conditions</strong>,
-                commission structure (60% dealer / 40% company), and understand that
-                final activation requires taking the Founding Member Oath.
+                I accept the{' '}
+                <strong className="text-white">Realtor X Terms & Conditions</strong>,
+                commission structure (60% dealer / 40% company), and understand that final
+                activation requires taking the Founding Member Oath.
               </div>
             </button>
 
@@ -659,8 +875,9 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               <ShieldCheck className="w-5 h-5 text-[#F5A623] shrink-0 mt-0.5" />
               <div className="text-xs text-slate-300 leading-relaxed">
                 <strong className="text-[#F5A623]">Next Step:</strong> After registration,
-                you'll be redirected to take the <strong>Realtor X Founding Member Oath</strong>.
-                Once taken, your dealer account will be fully activated.
+                you'll be redirected to take the{' '}
+                <strong>Realtor X Founding Member Oath</strong>. Once taken, your dealer
+                account will be fully activated.
               </div>
             </div>
           </div>
@@ -697,7 +914,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
             </button>
           )}
 
-          {currentStep < 4 ? (
+          {currentStep < 5 ? (
             <button
               type="button"
               onClick={nextStep}
@@ -716,7 +933,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Creating Account...
+                  Uploading & Creating...
                 </>
               ) : (
                 <>
