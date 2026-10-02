@@ -7,6 +7,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { SEO } from './components/SEO';
 import { SocialShareModal } from './components/SocialShareModal';
+import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { ShieldCheck } from 'lucide-react';
 
 // Pages
@@ -267,6 +268,8 @@ function AppContent() {
         currentPage={currentPage}
         property={undefined}
       />
+       
+       <WhatsAppWidget />
     </div>
   );
 }

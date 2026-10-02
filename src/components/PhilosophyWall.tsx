@@ -19,9 +19,9 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
 }) => {
   return (
     <section className="relative overflow-hidden py-12 lg:py-20 text-slate-100">
-      
+
       {/* Background radial atmosphere */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-40"
         style={{
           background: 'radial-gradient(circle at 50% 15%, rgba(14, 165, 233, 0.15) 0%, rgba(245, 158, 11, 0.12) 40%, rgba(6, 11, 25, 0) 75%)'
@@ -29,7 +29,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+
         {/* Executive Header Lockup */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="flex justify-center mb-6">
@@ -56,7 +56,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
 
         {/* The Flagship Engraved Wall Display Frame */}
         <div className="relative rounded-2xl border border-slate-800 bg-slate-900/60 shadow-2xl overflow-hidden backdrop-blur-md mb-12">
-          
+
           {/* Photographic view of the wall */}
           <div className="relative h-80 sm:h-96 lg:h-[480px] w-full overflow-hidden">
             <img
@@ -67,7 +67,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
             />
             {/* Measured Scrim for contrast readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#060b19] via-[#060b19]/65 to-transparent" />
-            
+
             {/* Brass-lettered floating inscription over photo */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 lg:p-14">
               <div className="flex items-center gap-2 mb-3">
@@ -76,7 +76,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
                   Permanent Hub Inscription
                 </span>
               </div>
-              
+
               <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-serif font-medium text-amber-100 tracking-wide leading-snug max-w-4xl text-balance drop-shadow-lg">
                 "{language === 'en' ? PHILOSOPHY_QUOTE.quote : PHILOSOPHY_QUOTE.quoteUrdu}"
               </blockquote>
@@ -110,7 +110,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
                   </>
                 )}
               </p>
-              
+
               {/* Three Pillared Values */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">
                 <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 transition-colors">
@@ -139,7 +139,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
                     <span>Investments Secured</span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Verified land titles, regulatory NOC verifications, and ERPNext auditing.
+                    Verified land titles, regulatory NOC verifications, and central registry auditing.
                   </p>
                 </div>
               </div>
@@ -155,8 +155,8 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
               </h3>
               <p className="text-xs text-slate-400 mt-1 mb-5">
                 {language === 'en'
-                  ? 'Take the solemn oath, earn your verified credentials, and sync your membership into ERPNext.'
-                  : 'مقدس حلف اٹھائیں، اپنی سند حاصل کریں، اور ای آر پی نیکسٹ میں اپنا نام درج کرائیں۔'}
+                  ? 'Take the solemn oath, earn your verified credentials, and sync your membership into our central registry.'
+                  : 'مقدس حلف اٹھائیں، اپنی سند حاصل کریں، اور ہماری مرکزی رجسٹری میں اپنا نام درج کرائیں۔'}
               </p>
               <button
                 onClick={onTakeOath}

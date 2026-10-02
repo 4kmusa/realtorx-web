@@ -53,7 +53,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-md">
-        
+
         {/* Section Heading */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
           <div>
@@ -292,7 +292,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   Why 40/60 Split is Industry-Leading:
                 </div>
                 <p className="text-slate-400 leading-relaxed">
-                  Traditional agencies take 50% or more from their agents. Realtor X only retains <strong>40%</strong> for portal infrastructure, legal NDC checks, buyer escort vehicles, and ERP integration, allowing the field dealer to retain <strong>60%</strong> of the earned commission.
+                  Traditional agencies take 50% or more from their agents. Realtor X only retains <strong>40%</strong> for portal infrastructure, legal NDC checks, buyer escort vehicles, and system integration, allowing the field dealer to retain <strong>60%</strong> of the earned commission.
                 </p>
               </div>
             </div>

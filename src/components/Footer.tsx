@@ -2,7 +2,7 @@ import React from 'react';
 import { PageId, Language } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
 import { BRAND_TAGLINES } from '../data/mockProperties';
-import { MapPin, Phone, Mail, Clock, MessageSquare, Database, ShieldCheck, Heart, Share2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageSquare, Share2 } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (page: PageId) => void;
@@ -14,13 +14,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
   return (
     <footer className="bg-[#050C16] border-t border-slate-800 text-slate-400 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
-          
+
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
-            <RealtorXLogo size="md" showSubtitle={false} />
+            <RealtorXLogo size="xl" showSubtitle={false} />
             <p className="text-xs text-slate-300 italic font-serif leading-relaxed max-w-sm">
               "{BRAND_TAGLINES.philosophy}"
             </p>
@@ -57,8 +57,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                 <button onClick={() => onNavigate('projects')} className="hover:text-[#2490EF] transition-colors">
                   Bahria Heights Luxury Flats
                 </button>
-              </li>
-              <li>
               </li>
             </ul>
           </div>
@@ -99,12 +97,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   Customer Portal (Auth)
                 </button>
               </li>
-              <li>
-                <button onClick={() => onNavigate('erpnext')} className="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
-                  <Database className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>ERPNext Hub</span>
-                </button>
-              </li>
               {onOpenSocialModal && (
                 <li>
                   <button onClick={onOpenSocialModal} className="text-[#2490EF] hover:text-white transition-colors flex items-center gap-1.5 font-medium">
@@ -136,7 +128,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                <span>info@realtorx.pk</span>
+                <span>info@realtorx.co</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Clock className="w-4 h-4 text-slate-400 shrink-0" />
@@ -157,7 +149,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             <span>·</span>
             <span className="font-urdu text-sm text-slate-400">اعتماد کے ساتھ پراپرٹی کا سفر</span>
             <span>·</span>
-            <span className="text-emerald-400">ERPNext REST Synced</span>
+            <span className="text-emerald-400">Live Sync Active</span>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ViewMode, Language } from '../types';
-import { BookOpen, Shield, Award, Quote, Users, Database, Wifi, Battery, Signal } from 'lucide-react';
+import { BookOpen, Shield, Award, Quote, Users, Wifi, Battery, Signal } from 'lucide-react';
 
 interface MobileAppSimulatorProps {
   currentView: ViewMode;
@@ -35,7 +35,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
 
       {/* Realistic Mobile Device Frame */}
       <div className="relative w-full max-w-[390px] h-[820px] bg-stone-900 rounded-[50px] p-3 shadow-2xl border-4 border-stone-800 ring-1 ring-stone-700/50 flex flex-col overflow-hidden">
-        
+
         {/* Dynamic Island / Top Camera Notch */}
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full z-50 flex items-center justify-between px-3">
           <div className="w-2.5 h-2.5 rounded-full bg-stone-900 border border-stone-800" />
@@ -107,16 +107,6 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
           >
             <Users className="w-4 h-4" />
             <span>Custodians</span>
-          </button>
-
-          <button
-            onClick={() => onSelectView('erpnext')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-mono transition-colors ${
-              currentView === 'erpnext' ? 'text-emerald-400 font-semibold' : 'text-stone-400'
-            }`}
-          >
-            <Database className="w-4 h-4 text-emerald-400" />
-            <span>ERP</span>
           </button>
         </div>
 

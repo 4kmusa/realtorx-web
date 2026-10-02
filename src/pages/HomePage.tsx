@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/HomePage.tsx
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { PageId, Language } from '../types';
 import { BRAND_TAGLINES, HOW_IT_WORKS_STEPS, TESTIMONIALS } from '../data/mockProperties';
-import { fetchProperties, Property } from '../services/propertyService';
+import { fetchProperties, fetchDealers, Property, Dealer } from '../services/propertyService';
 import {
   Search,
   MapPin,
@@ -17,8 +18,10 @@ import {
   ChevronRight,
   Sparkles,
   Star,
+  BadgeCheck,
+  Briefcase,
+  Phone,
 } from 'lucide-react';
-import { CalculatorsSection } from '../components/CalculatorsSection';
 
 interface HomePageProps {
   onNavigate: (page: PageId, extraId?: string) => void;
@@ -31,18 +34,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
   const [budgetRange, setBudgetRange] = useState<string>('All');
 
   const [properties, setProperties] = useState<Property[]>([]);
+  const [dealers, setDealers] = useState<Dealer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch properties from ERPNext on mount
+  const featuredRef = useRef<HTMLElement>(null);
+
   useEffect(() => {
-    async function loadProperties() {
+    async function loadData() {
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchProperties();
-        setProperties(data);
-        if (data.length === 0) {
+        const [props, dealerList] = await Promise.all([
+          fetchProperties(),
+          fetchDealers(),
+        ]);
+        setProperties(props);
+        setDealers(dealerList);
+        if (props.length === 0) {
           setError('No properties available yet. Please check back soon.');
         }
       } catch (err) {
@@ -52,12 +61,53 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         setLoading(false);
       }
     }
-    loadProperties();
+    loadData();
   }, []);
+
+  const filteredProperties = useMemo(() => {
+    return properties.filter((p) => {
+      if (selectedType !== 'All') {
+        const catMap: Record<string, string> = {
+          'Residential Plot': 'Residential Plot',
+          'Commercial Plot': 'Commercial Plot',
+          House: 'House',
+          Flat: 'Apartment',
+          Shop: 'Commercial Shop',
+        };
+        const target = catMap[selectedType];
+        if (target && p.category !== target) return false;
+      }
+
+      if (selectedProject !== 'All') {
+        const haystack = `${p.precinct || ''} ${p.title || ''} ${p.project || ''}`.toUpperCase();
+        const needle = selectedProject.toUpperCase();
+        if (!haystack.includes(needle)) return false;
+      }
+
+      if (budgetRange !== 'All') {
+        const price = p.pricePkr || 0;
+        if (budgetRange === 'under-50-lakh' && price >= 5000000) return false;
+        if (budgetRange === '50-to-1-crore' && (price < 5000000 || price >= 10000000)) return false;
+        if (budgetRange === '1-to-3-crore' && (price < 10000000 || price >= 30000000)) return false;
+        if (budgetRange === 'above-3-crore' && price < 30000000) return false;
+      }
+
+      return true;
+    });
+  }, [properties, selectedType, selectedProject, budgetRange]);
+
+  const hasActiveFilters =
+    selectedType !== 'All' || selectedProject !== 'All' || budgetRange !== 'All';
+
+  const resetFilters = () => {
+    setSelectedType('All');
+    setSelectedProject('All');
+    setBudgetRange('All');
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onNavigate('properties');
+    featuredRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -158,12 +208,21 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               </div>
             </form>
 
-            <div className="mt-4 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between text-xs text-slate-400">
+            <div className="mt-4 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />
                 100% Verified Bahria Town plot maps & NDC status
               </span>
               <div className="flex items-center gap-3">
+                {hasActiveFilters && (
+                  <button
+                    onClick={resetFilters}
+                    type="button"
+                    className="text-slate-300 hover:text-white underline"
+                  >
+                    Reset Filters
+                  </button>
+                )}
                 <button
                   onClick={() => onNavigate('become-dealer')}
                   className="text-[#F5A623] hover:underline font-medium"
@@ -229,8 +288,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 3. FEATURED PROPERTIES - REAL DATA FROM ERPNEXT */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 3. FEATURED PROPERTIES */}
+      <section ref={featuredRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#2490EF] mb-1">
@@ -239,10 +298,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               <span>Bahria Town Karachi</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading">
-              Featured Properties
+              {hasActiveFilters ? 'Matching Properties' : 'Featured Properties'}
             </h2>
             <p className="text-sm text-slate-400 mt-1">
-              Hand-picked verified villas, commercial shops, plots, and apartments ready for immediate transfer.
+              {hasActiveFilters
+                ? `${filteredProperties.length} properties match your filters`
+                : 'Hand-picked verified villas, commercial shops, plots, and apartments ready for immediate transfer.'}
             </p>
           </div>
 
@@ -257,12 +318,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
-            // Loading State
             Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden animate-pulse"
-              >
+              <div key={i} className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden animate-pulse">
                 <div className="h-56 w-full bg-slate-800/50" />
                 <div className="p-5 space-y-3">
                   <div className="h-5 bg-slate-800/60 rounded w-3/4" />
@@ -272,14 +329,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               </div>
             ))
           ) : properties.length === 0 ? (
-            // Empty State
             <div className="col-span-full text-center py-16 bg-slate-900/50 border border-slate-800 rounded-2xl">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/80 flex items-center justify-center">
                 <Building className="w-8 h-8 text-slate-500" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Properties Coming Soon
-              </h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Properties Coming Soon</h3>
               <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
                 {error || 'Our verified Bahria Town properties will be listed here soon.'}
               </p>
@@ -290,15 +344,29 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 Contact Us for Details
               </button>
             </div>
+          ) : filteredProperties.length === 0 ? (
+            <div className="col-span-full text-center py-16 bg-slate-900/50 border border-slate-800 rounded-2xl">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/80 flex items-center justify-center">
+                <Search className="w-8 h-8 text-slate-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">No Properties Match</h3>
+              <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
+                Try changing the filter selections or reset to see all properties.
+              </p>
+              <button
+                onClick={resetFilters}
+                className="px-5 py-2.5 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-lg transition-colors"
+              >
+                Reset Filters
+              </button>
+            </div>
           ) : (
-            // Real Properties
-            properties.slice(0, 6).map((property) => (
+            filteredProperties.slice(0, 6).map((property) => (
               <div
                 key={property.id}
                 className="group bg-slate-900/70 border border-slate-800 hover:border-[#2490EF]/60 rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col justify-between"
               >
                 <div>
-                  {/* Image */}
                   <div className="relative h-56 w-full overflow-hidden">
                     <img
                       src={property.images[0]}
@@ -329,7 +397,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                     </div>
                   </div>
 
-                  {/* Content */}
                   <div className="p-5 space-y-3">
                     <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2">
                       {property.title}
@@ -337,38 +404,40 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
                     <div className="flex items-center gap-1.5 text-xs text-slate-400">
                       <MapPin className="w-3.5 h-3.5 text-[#F5A623] shrink-0" />
-                      <span className="truncate">{property.location}</span>
+                      <span className="truncate">{property.precinct || 'Bahria Town Karachi'}</span>
                     </div>
 
                     {property.bedrooms || property.bathrooms ? (
                       <div className="flex items-center gap-4 text-xs text-slate-300 pt-1">
-                        {property.bedrooms && (
+                        {property.bedrooms ? (
                           <span className="flex items-center gap-1.5">
                             <Bed className="w-3.5 h-3.5 text-slate-400" />
                             {property.bedrooms} Beds
                           </span>
-                        )}
-                        {property.bathrooms && (
+                        ) : null}
+                        {property.bathrooms ? (
                           <span className="flex items-center gap-1.5">
                             <Bath className="w-3.5 h-3.5 text-slate-400" />
                             {property.bathrooms} Baths
                           </span>
-                        )}
+                        ) : null}
                       </div>
-                    ) : (
+                    ) : property.ownership ? (
                       <div className="flex items-center gap-2 text-xs text-slate-400">
-                        <span className="text-slate-500">·</span>
                         <span className="font-mono text-[11px]">{property.ownership}</span>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
-                {/* Action Footer */}
                 <div className="p-5 pt-0">
                   <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between">
                     <div className="text-[11px] text-slate-400 truncate max-w-[140px]">
-                      Dealer: <span className="text-slate-200">{property.dealer.name}</span>
+                      {property.listing_type ? (
+                        <span className="text-[#F5A623] font-medium">{property.listing_type}</span>
+                      ) : (
+                        <span className="font-mono text-slate-500">{property.erpCode}</span>
+                      )}
                     </div>
 
                     <button
@@ -386,10 +455,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 4. CALCULATORS */}
-      <CalculatorsSection onNavigate={onNavigate} language={language} />
-
-      {/* 5. WHY REALTOR X */}
+      {/* 4. WHY REALTOR X */}
       <section className="bg-[#07101E] py-16 sm:py-20 border-y border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14">
@@ -448,7 +514,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 6. STATS BAR */}
+      {/* 5. STATS BAR */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-8 bg-slate-900/80 border border-slate-800 rounded-2xl text-center">
           <div>
@@ -461,10 +527,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </div>
           <div>
             <div className="text-3xl sm:text-4xl font-extrabold text-[#F5A623] font-heading">
-              Bahria
+              {dealers.length > 0 ? `${dealers.length}+` : '—'}
             </div>
             <div className="text-xs font-mono uppercase tracking-wider text-slate-400 mt-1">
-              Town Karachi
+              Registered Dealers
             </div>
           </div>
           <div>
@@ -486,7 +552,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 7. HOW IT WORKS */}
+      {/* 6. HOW IT WORKS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-mono uppercase tracking-wider text-[#2490EF]">
@@ -519,7 +585,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 8. BAHRIA TOWN SPOTLIGHT */}
+      {/* 7. BAHRIA TOWN SPOTLIGHT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl overflow-hidden border border-slate-800 bg-[#0B1A30]">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
@@ -586,7 +652,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 9. CULTURE PREVIEW */}
+      {/* 8. CULTURE PREVIEW */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-mono uppercase tracking-wider text-[#F5A623]">
@@ -666,7 +732,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 10. TESTIMONIALS */}
+      {/* 9. TESTIMONIALS */}
       <section className="bg-[#07101E] py-16 sm:py-20 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -696,9 +762,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 </div>
 
                 <div className="pt-4 mt-4 border-t border-slate-800/80">
-                  <div className="font-heading font-semibold text-white text-sm">
-                    {t.author}
-                  </div>
+                  <div className="font-heading font-semibold text-white text-sm">{t.author}</div>
                   <div className="text-[11px] text-[#2490EF] font-mono">
                     {t.role} · {t.location}
                   </div>
@@ -708,6 +772,74 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </div>
         </div>
       </section>
+
+      {/* 10. REGISTERED DEALERS */}
+      {dealers.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-mono uppercase tracking-wider text-[#F5A623]">
+              Meet The Fraternity
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mt-1 font-heading">
+              Registered Dealers
+            </h2>
+            <p className="text-sm text-slate-400 mt-2">
+              Verified Realtor X members committed to ethical, client-first real estate.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {dealers.map((dealer) => (
+              <div
+                key={dealer.id}
+                className="group p-5 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-[#2490EF]/60 transition-all flex flex-col items-center text-center"
+              >
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-[#2490EF]/15 border-2 border-[#2490EF]/40 flex items-center justify-center mb-3 group-hover:border-[#2490EF] transition-colors">
+                  {dealer.imageUrl ? (
+                    <img
+                      src={dealer.imageUrl}
+                      alt={dealer.name}
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-[#2490EF] font-heading">
+                      {dealer.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1 mb-1 w-full justify-center">
+                  <h3 className="font-heading font-bold text-sm text-white truncate">
+                    {dealer.name}
+                  </h3>
+                  <BadgeCheck className="w-3.5 h-3.5 text-[#2490EF] shrink-0" />
+                </div>
+
+                {dealer.designation && (
+                  <div className="text-[11px] text-[#F5A623] font-mono uppercase tracking-wider truncate w-full">
+                    {dealer.designation}
+                  </div>
+                )}
+
+                {dealer.firm && (
+                  <div className="text-[11px] text-slate-400 truncate w-full mt-0.5">
+                    {dealer.firm}
+                  </div>
+                )}
+
+                {dealer.city && (
+                  <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-1.5">
+                    <MapPin className="w-3 h-3" />
+                    <span>{dealer.city}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 11. DUAL CTA */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">

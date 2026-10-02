@@ -24,7 +24,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
       <div className="relative w-full max-w-4xl bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden my-8">
-        
+
         {/* Top Control Bar (Hidden when printing) */}
         <div className="no-print flex items-center justify-between px-6 py-4 bg-[#060b19] border-b border-slate-800">
           <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
@@ -52,7 +52,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
         {/* Certificate Canvas Frame (High quality for screen and print) */}
         <div className="p-6 sm:p-12 bg-[#FAF7F2] text-slate-900 select-none">
           <div className="relative p-6 sm:p-10 border-4 border-double border-[#8C6D3F] rounded-lg bg-[#FAF8F5] shadow-inner">
-            
+
             {/* Ornamental Corner Filigree */}
             <div className="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-[#8C6D3F]" />
             <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-[#8C6D3F]" />
@@ -81,7 +81,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
               <p className="text-xs sm:text-sm uppercase tracking-widest text-slate-500 font-sans">
                 This is to officially attest that
               </p>
-              
+
               <div className="py-2 border-b border-slate-300">
                 <span className="text-2xl sm:text-4xl font-serif font-bold text-slate-900 tracking-wide text-balance">
                   {member.fullName}
@@ -100,7 +100,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
 
             {/* Verification Grid & Signatures */}
             <div className="mt-8 pt-6 border-t border-slate-300 grid grid-cols-1 sm:grid-cols-3 gap-6 items-end text-center">
-              
+
               {/* Left: Custodian Signature */}
               <div className="space-y-1">
                 <div className="h-10 flex items-center justify-center font-serif italic text-lg sm:text-xl text-slate-800">
@@ -149,7 +149,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
             {/* Bottom Meta & Security Bar */}
             <div className="mt-6 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[10px] font-mono text-slate-400">
               <span>Security Hash: RX-{member.id.toUpperCase()}-VERIFIED</span>
-              <span className="mt-1 sm:mt-0">ERPNext Sync Ref: {member.erpnextDocId || 'PENDING-DISPATCH'}</span>
+              <span className="mt-1 sm:mt-0">Registry Ref: {member.erpnextDocId || 'PENDING-DISPATCH'}</span>
             </div>
 
           </div>

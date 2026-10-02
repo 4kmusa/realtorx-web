@@ -82,9 +82,9 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
     };
 
     try {
-      setSyncStatusMsg(language === 'en' ? `Synchronizing with ERPNext (${erpConfig.doctype})...` : `ای آر پی نیکسٹ (${erpConfig.doctype}) کے ساتھ ہم آہنگ کیا جا رہا ہے...`);
+      setSyncStatusMsg(language === 'en' ? 'Synchronizing your record...' : 'آپ کا ریکارڈ محفوظ کیا جا رہا ہے...');
       const syncResult = await syncMemberToERPNext(newMember, erpConfig);
-      
+
       newMember.erpnextStatus = syncResult.success ? 'synced' : 'local';
       newMember.erpnextDocId = syncResult.docId;
 
@@ -103,7 +103,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
   return (
     <section className="py-12 lg:py-20 text-slate-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Curatorial Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="flex justify-center mb-6">
@@ -141,11 +141,11 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
             <h3 className="text-2xl sm:text-4xl font-serif font-bold text-white mt-2">
               Welcome, Custodian {submissionComplete.fullName}
             </h3>
-            
+
             <p className="mt-4 text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
               {language === 'en'
-                ? `You have formally sworn the RealtorX Oath. Your official credentials have been recorded, and your member record is mapped to ERPNext.`
-                : `آپ نے ریئلٹر ایکس کے مقدس حلف کی باقاعدہ توثیق کر دی ہے۔ آپ کے کوائف کا اندراج ہو چکا ہے اور ای آر پی نیکسٹ سے منسلک کر دیا گیا ہے۔`}
+                ? `You have formally sworn the RealtorX Oath. Your official credentials have been recorded, and your member record is securely saved in our registry.`
+                : `آپ نے ریئلٹر ایکس کے مقدس حلف کی باقاعدہ توثیق کر دی ہے۔ آپ کے کوائف کا اندراج ہو چکا ہے اور رجسٹری میں محفوظ کر دیا گیا ہے۔`}
             </p>
 
             <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs font-mono">
@@ -155,7 +155,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
               <span className="text-slate-600">·</span>
               <span className="text-sky-400 flex items-center gap-1">
                 <Database className="w-3.5 h-3.5" />
-                {submissionComplete.erpnextDocId ? `ERPNext: ${submissionComplete.erpnextDocId}` : 'ERPNext Ready'}
+                {submissionComplete.erpnextDocId ? `Ref: ${submissionComplete.erpnextDocId}` : 'Ready'}
               </span>
             </div>
 
@@ -167,7 +167,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 <Award className="w-4 h-4 text-slate-950" />
                 <span>{language === 'en' ? 'View & Print Digital Certificate' : 'ڈیجیٹل سند دیکھیں اور پرنٹ کریں'}</span>
               </button>
-              
+
               <button
                 onClick={() => {
                   setSubmissionComplete(null);
@@ -185,7 +185,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
         ) : (
           /* Oath Ceremony Form */
           <form onSubmit={handleSubmitOath} className="space-y-8">
-            
+
             {/* Solemn Preamble Banner */}
             <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-sky-950/40 via-slate-900 to-amber-950/40 border border-slate-800 text-center shadow-lg">
               <p className="font-serif text-xl sm:text-2xl text-amber-200 italic leading-relaxed">
@@ -258,12 +258,12 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="border-b border-slate-800 pb-4">
                 <h3 className="font-serif text-xl font-medium text-white">
-                  {language === 'en' ? 'Custodian Identity & ERPNext Mapping' : 'کسٹوڈین کوائف اور ای آر پی میپنگ'}
+                  {language === 'en' ? 'Custodian Identity & Registration' : 'کسٹوڈین کوائف اور رجسٹریشن'}
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
                   {language === 'en'
-                    ? 'These details will be verified, recorded in the custodian registry, and dispatched to ERPNext.'
-                    : 'یہ معلومات باضابطہ تصدیق کے بعد ریئلٹر ایکس رجسٹری اور ای آر پی نیکسٹ میں محفوظ ہوں گی۔'}
+                    ? 'These details will be verified, recorded in the custodian registry, and securely saved.'
+                    : 'یہ معلومات باضابطہ تصدیق کے بعد ریئلٹر ایکس رجسٹری میں محفوظ ہوں گی۔'}
                 </p>
               </div>
 
@@ -419,7 +419,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 {isSubmitting ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-                    <span>{syncStatusMsg || 'Recording Oath in ERPNext...'}</span>
+                    <span>{syncStatusMsg || 'Recording your Oath...'}</span>
                   </>
                 ) : (
                   <>
