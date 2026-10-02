@@ -302,7 +302,7 @@ export async function fetchProperty(id: string): Promise<Property | null> {
 }
 
 // ═══════════════════════════════════════════════════════
-// Dealers (RealtorX Member) — label-based field detection
+// Dealer Field Meta
 // ═══════════════════════════════════════════════════════
 export interface Dealer {
   id: string;
@@ -374,6 +374,9 @@ function findMemberField(
   return null;
 }
 
+// ═══════════════════════════════════════════════════════
+// Fetch Dealers — sirf Approved/Active
+// ═══════════════════════════════════════════════════════
 export async function fetchDealers(): Promise<Dealer[]> {
   try {
     const doctype = 'RealtorX Member';
@@ -394,16 +397,28 @@ export async function fetchDealers(): Promise<Dealer[]> {
       ['Profile Image', 'Photo', 'Image'],
       ['custom_profile_image', 'profile_image', 'member_image', 'image', 'photo', 'dealer_image']
     );
+    const statusField = findMemberField(
+      meta,
+      ['Application Status'],
+      ['custom_application_status', 'application_status']
+    );
 
     const fields: string[] = ['name'];
     const addIf = (f: string | null) => { if (f && !fields.includes(f)) fields.push(f); };
     addIf(nameField); addIf(firmField); addIf(roleField); addIf(cityField);
     addIf(phoneField); addIf(emailField); addIf(bioField); addIf(tierField);
-    addIf(idField); addIf(imageField);
+    addIf(idField); addIf(imageField); addIf(statusField);
+
+    // Sirf Approved ya Active dealers
+    const filters: any[] = [];
+    if (statusField) {
+      filters.push([statusField, 'in', ['Approved', 'Active']]);
+    }
 
     const url =
       `${ERPNEXT_URL}/api/resource/${encodeURIComponent(doctype)}` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
+      (filters.length > 0 ? `&filters=${encodeURIComponent(JSON.stringify(filters))}` : '') +
       `&limit_page_length=12&order_by=creation+desc`;
 
     const res = await fetch(url, {
@@ -430,6 +445,93 @@ export async function fetchDealers(): Promise<Dealer[]> {
   } catch (error) {
     console.error('Error fetching dealers:', error);
     return [];
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Dealer Application Status
+// ═══════════════════════════════════════════════════════
+export interface DealerApplication {
+  id: string;
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Active' | '';
+  reviewNotes: string;
+  reviewedOn: string;
+  submittedOn: string;
+  fullName: string;
+  firm: string;
+  city: string;
+  phone: string;
+  email: string;
+}
+
+export async function fetchDealerApplicationByEmail(
+  email: string
+): Promise<DealerApplication | null> {
+  if (!email) return null;
+
+  try {
+    const meta = await getMemberFieldMeta();
+
+    const statusField = findMemberField(
+      meta,
+      ['Application Status'],
+      ['custom_application_status', 'application_status']
+    );
+    const notesField = findMemberField(
+      meta,
+      ['Review Notes'],
+      ['custom_review_notes', 'review_notes']
+    );
+    const reviewedField = findMemberField(
+      meta,
+      ['Reviewed On'],
+      ['custom_reviewed_on', 'reviewed_on']
+    );
+    const nameField = findMemberField(meta, ['Full Name', 'Name'], ['full_name']);
+    const firmField = findMemberField(meta, ['Agency / Firm Name', 'Firm Name'], ['firm_name']);
+    const cityField = findMemberField(meta, ['City / Region', 'City'], ['city']);
+    const phoneField = findMemberField(meta, ['Phone / WhatsApp', 'Phone'], ['phone']);
+    const emailField = findMemberField(meta, ['Official Email', 'Email'], ['email']);
+
+    const fields: string[] = ['name', 'creation'];
+    const addIf = (f: string | null) => { if (f && !fields.includes(f)) fields.push(f); };
+    addIf(statusField); addIf(notesField); addIf(reviewedField);
+    addIf(nameField); addIf(firmField); addIf(cityField);
+    addIf(phoneField); addIf(emailField);
+
+    const filters = [['email', '=', email]];
+
+    const url =
+      `${ERPNEXT_URL}/api/resource/RealtorX Member` +
+      `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
+      `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
+      `&limit_page_length=1&order_by=creation+desc`;
+
+    const res = await fetch(url, {
+      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    const rows: any[] = data.data || [];
+    if (rows.length === 0) return null;
+
+    const r = rows[0];
+    return {
+      id: r.name,
+      status: statusField ? r[statusField] || 'Pending' : 'Pending',
+      reviewNotes: notesField ? r[notesField] || '' : '',
+      reviewedOn: reviewedField ? r[reviewedField] || '' : '',
+      submittedOn: r.creation || '',
+      fullName: nameField ? r[nameField] || '' : '',
+      firm: firmField ? r[firmField] || '' : '',
+      city: cityField ? r[cityField] || '' : '',
+      phone: phoneField ? String(r[phoneField] || '') : '',
+      email: emailField ? r[emailField] || '' : '',
+    };
+  } catch (error) {
+    console.error('Error fetching dealer application:', error);
+    return null;
   }
 }
 

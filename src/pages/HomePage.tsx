@@ -19,8 +19,6 @@ import {
   Sparkles,
   Star,
   BadgeCheck,
-  Briefcase,
-  Phone,
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -773,7 +771,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 10. REGISTERED DEALERS */}
+      {/* 10. REGISTERED DEALERS — sirf Approved/Active */}
       {dealers.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -789,54 +787,59 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {dealers.map((dealer) => (
-              <div
-                key={dealer.id}
-                className="group p-5 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-[#2490EF]/60 transition-all flex flex-col items-center text-center"
-              >
-                <div className="w-20 h-20 rounded-full overflow-hidden bg-[#2490EF]/15 border-2 border-[#2490EF]/40 flex items-center justify-center mb-3 group-hover:border-[#2490EF] transition-colors">
-                  {dealer.imageUrl ? (
-                    <img
-                      src={dealer.imageUrl}
-                      alt={dealer.name}
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-2xl font-bold text-[#2490EF] font-heading">
-                      {dealer.name.charAt(0).toUpperCase()}
-                    </span>
+            {dealers.map((dealer) => {
+              const showDesignation = dealer.designation && dealer.designation !== dealer.firm;
+              const showFirm = dealer.firm && dealer.firm !== dealer.designation;
+
+              return (
+                <div
+                  key={dealer.id}
+                  className="group p-5 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-[#2490EF]/60 transition-all flex flex-col items-center text-center"
+                >
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-[#2490EF]/15 border-2 border-[#2490EF]/40 flex items-center justify-center mb-3 group-hover:border-[#2490EF] transition-colors">
+                    {dealer.imageUrl ? (
+                      <img
+                        src={dealer.imageUrl}
+                        alt={dealer.name}
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-2xl font-bold text-[#2490EF] font-heading">
+                        {dealer.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 mb-1 w-full justify-center">
+                    <h3 className="font-heading font-bold text-sm text-white truncate">
+                      {dealer.name}
+                    </h3>
+                    <BadgeCheck className="w-3.5 h-3.5 text-[#2490EF] shrink-0" />
+                  </div>
+
+                  {showDesignation && (
+                    <div className="text-[11px] text-[#F5A623] font-mono uppercase tracking-wider truncate w-full">
+                      {dealer.designation}
+                    </div>
+                  )}
+
+                  {showFirm && (
+                    <div className="text-[11px] text-slate-400 truncate w-full mt-0.5">
+                      {dealer.firm}
+                    </div>
+                  )}
+
+                  {dealer.city && (
+                    <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-1.5">
+                      <MapPin className="w-3 h-3" />
+                      <span>{dealer.city}</span>
+                    </div>
                   )}
                 </div>
-
-                <div className="flex items-center gap-1 mb-1 w-full justify-center">
-                  <h3 className="font-heading font-bold text-sm text-white truncate">
-                    {dealer.name}
-                  </h3>
-                  <BadgeCheck className="w-3.5 h-3.5 text-[#2490EF] shrink-0" />
-                </div>
-
-                {dealer.designation && (
-                  <div className="text-[11px] text-[#F5A623] font-mono uppercase tracking-wider truncate w-full">
-                    {dealer.designation}
-                  </div>
-                )}
-
-                {dealer.firm && (
-                  <div className="text-[11px] text-slate-400 truncate w-full mt-0.5">
-                    {dealer.firm}
-                  </div>
-                )}
-
-                {dealer.city && (
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-1.5">
-                    <MapPin className="w-3 h-3" />
-                    <span>{dealer.city}</span>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

@@ -1,42 +1,14 @@
-// ═══════════════════════════════════════════════════════
 // src/pages/BecomeDealerPage.tsx
-// Info page + Apply form with profile image upload
-// ═══════════════════════════════════════════════════════
 import React, { useState, useEffect } from 'react';
 import { PageId, Language } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { OATH_CONTENT } from '../data/cultureData';
+import { fetchDealerApplicationByEmail, DealerApplication } from '../services/propertyService';
 import {
-  User,
-  CreditCard,
-  Calendar,
-  Phone,
-  Mail,
-  MapPin,
-  FileText,
-  Banknote,
-  Briefcase,
-  ShieldCheck,
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
-  ArrowRight,
-  ArrowLeft,
-  Sparkles,
-  Check,
-  Video,
-  Upload,
-  X,
-  Play,
-  Info,
-  Percent,
-  Users,
-  Award,
-  TrendingUp,
-  BookOpen,
-  FileCheck,
-  HelpCircle,
-  Camera,
+  User, CreditCard, Calendar, Phone, Mail, MapPin, FileText, Banknote, Briefcase,
+  ShieldCheck, Loader2, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, Sparkles,
+  Check, Video, Upload, X, Play, Info, Percent, Users, Award, TrendingUp, BookOpen,
+  FileCheck, HelpCircle, Camera, Clock, XCircle,
 } from 'lucide-react';
 
 interface BecomeDealerPageProps {
@@ -65,7 +37,7 @@ const formatFileSize = (bytes: number): string => {
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
-type Mode = 'info' | 'form';
+type Mode = 'info' | 'form' | 'status';
 
 export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }) => {
   const { user, isAuthenticated, updateUserRole } = useAuth();
@@ -73,6 +45,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [application, setApplication] = useState<DealerApplication | null>(null);
+  const [checkingStatus, setCheckingStatus] = useState(false);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -96,18 +70,56 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     terms_and_conditions: false,
   });
 
+  // ═══════════════════════════════════════════════════════
+  // ON MOUNT: check application status
+  // ═══════════════════════════════════════════════════════
   useEffect(() => {
-    if (mode === 'form' && !isAuthenticated) onNavigate('login');
-    if (user?.is_dealer) onNavigate('dealer');
-  }, [isAuthenticated, user, onNavigate, mode]);
+    async function checkStatus() {
+      if (!isAuthenticated || !user?.email) return;
 
+      // If already a dealer → dealer dashboard
+      if (user.is_dealer) {
+        onNavigate('dealer');
+        return;
+      }
+
+      setCheckingStatus(true);
+      try {
+        const app = await fetchDealerApplicationByEmail(user.email);
+        if (app) {
+          setApplication(app);
+          if (app.status === 'Approved') {
+            setMode('status');
+          } else if (app.status === 'Pending') {
+            setMode('status');
+          } else if (app.status === 'Rejected') {
+            setMode('status');
+          } else if (app.status === 'Active') {
+            // Already active → dealer dashboard
+            onNavigate('dealer');
+          } else {
+            setMode('status');
+          }
+        } else {
+          setMode('info');
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setCheckingStatus(false);
+      }
+    }
+    checkStatus();
+  }, [isAuthenticated, user, onNavigate]);
+
+  // Pre-fill from user
   useEffect(() => {
     if (user) {
       setFormData((prev) => ({
         ...prev,
-        full_name: user.full_name || '',
-        phone: user.phone || '',
-        email: user.email || '',
+        full_name: prev.full_name || user.full_name || '',
+        phone: prev.phone || user.phone || '',
+        email: prev.email || user.email || '',
       }));
     }
   }, [user]);
@@ -132,7 +144,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
       if (!formData.account_number.trim()) { setError('Account number is required'); return false; }
     }
     if (step === 4) {
-      if (!formData.video_kyc_file) { setError('Video KYC file is required. Please upload your video.'); return false; }
+      if (!formData.video_kyc_file) { setError('Video KYC file is required.'); return false; }
     }
     if (step === 5) {
       if (!formData.terms_and_conditions) { setError('You must accept the Terms & Conditions'); return false; }
@@ -158,9 +170,9 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     setError(null);
     if (!file) return;
     const validTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
-    if (!validTypes.includes(file.type)) { setError('Please upload MP4, WebM, or MOV video format only.'); return; }
+    if (!validTypes.includes(file.type)) { setError('Please upload MP4, WebM, or MOV only.'); return; }
     if (file.size > MAX_VIDEO_SIZE) {
-      setError(`Video size (${formatFileSize(file.size)}) exceeds maximum ${formatFileSize(MAX_VIDEO_SIZE)}.`);
+      setError(`Video size exceeds ${formatFileSize(MAX_VIDEO_SIZE)}.`);
       return;
     }
     updateField('video_kyc_file', file);
@@ -172,7 +184,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     if (!file) return;
     if (!file.type.startsWith('image/')) { setError('Please upload a valid image file.'); return; }
     if (file.size > MAX_IMAGE_SIZE) {
-      setError(`Image size exceeds maximum ${formatFileSize(MAX_IMAGE_SIZE)}.`);
+      setError(`Image exceeds ${formatFileSize(MAX_IMAGE_SIZE)}.`);
       return;
     }
     updateField('profile_image_file', file);
@@ -184,7 +196,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     setError(null);
 
     try {
-      // 1. Upload profile image (public)
+      // 1. Upload profile image
       let profileImageUrl = '';
       if (formData.profile_image_file) {
         const imgFormData = new FormData();
@@ -197,14 +209,13 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           credentials: 'include',
           body: imgFormData,
         });
-
         if (imgResponse.ok) {
           const imgResult = await imgResponse.json();
           profileImageUrl = imgResult.message?.file_url || '';
         }
       }
 
-      // 2. Upload video KYC (private)
+      // 2. Upload video KYC
       let videoFileUrl = '';
       if (formData.video_kyc_file) {
         const videoFormData = new FormData();
@@ -217,13 +228,12 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           credentials: 'include',
           body: videoFormData,
         });
-
-        if (!uploadResponse.ok) throw new Error('Failed to upload Video KYC. Please try again.');
+        if (!uploadResponse.ok) throw new Error('Failed to upload Video KYC.');
         const uploadResult = await uploadResponse.json();
         videoFileUrl = uploadResult.message?.file_url || '';
       }
 
-      // 3. Create dealer record
+      // 3. Create dealer application with PENDING status
       const payload = {
         full_name: formData.full_name,
         cnic_number: formData.cnic_number,
@@ -244,6 +254,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         profile_image_url: profileImageUrl,
         video_kyc_url: videoFileUrl,
         user_email: user?.email,
+        application_status: 'Pending',   // IMPORTANT
       };
 
       const response = await fetch(`${ERPNEXT_URL}/api/method/realtorx.api.become_dealer`, {
@@ -255,21 +266,209 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
       const result = await response.json();
       if (!response.ok || result.exception) {
-        throw new Error(result.exception || result.message || 'Failed to create dealer');
+        throw new Error(result.exception || result.message || 'Failed to create application');
       }
 
-      updateUserRole('Dealer');
-      sessionStorage.setItem('realtorx_dealer_flow', 'true');
-      sessionStorage.setItem('realtorx_dealer_id', result.message?.dealer_id || '');
-      setTimeout(() => onNavigate('oath'), 500);
+      // Reload application status
+      const app = await fetchDealerApplicationByEmail(user?.email || '');
+      setApplication(app || {
+        id: result.message?.dealer_id || '',
+        status: 'Pending',
+        reviewNotes: '',
+        reviewedOn: '',
+        submittedOn: new Date().toISOString(),
+        fullName: formData.full_name,
+        firm: '',
+        city: formData.city,
+        phone: formData.phone,
+        email: formData.email,
+      });
+
+      setMode('status');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       setError(err.message || 'Failed to submit. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
   // ═══════════════════════════════════════════════════════
-  // INFO MODE
+  // CHECKING STATUS LOADER
+  // ═══════════════════════════════════════════════════════
+  if (checkingStatus) {
+    return (
+      <div className="py-24 max-w-4xl mx-auto px-4 text-center">
+        <Loader2 className="w-10 h-10 text-[#2490EF] animate-spin mx-auto mb-4" />
+        <p className="text-slate-400 text-sm">Checking your application status...</p>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // STATUS MODE
+  // ═══════════════════════════════════════════════════════
+  if (mode === 'status' && application) {
+    const isPending = application.status === 'Pending';
+    const isApproved = application.status === 'Approved';
+    const isRejected = application.status === 'Rejected';
+
+    return (
+      <div className="py-12 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-900/70 border border-slate-800 shadow-2xl">
+
+          {/* Pending */}
+          {isPending && (
+            <div className="text-center space-y-5">
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-[#F5A623]/15 border border-[#F5A623]/40 flex items-center justify-center">
+                <Clock className="w-10 h-10 text-[#F5A623]" />
+              </div>
+              <div>
+                <div className="text-xs font-mono uppercase tracking-widest text-[#F5A623] mb-2">
+                  Under Review
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading mb-3">
+                  Application Received!
+                </h2>
+                <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong className="text-white">{application.fullName}</strong>. Your dealer
+                  application is currently <strong className="text-[#F5A623]">under review</strong> by our team.
+                  We typically respond within 24-48 hours.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-left space-y-2">
+                <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 mb-2">
+                  Application Details
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-slate-400">Application ID:</div>
+                  <div className="text-white text-right font-mono truncate">{application.id}</div>
+                  <div className="text-slate-400">Status:</div>
+                  <div className="text-[#F5A623] text-right font-semibold">{application.status}</div>
+                  <div className="text-slate-400">Submitted:</div>
+                  <div className="text-white text-right">
+                    {new Date(application.submittedOn).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 space-y-3">
+                <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start gap-3 text-left">
+                  <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    What happens next? Our team will verify your CNIC, video KYC, and background.
+                    Once approved, you'll receive a notification to take the Founding Oath and
+                    activate your dealer account.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    window.location.reload();
+                  }}
+                  className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Loader2 className="w-4 h-4" />
+                  Refresh Status
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Approved */}
+          {isApproved && (
+            <div className="text-center space-y-5">
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-[#28A745]" />
+              </div>
+              <div>
+                <div className="text-xs font-mono uppercase tracking-widest text-[#28A745] mb-2">
+                  Approved
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading mb-3">
+                  Congratulations! 🎉
+                </h2>
+                <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+                  Your dealer application has been <strong className="text-[#28A745]">approved</strong>.
+                  Take the Founding Oath to activate your dealer account and start listing.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#28A745]/5 border border-[#28A745]/30 text-left">
+                <div className="flex items-start gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-[#28A745] shrink-0 mt-0.5" />
+                  <div className="text-xs text-slate-300 leading-relaxed">
+                    <strong className="text-white">Next Step:</strong> Take the Realtor X Founding
+                    Member Oath to activate your account.
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('realtorx_dealer_flow', 'true');
+                  sessionStorage.setItem('realtorx_dealer_id', application.id);
+                  onNavigate('oath');
+                }}
+                className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-lg shadow-[#F5A623]/25 flex items-center justify-center gap-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                Take the Founding Oath
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Rejected */}
+          {isRejected && (
+            <div className="text-center space-y-5">
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-red-500/15 border border-red-500/40 flex items-center justify-center">
+                <XCircle className="w-10 h-10 text-red-400" />
+              </div>
+              <div>
+                <div className="text-xs font-mono uppercase tracking-widest text-red-400 mb-2">
+                  Not Approved
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading mb-3">
+                  Application Not Approved
+                </h2>
+                <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+                  Unfortunately, your dealer application could not be approved at this time.
+                </p>
+              </div>
+
+              {application.reviewNotes && (
+                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/30 text-left">
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-red-400 mb-1.5">
+                    Reviewer Notes
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {application.reviewNotes}
+                  </p>
+                </div>
+              )}
+
+              <div className="pt-2 space-y-3">
+                <a
+                  href="https://wa.me/923049383785?text=Hello%20Realtor%20X,%20my%20dealer%20application%20was%20not%20approved.%20I'd%20like%20to%20discuss."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5b] transition-colors flex items-center justify-center gap-2"
+                >
+                  <Phone className="w-4 h-4" />
+                  Discuss on WhatsApp
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // INFO MODE (existing)
   // ═══════════════════════════════════════════════════════
   if (mode === 'info') {
     const benefits = [
@@ -289,25 +488,23 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     ];
 
     const processSteps = [
-      { num: 1, title: 'Submit Application', desc: 'Fill out the 5-step online form with your personal, contact, and bank details.', icon: FileText },
-      { num: 2, title: 'Verification', desc: 'Our team verifies your CNIC, contact, and background within 24-48 hours.', icon: ShieldCheck },
-      { num: 3, title: 'Video KYC', desc: 'Upload a short video introducing yourself. Used for identity confirmation only.', icon: Video },
+      { num: 1, title: 'Submit Application', desc: 'Fill out the 5-step form with your personal, contact, and bank details.', icon: FileText },
+      { num: 2, title: 'Admin Review', desc: 'Our team verifies your CNIC, contact, and background within 24-48 hours.', icon: ShieldCheck },
+      { num: 3, title: 'Approval', desc: 'Once approved, you\'ll be notified to proceed to the next step.', icon: CheckCircle2 },
       { num: 4, title: 'Take the Oath', desc: 'Recite the Realtor X Founding Oath and receive your verified custodian credential.', icon: BookOpen },
-      { num: 5, title: 'Get Activated', desc: 'Your dealer account is activated. Start listing, receiving leads, and closing deals.', icon: CheckCircle2 },
+      { num: 5, title: 'Get Activated', desc: 'Your dealer account is activated. Start listing, receiving leads, and closing deals.', icon: Award },
     ];
 
     const faqs = [
-      { q: 'Do I need prior real estate experience?', a: 'Not mandatory. We welcome both new and experienced dealers. What matters more is your integrity, willingness to learn, and commitment to the Realtor X Code.' },
+      { q: 'How long does approval take?', a: 'Typically 24-48 hours after you submit the complete form and Video KYC. If additional verification is needed, our team will contact you.' },
       { q: 'What is the 60/40 commission split?', a: 'For every closed deal, you receive 60% of the total commission. Realtor X retains 40% to cover portal infrastructure, legal NDC verification, buyer escort services, and marketing.' },
       { q: 'Is there any joining fee?', a: 'No. Joining Realtor X is completely free. We earn only when you close a deal.' },
-      { q: 'How long does approval take?', a: 'Typically 24-48 hours after you submit the complete form and Video KYC. If additional verification is needed, our team will contact you.' },
-      { q: 'What is the Founding Member Oath?', a: 'A solemn commitment every Realtor X dealer takes — 9 promises about ethics, transparency, client protection, and community. It is not a legal contract but a personal pledge of integrity.' },
-      { q: 'Can I keep my existing brokerage?', a: 'Yes. Realtor X is a cooperative network. You can continue your existing practice and still list and close deals through our platform.' },
+      { q: 'What is the Founding Member Oath?', a: 'A solemn commitment every Realtor X dealer takes — 9 promises about ethics, transparency, client protection, and community.' },
+      { q: 'Can I keep my existing brokerage?', a: 'Yes. Realtor X is a cooperative network. You can continue your existing practice and still list deals through our platform.' },
     ];
 
     return (
       <div className="py-12 space-y-16 sm:space-y-20">
-        {/* HERO */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-4 py-1.5 rounded-full mb-6">
             <Sparkles className="w-3.5 h-3.5" />
@@ -326,7 +523,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
             <button
               onClick={() => {
                 if (!isAuthenticated) onNavigate('login');
-                else { setMode('form'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                else { setMode('form'); setCurrentStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }
               }}
               className="px-8 py-4 rounded-2xl text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-xl shadow-[#F5A623]/30 flex items-center gap-2"
             >
@@ -344,17 +541,15 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-500 font-mono">
             <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />Free to join</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />No monthly fee</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />Admin reviewed</span>
             <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />24-48h approval</span>
           </div>
         </section>
 
-        {/* WHY JOIN */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-mono uppercase tracking-widest text-[#2490EF]">The Realtor X Advantage</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">Why Dealers Choose Us</h2>
-            <p className="text-sm text-slate-400 mt-3">We built Realtor X for dealers, by dealers. Everything here works in your favour.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {benefits.map((b, i) => {
@@ -372,13 +567,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         </section>
 
-        {/* REQUIREMENTS */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-900/50 border border-slate-800 p-8 sm:p-12">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <span className="text-xs font-mono uppercase tracking-widest text-[#28A745]">Eligibility</span>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">What You Need to Apply</h2>
-              <p className="text-sm text-slate-400 mt-3">Simple requirements. No hidden criteria.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {requirements.map((r, i) => {
@@ -399,11 +592,13 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         </section>
 
-        {/* PROCESS */}
         <section id="dealer-process" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-mono uppercase tracking-widest text-[#2490EF]">Simple & Transparent</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">How It Works</h2>
+            <p className="text-sm text-slate-400 mt-3">
+              From application to activation — with admin review at every step.
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
             {processSteps.map((s) => {
@@ -422,7 +617,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         </section>
 
-        {/* THE OATH */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-br from-amber-950/30 via-slate-900 to-slate-900/50 border border-amber-500/30 p-8 sm:p-12">
             <div className="text-center max-w-3xl mx-auto mb-10">
@@ -432,10 +626,10 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-4">The Realtor X Founding Oath</h2>
               <p className="text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Every Realtor X dealer takes this oath before activation. It is not a legal contract — it is a personal promise of integrity, transparency, and community protection that defines who we are.
+                Taken by every Realtor X dealer before activation. It is a personal promise of integrity,
+                transparency, and community protection that defines who we are.
               </p>
             </div>
-
             <div className="mb-8">
               <h3 className="text-xs font-mono uppercase tracking-[0.15em] text-[#F5A623] mb-4 text-center">The Nine Solemn Promises</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -447,7 +641,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 ))}
               </div>
             </div>
-
             <div className="text-center pt-6 border-t border-slate-800">
               <button
                 onClick={() => onNavigate('oath')}
@@ -461,7 +654,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         </section>
 
-        {/* FAQ */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs font-mono uppercase tracking-widest text-[#2490EF]">Questions</span>
@@ -483,7 +675,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </div>
         </section>
 
-        {/* FINAL CTA */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           <div className="rounded-3xl bg-gradient-to-r from-[#0E2849] via-[#0B1A30] to-[#0E2849] border border-[#F5A623]/30 p-8 sm:p-14 text-center shadow-2xl">
             <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#F5A623]/15 border border-[#F5A623]/40 flex items-center justify-center">
@@ -491,12 +682,12 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-4">Ready to Join Realtor X?</h2>
             <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed">
-              Start your application now. Takes 10 minutes. Approval typically within 48 hours. Free to join, no hidden fees.
+              Start your application now. Takes 10 minutes. Admin reviews within 48 hours. Free to join.
             </p>
             <button
               onClick={() => {
                 if (!isAuthenticated) onNavigate('login');
-                else { setMode('form'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                else { setMode('form'); setCurrentStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }
               }}
               className="px-8 py-4 rounded-2xl text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-xl shadow-[#F5A623]/30 inline-flex items-center gap-2"
             >
@@ -514,14 +705,14 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   }
 
   // ═══════════════════════════════════════════════════════
-  // FORM MODE
+  // FORM MODE — same as before
   // ═══════════════════════════════════════════════════════
   const steps = [
     { num: 1, title: 'Personal', icon: User },
     { num: 2, title: 'Contact', icon: Phone },
     { num: 3, title: 'Bank', icon: Banknote },
     { num: 4, title: 'Video KYC', icon: Video },
-    { num: 5, title: 'Oath', icon: ShieldCheck },
+    { num: 5, title: 'Submit', icon: ShieldCheck },
   ];
 
   return (
@@ -537,15 +728,14 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1.5 rounded-full mb-4">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Dealer Registration</span>
+          <span>Dealer Application</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-3">Complete Your Application</h1>
         <p className="text-sm text-slate-400 max-w-xl mx-auto">
-          Fill in 5 quick steps to start your journey with <strong className="text-[#F5A623]">60% commission split</strong>.
+          Fill in 5 quick steps. Our team will review your application within 24-48 hours.
         </p>
       </div>
 
-      {/* Progress */}
       <div className="mb-10">
         <div className="flex items-center justify-between">
           {steps.map((step, idx) => {
@@ -634,11 +824,10 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 </div>
               </div>
 
-              {/* Profile Image Upload */}
               <div className="sm:col-span-2 pt-4 border-t border-slate-800">
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Profile Image</label>
                 <p className="text-[11px] text-slate-500 mb-3">
-                  Ye aap ki photo hai jo home page par "Registered Dealers" section mein dikhegi.
+                  Ye photo home page par "Registered Dealers" section mein dikhegi.
                 </p>
 
                 {!formData.profile_image_file ? (
@@ -654,11 +843,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                   </label>
                 ) : (
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-[#28A745]/5 border border-[#28A745]/30">
-                    <img
-                      src={URL.createObjectURL(formData.profile_image_file)}
-                      alt="Profile preview"
-                      className="w-14 h-14 rounded-full object-cover border-2 border-[#28A745]/40 shrink-0"
-                    />
+                    <img src={URL.createObjectURL(formData.profile_image_file)} alt="Profile preview"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-[#28A745]/40 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white truncate">{formData.profile_image_file.name}</p>
                       <p className="text-xs text-[#28A745] mt-1 flex items-center gap-1.5">
@@ -686,7 +872,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">Step 2 — Contact Details</h2>
-                <p className="text-xs text-slate-400">How clients can reach you</p>
               </div>
             </div>
 
@@ -698,7 +883,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                   <input type="tel" required value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} placeholder="03XX XXXXXXX"
                     className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Local ya international (+92) — dono chalenge</p>
               </div>
 
               <div>
@@ -746,7 +930,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">Step 3 — Bank & Business</h2>
-                <p className="text-xs text-slate-400">For commission payouts</p>
               </div>
             </div>
 
@@ -812,7 +995,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">Step 4 — Video KYC</h2>
-                <p className="text-xs text-slate-400">Upload a short video for identity verification</p>
               </div>
             </div>
 
@@ -825,9 +1007,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                     <li>Duration: <strong className="text-white">1-2 minutes</strong></li>
                     <li>Max file size: <strong className="text-white">50 MB</strong></li>
                     <li>Format: <strong className="text-white">MP4, WebM, MOV</strong></li>
-                    <li>Camera stable rakhein, chehra clear dikhe</li>
                     <li>Apna naam, CNIC number aur address bolein</li>
-                    <li>Quiet environment mein record karein</li>
                   </ul>
                 </div>
               </div>
@@ -856,16 +1036,12 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{formData.video_kyc_file.name}</p>
-                        <p className="text-xs text-slate-400 mt-1">{formatFileSize(formData.video_kyc_file.size)} · Ready to upload</p>
+                        <p className="text-xs text-slate-400 mt-1">{formatFileSize(formData.video_kyc_file.size)}</p>
                       </div>
                       <button type="button" onClick={() => updateField('video_kyc_file', null)}
                         className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg transition-colors shrink-0">
                         <X className="w-4 h-4" />
                       </button>
-                    </div>
-                    <div className="flex items-center gap-2 mt-3">
-                      <CheckCircle2 className="w-4 h-4 text-[#28A745]" />
-                      <span className="text-xs text-[#28A745] font-medium">Video validated successfully</span>
                     </div>
                   </div>
                 </div>
@@ -882,8 +1058,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <ShieldCheck className="w-5 h-5 text-[#F5A623]" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white font-heading">Step 5 — Terms & Oath</h2>
-                <p className="text-xs text-slate-400">Final step — accept terms and take the Realtor X Oath</p>
+                <h2 className="text-lg font-bold text-white font-heading">Step 5 — Review & Submit</h2>
+                <p className="text-xs text-slate-400">Review your details before submitting</p>
               </div>
             </div>
 
@@ -919,14 +1095,18 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 {formData.terms_and_conditions && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
               </div>
               <div className="text-sm text-slate-300 leading-relaxed">
-                I accept the <strong className="text-white">Realtor X Terms & Conditions</strong>, commission structure (60% dealer / 40% company), and understand that final activation requires taking the Founding Member Oath.
+                I accept the <strong className="text-white">Realtor X Terms & Conditions</strong>,
+                commission structure (60% dealer / 40% company), and understand that final activation
+                requires admin approval and taking the Founding Member Oath.
               </div>
             </button>
 
             <div className="p-4 rounded-xl bg-[#F5A623]/5 border border-[#F5A623]/30 flex items-start gap-3">
-              <ShieldCheck className="w-5 h-5 text-[#F5A623] shrink-0 mt-0.5" />
+              <Clock className="w-5 h-5 text-[#F5A623] shrink-0 mt-0.5" />
               <div className="text-xs text-slate-300 leading-relaxed">
-                <strong className="text-[#F5A623]">Next Step:</strong> After registration, you'll be redirected to take the <strong>Realtor X Founding Member Oath</strong>. Once taken, your dealer account will be fully activated.
+                <strong className="text-[#F5A623]">What happens next:</strong> After submission, our
+                team will review your application within <strong>24-48 hours</strong>. You'll be
+                notified once approved, then you can take the Founding Oath.
               </div>
             </div>
           </div>
@@ -966,11 +1146,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Uploading & Creating...
+                  Submitting...
                 </>
               ) : (
                 <>
-                  Complete Registration
+                  Submit for Review
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
