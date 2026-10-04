@@ -9,6 +9,9 @@
     }
   },
   "rewrites": [
-    { "source": "/api/erp/(.*)", "destination": "/api/erp/[...path]" }
+    {
+      "source": "/api/erp/(.*)",
+      "destination": "/api/erp/[...path]"
+    }
   ]
 }
