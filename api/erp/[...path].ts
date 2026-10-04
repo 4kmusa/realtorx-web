@@ -1,10 +1,17 @@
-// api/erp/[...path].ts — Vercel Node function
-// Proxy for ERPNext — keeps API keys server-side
-
 export default async function handler(req: any, res: any) {
   const ERPNEXT_URL = process.env.ERPNEXT_URL;
   const API_KEY = process.env.ERPNEXT_API_KEY;
   const API_SECRET = process.env.ERPNEXT_API_SECRET;
+
+  // Debug log (Vercel function logs mein dikhega)
+  console.log('[PROXY DEBUG]', {
+    hasUrl: !!ERPNEXT_URL,
+    urlPreview: ERPNEXT_URL ? ERPNEXT_URL.slice(0, 30) + '...' : 'MISSING',
+    hasKey: !!API_KEY,
+    hasSecret: !!API_SECRET,
+    method: req.method,
+    query: req.query,
+  });
 
   if (!ERPNEXT_URL || !API_KEY || !API_SECRET) {
     return res.status(500).json({
