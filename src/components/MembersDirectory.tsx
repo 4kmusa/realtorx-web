@@ -67,7 +67,7 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
         {/* Community Hub Atrium Banner */}
         <div className="relative rounded-2xl overflow-hidden border border-slate-800 mb-12 shadow-2xl">
           <img
-            src="/src/assets/images/realtorx_hub_atrium_1790597209570.jpg"
+            src="/images/realtorx_hub_atrium_1790597209570.jpg"
             alt="The RealtorX Flagship Hub Atrium"
             referrerPolicy="no-referrer"
             className="w-full h-56 sm:h-72 object-cover brightness-[0.75]"

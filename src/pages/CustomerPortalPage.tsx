@@ -30,6 +30,7 @@ interface CustomerPortalPageProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 type TabType = 'overview' | 'bookings' | 'deals' | 'payments' | 'visits';
 
@@ -86,7 +87,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
       setLoading(true);
       try {
         const response = await fetch(
-          `${ERPNEXT_URL}/api/method/realtorx.api.customer_dashboard`,
+          `${API_BASE}/method/realtorx.api.customer_dashboard`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

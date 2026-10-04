@@ -8,6 +8,7 @@ import {
 } from '../types';
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
@@ -22,7 +23,7 @@ const AUTH_HEADERS = {
 // ═══════════════════════════════════════════════════════
 export async function fetchMemberProfile(email: string): Promise<MemberProfile | null> {
   try {
-    const url = `${ERPNEXT_URL}/api/resource/RealtorX Member?filters=[["email","=","${email}"]]&limit_page_length=1`;
+    const url = `${API_BASE}/resource/RealtorX Member?filters=[["email","=","${email}"]]&limit_page_length=1`;
     const response = await fetch(url, { headers: AUTH_HEADERS });
 
     if (!response.ok) return null;
@@ -42,7 +43,7 @@ export async function fetchMemberProfile(email: string): Promise<MemberProfile |
 // ═══════════════════════════════════════════════════════
 export async function fetchMemberById(memberId: string): Promise<MemberProfile | null> {
   try {
-    const url = `${ERPNEXT_URL}/api/resource/RealtorX Member/${memberId}`;
+    const url = `${API_BASE}/resource/RealtorX Member/${memberId}`;
     const response = await fetch(url, { headers: AUTH_HEADERS });
 
     if (!response.ok) return null;
@@ -60,7 +61,7 @@ export async function fetchMemberById(memberId: string): Promise<MemberProfile |
 // ═══════════════════════════════════════════════════════
 export async function fetchMemberReferrals(memberId: string): Promise<MemberReferral[]> {
   try {
-    const url = `${ERPNEXT_URL}/api/resource/Referral Ledger?filters=[["member","=","${memberId}"]]&fields=["*"]&order_by=creation+desc&limit_page_length=100`;
+    const url = `${API_BASE}/resource/Referral Ledger?filters=[["member","=","${memberId}"]]&fields=["*"]&order_by=creation+desc&limit_page_length=100`;
     const response = await fetch(url, { headers: AUTH_HEADERS });
 
     if (!response.ok) return [];
@@ -78,7 +79,7 @@ export async function fetchMemberReferrals(memberId: string): Promise<MemberRefe
 // ═══════════════════════════════════════════════════════
 export async function fetchMemberPayouts(memberId: string): Promise<MemberPayout[]> {
   try {
-    const url = `${ERPNEXT_URL}/api/resource/Member Payout?filters=[["member","=","${memberId}"]]&fields=["*"]&order_by=creation+desc&limit_page_length=100`;
+    const url = `${API_BASE}/resource/Member Payout?filters=[["member","=","${memberId}"]]&fields=["*"]&order_by=creation+desc&limit_page_length=100`;
     const response = await fetch(url, { headers: AUTH_HEADERS });
 
     if (!response.ok) return [];
@@ -96,7 +97,7 @@ export async function fetchMemberPayouts(memberId: string): Promise<MemberPayout
 // ═══════════════════════════════════════════════════════
 export async function fetchMemberProperties(memberId: string): Promise<MemberProperty[]> {
   try {
-    const url = `${ERPNEXT_URL}/api/resource/Property?filters=[["listed_by_member","=","${memberId}"]]&fields=["name","property_title","custom_property_category","status","list_price","size","size_unit","listed_by_member"]&order_by=creation+desc&limit_page_length=10`;
+    const url = `${API_BASE}/resource/Property?filters=[["listed_by_member","=","${memberId}"]]&fields=["name","property_title","custom_property_category","status","list_price","size","size_unit","listed_by_member"]&order_by=creation+desc&limit_page_length=10`;
     const response = await fetch(url, { headers: AUTH_HEADERS });
 
     if (!response.ok) return [];
@@ -123,7 +124,7 @@ export async function createMemberProperty(data: {
   listing_type: string;
 }): Promise<{ success: boolean; name?: string; error?: string }> {
   try {
-    const response = await fetch(`${ERPNEXT_URL}/api/resource/Property`, {
+    const response = await fetch(`${API_BASE}/resource/Property`, {
       method: 'POST',
       headers: AUTH_HEADERS,
       body: JSON.stringify(data),

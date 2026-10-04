@@ -45,7 +45,7 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
         {/* Hero Photo: Founding Gathering */}
         <div className="relative rounded-2xl overflow-hidden border border-slate-800 mb-14 shadow-2xl">
           <img
-            src="/src/assets/images/realtorx_founding_ceremony_1790597198456.jpg"
+            src="/images/realtorx_founding_ceremony_1790597198456.jpg"
             alt="RealtorX Founding Assembly"
             referrerPolicy="no-referrer"
             className="w-full h-72 sm:h-96 lg:h-[440px] object-cover brightness-[0.8]"

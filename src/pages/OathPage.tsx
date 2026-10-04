@@ -27,6 +27,7 @@ interface OathPageProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
@@ -164,7 +165,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
         bio: 'Founding member dedicated to collaboration, ethics and allottee protection.',
       };
 
-      const response = await fetch(`${ERPNEXT_URL}/api/resource/RealtorX Member`, {
+      const response = await fetch(`${API_BASE}/resource/RealtorX Member`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

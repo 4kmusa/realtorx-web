@@ -17,6 +17,7 @@ interface BecomeDealerPageProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 const formatPhoneNumber = (phone: string): string => {
   let cleaned = phone.replace(/[\s\-()]/g, '');
@@ -204,7 +205,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         imgFormData.append('is_private', '0');
         imgFormData.append('folder', 'Home/Dealer Profiles');
 
-        const imgResponse = await fetch(`${ERPNEXT_URL}/api/method/upload_file`, {
+        const imgResponse = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
           credentials: 'include',
           body: imgFormData,
@@ -223,7 +224,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         videoFormData.append('is_private', '1');
         videoFormData.append('folder', 'Home/Video KYC');
 
-        const uploadResponse = await fetch(`${ERPNEXT_URL}/api/method/upload_file`, {
+        const uploadResponse = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
           credentials: 'include',
           body: videoFormData,
@@ -257,7 +258,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         application_status: 'Pending',   // IMPORTANT
       };
 
-      const response = await fetch(`${ERPNEXT_URL}/api/method/realtorx.api.become_dealer`, {
+      const response = await fetch(`${API_BASE}/method/realtorx.api.become_dealer`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

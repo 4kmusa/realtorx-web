@@ -60,7 +60,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
           {/* Photographic view of the wall */}
           <div className="relative h-80 sm:h-96 lg:h-[480px] w-full overflow-hidden">
             <img
-              src="/src/assets/images/realtorx_engraved_wall_1790597184603.jpg"
+              src="/images/realtorx_engraved_wall_1790597184603.jpg"
               alt="The RealtorX Engraved Philosophy Wall in Honed Slate"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover brightness-[0.7] contrast-[1.15]"

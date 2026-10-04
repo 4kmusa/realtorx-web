@@ -8,6 +8,7 @@ interface RealtorXLogoProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 export const RealtorXLogo: React.FC<RealtorXLogoProps> = ({
   className = '',
@@ -22,8 +23,7 @@ export const RealtorXLogo: React.FC<RealtorXLogoProps> = ({
   };
 
   const currentSize = sizeMap[size];
-  const logoUrl = `${ERPNEXT_URL}/files/realtorx-logo.png`;
-
+  const logoUrl = '/images/realtorx-logo.png';
   return (
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
       <img

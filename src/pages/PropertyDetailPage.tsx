@@ -36,6 +36,7 @@ interface PropertyDetailPageProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 const WHATSAPP_NUMBER = '923008472910';
@@ -159,7 +160,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
         notes: `Site Visit request for: ${property.title} (${property.erpCode}). Preferred date: ${preferredDate}, Time: ${timeSlot}`,
       };
 
-      const leadResponse = await fetch(`${ERPNEXT_URL}/api/resource/RX Lead`, {
+      const leadResponse = await fetch(`${API_BASE}/resource/RX Lead`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

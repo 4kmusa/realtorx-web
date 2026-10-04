@@ -33,6 +33,7 @@ interface DealerPortalPageProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 type TabType = 'overview' | 'leads' | 'deals' | 'commission' | 'payouts' | 'targets' | 'tasks';
 
@@ -88,7 +89,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
       setLoading(true);
       try {
         const response = await fetch(
-          `${ERPNEXT_URL}/api/method/realtorx.api.dealer_dashboard`,
+          `${API_BASE}/method/realtorx.api.dealer_dashboard`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

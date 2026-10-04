@@ -639,7 +639,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
             <div className="lg:col-span-5 h-72 sm:h-96 lg:h-full min-h-[360px] relative">
               <img
-                src="/src/assets/images/bahria_town_karachi_1790600916751.jpg"
+                src="/images/bahria_town_karachi_1790600916751.jpg"
                 alt="Bahria Town Karachi Grand View"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"

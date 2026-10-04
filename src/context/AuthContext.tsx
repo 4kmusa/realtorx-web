@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 const STORAGE_KEY = 'realtorx_auth_user';
 
 export interface AuthUser {
@@ -94,7 +95,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const refreshUser = async () => {
     try {
       const response = await fetch(
-        `${ERPNEXT_URL}/api/method/frappe.auth.get_logged_user`,
+        `${API_BASE}/method/frappe.auth.get_logged_user`,
         {
           credentials: 'include',
           headers: { Accept: 'application/json' },
@@ -111,7 +112,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!email || email === 'Guest') return;
 
       const userResponse = await fetch(
-        `${ERPNEXT_URL}/api/resource/User/${encodeURIComponent(email)}`,
+        `${API_BASE}/resource/User/${encodeURIComponent(email)}`,
         {
           credentials: 'include',
           headers: { Accept: 'application/json' },
@@ -154,7 +155,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signup = async (data: SignupData): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch(
-        `${ERPNEXT_URL}/api/method/realtorx.api.signup`,
+        `${API_BASE}/method/realtorx.api.signup`,
         {
           method: 'POST',
           credentials: 'include',
@@ -209,7 +210,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       formData.append('usr', email);
       formData.append('pwd', password);
 
-      const response = await fetch(`${ERPNEXT_URL}/api/method/login`, {
+      const response = await fetch(`${API_BASE}/method/login`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -260,7 +261,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // ═══════════════════════════════════════════════════════
   const logout = async () => {
     try {
-      await fetch(`${ERPNEXT_URL}/api/method/logout`, {
+      await fetch(`${API_BASE}/method/logout`, {
         credentials: 'include',
       });
     } catch (error) {

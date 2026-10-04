@@ -28,6 +28,7 @@ const EMAIL_PRIMARY = 'info@realtorx.co';
 const EMAIL_SALES = 'sales@realtorx.co';
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className={className} aria-hidden="true">
@@ -65,7 +66,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
         notes: `Subject: ${subject}\n\nMessage: ${message}`,
       };
 
-      const res = await fetch(`${ERPNEXT_URL}/api/resource/RX Lead`, {
+      const res = await fetch(`${API_BASE}/resource/RX Lead`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

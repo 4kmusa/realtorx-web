@@ -16,7 +16,7 @@ export const MOCK_PROJECTS: ProjectInfo[] = [
     tagline: "Pakistan's premier master-planned luxury destination on Super Highway / M-9",
     location: "Super Highway (M-9), Karachi",
     description: "Spanning over 44,000 acres, Bahria Town Karachi offers an international lifestyle with uncompromised 24/7 security, uninterrupted power, world-class theme parks, Danzoo, Grand Jamia Mosque, and gated precincts.",
-    heroImage: "/src/assets/images/bahria_town_karachi_1790600916751.jpg",
+    heroImage: "/images/bahria_town_karachi_1790600916751.jpg",
     totalProperties: 120,
     status: "Established",
     precincts: ["Precinct 1 (Adjacent to Gate)", "Precinct 10A (Villas)", "Precinct 19 (Apartments)", "Precinct 27", "Ali Block", "Jinnah Avenue Commercial"],
@@ -35,7 +35,7 @@ export const MOCK_PROJECTS: ProjectInfo[] = [
     tagline: "The Next Frontier of Smart Living on M-9 Expressway",
     location: "M-9 Karachi-Hyderabad Motorway, Karachi",
     description: "BTK-2 introduces solar-integrated green urbanism, high-return residential plots, and rapid infrastructural development for visionary investors and modern families.",
-    heroImage: "/src/assets/images/plot_precinct_bahria_1790600998798.jpg",
+    heroImage: "/images/plot_precinct_bahria_1790600998798.jpg",
     totalProperties: 48,
     status: "Rapid Development",
     precincts: ["Sector A", "Sector B", "Commercial Central", "Lake View Villas"],
@@ -53,7 +53,7 @@ export const MOCK_PROJECTS: ProjectInfo[] = [
     tagline: "Modern High-Rise Apartment Living with Panoramic Community Views",
     location: "Precinct 17, Bahria Town Karachi",
     description: "Iconic dual-tower apartment complexes offering 2-bedroom luxury apartments with dedicated basement parking, round-the-clock maintenance, and swift elevator access.",
-    heroImage: "/src/assets/images/apartment_bahria_heights_1790600970754.jpg",
+    heroImage: "/images/apartment_bahria_heights_1790600970754.jpg",
     totalProperties: 35,
     status: "Possession Handed Over",
     precincts: ["Tower A", "Tower B", "Tower C", "Commercial Courtyard"],
@@ -86,8 +86,8 @@ export const MOCK_PROPERTIES: Property[] = [
     status: "Hot Deal",
     isFeatured: true,
     images: [
-      "/src/assets/images/villa_bahria_luxury_1790600936792.jpg",
-      "/src/assets/images/bahria_town_karachi_1790600916751.jpg"
+      "/images/villa_bahria_luxury_1790600936792.jpg",
+      "/images/bahria_town_karachi_1790600916751.jpg"
     ],
     description: "Architect-designed 500 sq yards brand new double-storey designer villa featuring imported Spanish tiles, Grohe fittings, high-ceiling drawing room, servant quarters, and front lawn with ambient lighting. Direct walking distance to neighborhood mosque and park.",
     features: [
@@ -127,8 +127,8 @@ export const MOCK_PROPERTIES: Property[] = [
     status: "Available",
     isFeatured: true,
     images: [
-      "/src/assets/images/villa_bahria_luxury_1790600936792.jpg",
-      "/src/assets/images/apartment_bahria_heights_1790600970754.jpg"
+      "/images/villa_bahria_luxury_1790600936792.jpg",
+      "/images/apartment_bahria_heights_1790600970754.jpg"
     ],
     description: "Ideal compact family villa in one of the most populated and active precincts of Bahria Town Karachi. Clean paperwork, utility meters installed, ready for immediate possession and shifting.",
     features: [
@@ -167,8 +167,8 @@ export const MOCK_PROPERTIES: Property[] = [
     status: "Available",
     isFeatured: true,
     images: [
-      "/src/assets/images/apartment_bahria_heights_1790600970754.jpg",
-      "/src/assets/images/commercial_bahria_hub_1790600954734.jpg"
+      "/images/apartment_bahria_heights_1790600970754.jpg",
+      "/images/commercial_bahria_hub_1790600954734.jpg"
     ],
     description: "Corner apartment on 6th floor with expansive balcony overlooking central landscaped park. Exceptional rental return of PKR 50,000 - 65,000 per month, making it prime investment for passive income.",
     features: [
@@ -205,8 +205,8 @@ export const MOCK_PROPERTIES: Property[] = [
     status: "Hot Deal",
     isFeatured: true,
     images: [
-      "/src/assets/images/plot_precinct_bahria_1790600998798.jpg",
-      "/src/assets/images/bahria_town_karachi_1790600916751.jpg"
+      "/images/plot_precinct_bahria_1790600998798.jpg",
+      "/images/bahria_town_karachi_1790600916751.jpg"
     ],
     description: "Ultra-prime category plot in Precinct 1, immediately adjacent to the grand entrance gate and hospital. Ready for immediate construction, surrounded by inhabited luxury residences.",
     features: [
@@ -243,8 +243,8 @@ export const MOCK_PROPERTIES: Property[] = [
     status: "Available",
     isFeatured: true,
     images: [
-      "/src/assets/images/commercial_bahria_hub_1790600954734.jpg",
-      "/src/assets/images/bahria_town_karachi_1790600916751.jpg"
+      "/images/commercial_bahria_hub_1790600954734.jpg",
+      "/images/bahria_town_karachi_1790600916751.jpg"
     ],
     description: "High-visibility ground floor commercial shop facing the 400 ft Jinnah Avenue. High footfall corridor surrounded by top banking branches, fashion outlets, and corporate offices.",
     features: [
@@ -281,8 +281,8 @@ export const MOCK_PROPERTIES: Property[] = [
     status: "Available",
     isFeatured: true,
     images: [
-      "/src/assets/images/plot_precinct_bahria_1790600998798.jpg",
-      "/src/assets/images/villa_bahria_luxury_1790600936792.jpg"
+      "/images/plot_precinct_bahria_1790600998798.jpg",
+      "/images/villa_bahria_luxury_1790600936792.jpg"
     ],
     description: "Early-stage high-growth investment plot in BTK-2 Sector A. Fully balloted with clear allotment letter. Rapid ground development currently ongoing with asphalt roads laid.",
     features: [
