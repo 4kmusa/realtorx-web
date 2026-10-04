@@ -31,8 +31,9 @@ export default async function handler(req: any, res: any) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'ngrok-skip-browser-warning': 'true',
-        'User-Agent': 'RealtorX-Proxy/1.0',
+        'User-Agent': 'curl/7.81.0',
       },
+      redirect: 'manual',
     };
 
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
