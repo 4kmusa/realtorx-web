@@ -3,16 +3,6 @@ export default async function handler(req: any, res: any) {
   const API_KEY = process.env.ERPNEXT_API_KEY;
   const API_SECRET = process.env.ERPNEXT_API_SECRET;
 
-  // Debug log (Vercel function logs mein dikhega)
-  console.log('[PROXY DEBUG]', {
-    hasUrl: !!ERPNEXT_URL,
-    urlPreview: ERPNEXT_URL ? ERPNEXT_URL.slice(0, 30) + '...' : 'MISSING',
-    hasKey: !!API_KEY,
-    hasSecret: !!API_SECRET,
-    method: req.method,
-    query: req.query,
-  });
-
   if (!ERPNEXT_URL || !API_KEY || !API_SECRET) {
     return res.status(500).json({
       error: 'Server configuration missing',
@@ -40,6 +30,8 @@ export default async function handler(req: any, res: any) {
         Authorization: `token ${API_KEY}:${API_SECRET}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+        'User-Agent': 'RealtorX-Proxy/1.0',
       },
     };
 
