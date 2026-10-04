@@ -1,3 +1,4 @@
+// src/pages/PropertiesPage.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { PageId, Language } from '../types';
 import { fetchProperties, Property } from '../services/propertyService';
@@ -33,7 +34,7 @@ interface PropertiesPageProps {
 type ViewMode = 'grid' | 'list';
 type GridCols = 2 | 3 | 4;
 
-const WHATSAPP_NUMBER = '923008472910';
+const WHATSAPP_NUMBER = '923049383785';
 const FAVORITES_KEY = 'realtorx_favorites';
 const FILTERS_KEY = 'realtorx_properties_filters';
 
@@ -75,6 +76,54 @@ const hasRealImage = (url?: string): boolean => {
   if (!url) return false;
   return !url.startsWith('data:');
 };
+
+// ═══════════════════════════════════════════════════════
+// Scroll Reveal Hook — observes new elements + checks viewport
+// ═══════════════════════════════════════════════════════
+function useScrollReveal(deps: React.DependencyList = []) {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    const checkAndObserve = () => {
+      document.querySelectorAll('.scroll-reveal:not(.is-visible)').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) {
+          el.classList.add('is-visible');
+        } else {
+          observer.observe(el);
+        }
+      });
+    };
+
+    checkAndObserve();
+
+    const mutationObserver = new MutationObserver(() => {
+      checkAndObserve();
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
 
 export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -123,6 +172,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
     };
     try { sessionStorage.setItem(FILTERS_KEY, JSON.stringify(payload)); } catch {}
   }, [searchKeyword, selectedCategory, selectedProject, selectedPrecinct, selectedSize, selectedBedrooms, selectedPriceRange, sortBy, viewMode, gridCols]);
+
+  useEffect(() => {
+    if (filtersOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [filtersOpen]);
 
   useEffect(() => {
     async function loadProperties() {
@@ -220,6 +278,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
     return result;
   }, [properties, searchKeyword, selectedCategory, selectedProject, selectedPrecinct, selectedSize, selectedBedrooms, selectedPriceRange, sortBy, hasBedrooms]);
 
+  // Re-run scroll observer whenever filtered list or loading state changes
+  useScrollReveal([filteredProperties.length, loading, viewMode, gridCols]);
+
   const activeChips: { key: string; label: string; onClear: () => void }[] = [];
   if (searchKeyword.trim()) activeChips.push({ key: 'kw', label: `"${searchKeyword}"`, onClear: () => setSearchKeyword('') });
   if (selectedCategory !== 'All') activeChips.push({ key: 'cat', label: selectedCategory, onClear: () => setSelectedCategory('All') });
@@ -255,22 +316,22 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
 
   if (loading) {
     return (
-      <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 space-y-3">
+      <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 space-y-4">
           <div className="h-4 bg-slate-800/60 rounded w-48 animate-pulse" />
-          <div className="h-10 bg-slate-800/60 rounded w-96 animate-pulse" />
+          <div className="h-12 bg-slate-800/60 rounded w-96 animate-pulse" />
           <div className="h-4 bg-slate-800/40 rounded w-64 animate-pulse" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-1">
-            <div className="h-[600px] bg-slate-900/60 border border-slate-800 rounded-3xl animate-pulse" />
+            <div className="h-[700px] bg-slate-900/60 border border-slate-800 rounded-3xl animate-pulse" />
           </div>
           <div className="lg:col-span-3 min-w-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-slate-900/70 border border-slate-800 rounded-3xl overflow-hidden animate-pulse">
-                  <div className="h-56 w-full bg-slate-800/50" />
-                  <div className="p-5 space-y-3">
+                  <div className="h-60 w-full bg-slate-800/50" />
+                  <div className="p-6 space-y-3">
                     <div className="h-4 bg-slate-800/60 rounded w-3/4" />
                     <div className="h-3 bg-slate-800/40 rounded w-1/2" />
                     <div className="h-3 bg-slate-800/40 rounded w-2/3" />
@@ -285,38 +346,41 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
   }
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#2490EF]" />
+    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* HEADER */}
+      <div className="mb-10">
+        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
+          <span className="w-6 h-[1px] bg-[#2490EF]/60" />
           <span>Marketplace</span>
           <span className="text-slate-600">·</span>
           <span>Bahria Town Karachi</span>
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
-          <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-white font-heading leading-tight">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
               Verified Property Listings
             </h1>
-            <p className="text-sm text-slate-400 mt-2">
+            <p className="text-sm sm:text-base text-slate-400 mt-3 leading-relaxed">
               Showing{' '}
-              <span className="text-white font-semibold tabular-nums">{filteredProperties.length}</span>
-              {' '}of{' '}
-              <span className="text-white font-semibold tabular-nums">{properties.length}</span>
-              {' '}{properties.length === 1 ? 'property' : 'properties'}
+              <span className="text-white font-semibold tabular-nums">
+                {filteredProperties.length}
+              </span>{' '}
+              of{' '}
+              <span className="text-white font-semibold tabular-nums">{properties.length}</span>{' '}
+              {properties.length === 1 ? 'property' : 'properties'}
               {hasActiveFilters ? ' matching your filters' : ' available'}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center bg-slate-900/80 border border-slate-800 rounded-xl p-1">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex items-center bg-white/[0.04] border border-white/[0.08] rounded-xl p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${
+                className={`p-2 rounded-lg transition-all duration-300 ${
                   viewMode === 'grid'
                     ? 'bg-[#2490EF] text-white shadow-md shadow-[#2490EF]/30'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
                 aria-label="Grid view"
                 title="Grid view"
@@ -325,10 +389,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${
+                className={`p-2 rounded-lg transition-all duration-300 ${
                   viewMode === 'list'
                     ? 'bg-[#2490EF] text-white shadow-md shadow-[#2490EF]/30'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
                 aria-label="List view"
                 title="List view"
@@ -338,10 +402,12 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             </div>
 
             {viewMode === 'grid' && (
-              <div className="hidden md:flex items-center bg-slate-900/80 border border-slate-800 rounded-xl p-1">
+              <div className="hidden md:flex items-center bg-white/[0.04] border border-white/[0.08] rounded-xl p-1">
                 <button
                   onClick={() => setGridCols(2)}
-                  className={`p-2 rounded-lg transition-all ${gridCols === 2 ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}
+                  className={`p-2 rounded-lg transition-all duration-300 ${
+                    gridCols === 2 ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                  }`}
                   aria-label="2 columns"
                   title="2 columns"
                 >
@@ -349,7 +415,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                 </button>
                 <button
                   onClick={() => setGridCols(3)}
-                  className={`p-2 rounded-lg transition-all ${gridCols === 3 ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}
+                  className={`p-2 rounded-lg transition-all duration-300 ${
+                    gridCols === 3 ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                  }`}
                   aria-label="3 columns"
                   title="3 columns"
                 >
@@ -357,7 +425,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                 </button>
                 <button
                   onClick={() => setGridCols(4)}
-                  className={`p-2 rounded-lg transition-all ${gridCols === 4 ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}
+                  className={`p-2 rounded-lg transition-all duration-300 ${
+                    gridCols === 4 ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                  }`}
                   aria-label="4 columns"
                   title="4 columns"
                 >
@@ -371,7 +441,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="pl-9 pr-8 py-2.5 bg-slate-900/80 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF] cursor-pointer appearance-none"
+                className="pl-9 pr-9 py-2.5 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer appearance-none transition-all"
               >
                 <option value="default">Sort: Default</option>
                 <option value="price-low">Price: Low to High</option>
@@ -383,7 +453,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
 
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="lg:hidden inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900/80 border border-slate-800 rounded-xl text-sm text-white relative"
+              className="lg:hidden inline-flex items-center gap-2 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white relative transition-all"
             >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
@@ -397,20 +467,20 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
         </div>
 
         {hasActiveFilters && (
-          <div className="mt-5 flex flex-wrap items-center gap-2">
+          <div className="mt-6 flex flex-wrap items-center gap-2">
             {activeChips.map((chip) => (
               <button
                 key={chip.key}
                 onClick={chip.onClear}
-                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#2490EF]/10 border border-[#2490EF]/30 text-[#2490EF] hover:bg-[#2490EF]/20 transition-all"
+                className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#2490EF]/10 border border-[#2490EF]/30 text-[#2490EF] hover:bg-[#2490EF]/20 hover:border-[#2490EF]/50 transition-all"
               >
                 <span>{chip.label}</span>
-                <X className="w-3 h-3 opacity-60 group-hover:opacity-100" />
+                <X className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
               </button>
             ))}
             <button
               onClick={resetFilters}
-              className="text-xs font-medium text-[#F5A623] hover:underline ml-1"
+              className="text-xs font-semibold text-[#F5A623] hover:text-[#FFB84D] hover:underline ml-1"
             >
               Clear all
             </button>
@@ -418,46 +488,49 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
         )}
       </div>
 
+      {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* SIDEBAR */}
         <div className={`lg:col-span-1 ${filtersOpen ? 'block' : 'hidden lg:block'}`}>
-          <div className="rounded-3xl bg-gradient-to-b from-slate-900/90 to-slate-900/60 border border-slate-800 p-5 lg:sticky lg:top-24 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-800/80">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#2490EF]/15 flex items-center justify-center">
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#2490EF]" />
+          <div className="rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.08] p-6 lg:sticky lg:top-24 backdrop-blur-sm shadow-xl shadow-black/20">
+
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                  <SlidersHorizontal className="w-4 h-4 text-[#2490EF]" />
                 </div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Filters</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-[0.1em]">Filters</h3>
               </div>
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="text-[11px] text-[#F5A623] hover:underline font-semibold uppercase tracking-wider"
+                  className="text-[10px] text-[#F5A623] hover:text-[#FFB84D] hover:underline font-bold uppercase tracking-[0.1em]"
                 >
                   Reset
                 </button>
               )}
             </div>
 
-            <div className="mb-5">
-              <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em]">
+            <div className="mb-6">
+              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em]">
                 Search
               </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <div className="relative group">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
                 <input
                   type="text"
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
                   placeholder="Precinct, villa, shop..."
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
                 />
               </div>
             </div>
 
             {categories.length > 1 && (
-              <div className="mb-5">
-                <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em] flex items-center gap-1.5">
-                  <Tag className="w-3 h-3" />
+              <div className="mb-6">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                  <Tag className="w-3 h-3 text-[#2490EF]" />
                   Category
                 </label>
                 <div className="space-y-1">
@@ -468,15 +541,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                       <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all flex items-center justify-between group ${
+                        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm transition-all flex items-center justify-between group ${
                           isActive
                             ? 'bg-[#2490EF]/15 text-[#2490EF] font-semibold ring-1 ring-[#2490EF]/30'
-                            : 'text-slate-300 hover:bg-slate-800/50'
+                            : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
                         }`}
                       >
-                        <span>{cat === 'All' ? 'All Categories' : cat}</span>
-                        <span className={`text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded ${
-                          isActive ? 'bg-[#2490EF]/25 text-[#2490EF]' : 'bg-slate-800/60 text-slate-500'
+                        <span className="truncate">{cat === 'All' ? 'All Categories' : cat}</span>
+                        <span className={`text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-lg shrink-0 ml-2 transition-colors ${
+                          isActive ? 'bg-[#2490EF]/25 text-[#2490EF]' : 'bg-white/[0.04] text-slate-500 group-hover:bg-white/[0.08]'
                         }`}>
                           {count}
                         </span>
@@ -488,15 +561,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             )}
 
             {projects.length > 1 && (
-              <div className="mb-5">
-                <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em] flex items-center gap-1.5">
-                  <Building2 className="w-3 h-3" />
+              <div className="mb-6">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                  <Building2 className="w-3 h-3 text-[#2490EF]" />
                   Project
                 </label>
                 <select
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF] cursor-pointer"
+                  className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer transition-all"
                 >
                   {projects.map((proj) => (
                     <option key={proj} value={proj}>
@@ -508,15 +581,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             )}
 
             {precincts.length > 1 && (
-              <div className="mb-5">
-                <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em] flex items-center gap-1.5">
-                  <MapPin className="w-3 h-3" />
+              <div className="mb-6">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3 text-[#F5A623]" />
                   Precinct
                 </label>
                 <select
                   value={selectedPrecinct}
                   onChange={(e) => setSelectedPrecinct(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF] cursor-pointer"
+                  className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer transition-all"
                 >
                   {precincts.map((p) => (
                     <option key={p} value={p}>
@@ -527,12 +600,12 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               </div>
             )}
 
-            <div className="mb-5">
-              <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em] flex items-center gap-1.5">
-                <Ruler className="w-3 h-3" />
+            <div className="mb-6">
+              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                <Ruler className="w-3 h-3 text-[#28A745]" />
                 Plot / Villa Size
               </label>
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: 'All', label: 'Any' },
                   { value: 'small', label: '≤250' },
@@ -542,10 +615,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                   <button
                     key={opt.value}
                     onClick={() => setSelectedSize(opt.value)}
-                    className={`px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                    className={`px-2 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
                       selectedSize === opt.value
                         ? 'bg-[#2490EF]/15 text-[#2490EF] ring-1 ring-[#2490EF]/30'
-                        : 'bg-slate-950/60 text-slate-400 hover:text-white hover:bg-slate-800/60'
+                        : 'bg-slate-950/60 text-slate-400 hover:text-white hover:bg-white/[0.06]'
                     }`}
                   >
                     {opt.label}
@@ -555,9 +628,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             </div>
 
             {hasBedrooms && (
-              <div className="mb-5">
-                <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em] flex items-center gap-1.5">
-                  <Bed className="w-3 h-3" />
+              <div className="mb-6">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                  <Bed className="w-3 h-3 text-purple-400" />
                   Bedrooms
                 </label>
                 <div className="grid grid-cols-5 gap-1.5">
@@ -565,10 +638,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                     <button
                       key={opt}
                       onClick={() => setSelectedBedrooms(opt)}
-                      className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                      className={`py-2.5 rounded-lg text-xs font-medium transition-all duration-300 ${
                         selectedBedrooms === opt
                           ? 'bg-[#2490EF]/15 text-[#2490EF] ring-1 ring-[#2490EF]/30'
-                          : 'bg-slate-950/60 text-slate-400 hover:text-white hover:bg-slate-800/60'
+                          : 'bg-slate-950/60 text-slate-400 hover:text-white hover:bg-white/[0.06]'
                       }`}
                     >
                       {opt}
@@ -579,14 +652,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             )}
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.1em] flex items-center gap-1.5">
-                <Wallet className="w-3 h-3" />
+              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                <Wallet className="w-3 h-3 text-[#F5A623]" />
                 Price Range
               </label>
               <select
                 value={selectedPriceRange}
                 onChange={(e) => setSelectedPriceRange(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF] cursor-pointer"
+                className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer transition-all"
               >
                 {PRICE_RANGES.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -598,68 +671,71 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
           </div>
         </div>
 
+        {/* LISTINGS */}
         <div className="lg:col-span-3 min-w-0">
           {error && properties.length === 0 ? (
-            <div className="text-center py-24 bg-gradient-to-b from-slate-900/60 to-slate-900/30 border border-slate-800 rounded-3xl">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center">
-                <AlertCircle className="w-8 h-8 text-slate-500" />
+            <div className="text-center py-24 bg-gradient-to-b from-slate-900/60 to-slate-900/30 border border-white/[0.06] rounded-3xl">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center">
+                <AlertCircle className="w-10 h-10 text-slate-500" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">{error}</h3>
-              <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
+              <h3 className="text-xl font-semibold text-white mb-3">{error}</h3>
+              <p className="text-sm text-slate-400 mb-7 max-w-md mx-auto leading-relaxed">
                 Please check back soon or contact us for available properties.
               </p>
               <button
                 onClick={() => onNavigate('contact')}
-                className="px-6 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-colors shadow-lg shadow-[#2490EF]/25"
+                className="px-7 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-all shadow-lg shadow-[#2490EF]/25 active:scale-[0.98]"
               >
                 Contact Us
               </button>
             </div>
           ) : filteredProperties.length === 0 ? (
-            <div className="text-center py-24 bg-gradient-to-b from-slate-900/60 to-slate-900/30 border border-slate-800 rounded-3xl">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center">
-                <Search className="w-8 h-8 text-slate-500" />
+            <div className="text-center py-24 bg-gradient-to-b from-slate-900/60 to-slate-900/30 border border-white/[0.06] rounded-3xl">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center">
+                <Search className="w-10 h-10 text-slate-500" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">No properties match</h3>
-              <p className="text-sm text-slate-400 mb-6 max-w-md mx-auto">
+              <h3 className="text-xl font-semibold text-white mb-3">No properties match</h3>
+              <p className="text-sm text-slate-400 mb-7 max-w-md mx-auto leading-relaxed">
                 Try removing a filter or searching for something else. Our inventory changes daily.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
                   onClick={resetFilters}
-                  className="px-5 py-2.5 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-colors"
+                  className="px-6 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-all shadow-lg shadow-[#2490EF]/25 active:scale-[0.98]"
                 >
                   Clear All Filters
                 </button>
                 <button
                   onClick={() => onNavigate('contact')}
-                  className="px-5 py-2.5 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors"
+                  className="px-6 py-3 text-sm font-semibold text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl transition-all"
                 >
                   Contact Us
                 </button>
               </div>
             </div>
           ) : viewMode === 'grid' ? (
-            <div className={`grid ${gridClass} gap-5`}>
-              {filteredProperties.map((property) => (
+            <div className={`grid ${gridClass} gap-6`}>
+              {filteredProperties.map((property, idx) => (
                 <PropertyCard
                   key={property.erpCode || property.id}
                   property={property}
                   onNavigate={onNavigate}
                   isFavorite={favorites.has(property.erpCode)}
                   onToggleFavorite={toggleFavorite}
+                  index={idx}
                 />
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredProperties.map((property) => (
+            <div className="space-y-5">
+              {filteredProperties.map((property, idx) => (
                 <PropertyListItem
                   key={property.erpCode || property.id}
                   property={property}
                   onNavigate={onNavigate}
                   isFavorite={favorites.has(property.erpCode)}
                   onToggleFavorite={toggleFavorite}
+                  index={idx}
                 />
               ))}
             </div>
@@ -670,12 +746,16 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
   );
 };
 
+// ═══════════════════════════════════════════════════════
+// PROPERTY CARD (GRID)
+// ═══════════════════════════════════════════════════════
 const PropertyCard: React.FC<{
   property: Property;
   onNavigate: (page: PageId, extraId?: string) => void;
   isFavorite: boolean;
   onToggleFavorite: (erpCode: string, e: React.MouseEvent) => void;
-}> = ({ property, onNavigate, isFavorite, onToggleFavorite }) => {
+  index?: number;
+}> = ({ property, onNavigate, isFavorite, onToggleFavorite, index = 0 }) => {
   const handleClick = () => onNavigate('property-detail', property.erpCode || property.id);
 
   const isNew =
@@ -688,16 +768,19 @@ const PropertyCard: React.FC<{
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
 
   return (
-    <div className="group bg-slate-900/70 border border-slate-800 hover:border-[#2490EF]/60 rounded-3xl overflow-hidden transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1 flex flex-col justify-between">
+    <div
+      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+      style={{ animationDelay: `${(index % 6) * 60}ms` }}
+    >
       <div>
-        <div className="relative h-56 w-full overflow-hidden bg-slate-950">
+        <div className="relative h-60 w-full overflow-hidden bg-slate-950">
           {realImg ? (
             <img
               src={property.images[0]}
               alt={property.title}
               referrerPolicy="no-referrer"
               loading="lazy"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95"
+              className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-[900ms] ease-out-expo brightness-95"
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
@@ -708,34 +791,34 @@ const PropertyCard: React.FC<{
 
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none" />
 
-          <div className="absolute top-3 left-3">
-            <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/80 backdrop-blur-md border border-white/10 text-white">
+          <div className="absolute top-4 left-4">
+            <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
               {property.category}
             </span>
           </div>
 
           <button
             onClick={(e) => onToggleFavorite(property.erpCode, e)}
-            className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
+            className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
               isFavorite
-                ? 'bg-red-500/90 border-red-400 text-white shadow-lg shadow-red-500/30'
-                : 'bg-slate-950/60 border-white/10 text-slate-300 hover:bg-slate-950/90 hover:text-red-400'
+                ? 'bg-red-500/90 border-red-400 text-white shadow-lg shadow-red-500/40 scale-105'
+                : 'bg-slate-950/60 border-white/10 text-slate-300 hover:bg-slate-950/90 hover:text-red-400 hover:scale-110'
             }`}
             aria-label="Save"
           >
             <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
 
-          <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-1.5">
+          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 {property.status && (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#28A745] text-white shadow-md">
+                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#28A745] text-white shadow-lg shadow-[#28A745]/30">
                     {property.status}
                   </span>
                 )}
                 {isNew && (
-                  <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-md">
+                  <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/30">
                     <Zap className="w-2.5 h-2.5" />
                     New
                   </span>
@@ -746,20 +829,20 @@ const PropertyCard: React.FC<{
               </div>
             </div>
 
-            <span className="text-[11px] bg-slate-950/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white shrink-0">
+            <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-mono text-white shrink-0">
               {property.size} {property.sizeUnit}
             </span>
           </div>
 
           {property.images.length > 1 && realImg && (
-            <span className="absolute top-3 right-14 text-[10px] bg-slate-950/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white">
+            <span className="absolute top-4 right-16 text-[10px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white">
               {property.images.length} photos
             </span>
           )}
         </div>
 
-        <div className="p-5 space-y-3">
-          <h3 className="font-heading font-bold text-base text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2 min-h-[2.6rem]">
+        <div className="p-6 space-y-3">
+          <h3 className="font-heading font-bold text-base sm:text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2 min-h-[2.75rem]">
             {property.title}
           </h3>
 
@@ -773,15 +856,15 @@ const PropertyCard: React.FC<{
           {(property.bedrooms || property.bathrooms) && (
             <div className="flex items-center gap-3 text-xs text-slate-300 pt-1">
               {property.bedrooms ? (
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <Bed className="w-3.5 h-3.5 text-slate-500" />
-                  {property.bedrooms}
+                  {property.bedrooms} Beds
                 </span>
               ) : null}
               {property.bathrooms ? (
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <Bath className="w-3.5 h-3.5 text-slate-500" />
-                  {property.bathrooms}
+                  {property.bathrooms} Baths
                 </span>
               ) : null}
             </div>
@@ -789,8 +872,8 @@ const PropertyCard: React.FC<{
         </div>
       </div>
 
-      <div className="px-5 pb-5">
-        <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between gap-2">
+      <div className="px-6 pb-6">
+        <div className="border-t border-white/[0.06] pt-4 flex items-center justify-between gap-2">
           <div className="text-[10px] text-slate-500 font-mono truncate min-w-0 flex items-center gap-1">
             <Building2 className="w-3 h-3 shrink-0" />
             <span className="truncate">{property.erpCode}</span>
@@ -802,7 +885,7 @@ const PropertyCard: React.FC<{
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="w-8 h-8 rounded-lg bg-[#25D366] hover:bg-[#1ebe5b] text-white flex items-center justify-center transition-all shadow-md shadow-[#25D366]/30"
+              className="w-9 h-9 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white flex items-center justify-center transition-all duration-300 shadow-md shadow-[#25D366]/30 hover:shadow-[#25D366]/50 hover:scale-105"
               aria-label="WhatsApp"
               title="Chat on WhatsApp"
             >
@@ -811,7 +894,7 @@ const PropertyCard: React.FC<{
 
             <button
               onClick={handleClick}
-              className="px-3.5 py-1.5 text-xs font-semibold text-white bg-slate-800 hover:bg-[#2490EF] rounded-lg transition-all flex items-center gap-1 group/btn"
+              className="px-4 py-2 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#2490EF] border border-white/[0.08] hover:border-[#2490EF] rounded-xl transition-all duration-300 flex items-center gap-1.5 group/btn"
             >
               <span>Details</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -823,12 +906,16 @@ const PropertyCard: React.FC<{
   );
 };
 
+// ═══════════════════════════════════════════════════════
+// PROPERTY LIST ITEM
+// ═══════════════════════════════════════════════════════
 const PropertyListItem: React.FC<{
   property: Property;
   onNavigate: (page: PageId, extraId?: string) => void;
   isFavorite: boolean;
   onToggleFavorite: (erpCode: string, e: React.MouseEvent) => void;
-}> = ({ property, onNavigate, isFavorite, onToggleFavorite }) => {
+  index?: number;
+}> = ({ property, onNavigate, isFavorite, onToggleFavorite, index = 0 }) => {
   const handleClick = () => onNavigate('property-detail', property.erpCode || property.id);
 
   const isNew =
@@ -840,16 +927,19 @@ const PropertyListItem: React.FC<{
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
 
   return (
-    <div className="group bg-slate-900/70 border border-slate-800 hover:border-[#2490EF]/60 rounded-3xl overflow-hidden transition-all hover:shadow-xl hover:shadow-[#2490EF]/10">
+    <div
+      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#2490EF]/10 scroll-reveal"
+      style={{ animationDelay: `${(index % 8) * 50}ms` }}
+    >
       <div className="flex flex-col sm:flex-row min-w-0">
-        <div className="sm:w-64 h-52 sm:h-auto sm:min-h-[200px] shrink-0 relative overflow-hidden bg-slate-950">
+        <div className="sm:w-72 h-56 sm:h-auto sm:min-h-[220px] shrink-0 relative overflow-hidden bg-slate-950">
           {realImg ? (
             <img
               src={property.images[0]}
               alt={property.title}
               referrerPolicy="no-referrer"
               loading="lazy"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-[900ms] ease-out-expo"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
@@ -857,16 +947,18 @@ const PropertyListItem: React.FC<{
             </div>
           )}
 
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/80 backdrop-blur-md border border-white/10 text-white">
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+
+          <span className="absolute top-4 left-4 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
             {property.category}
           </span>
 
           <button
             onClick={(e) => onToggleFavorite(property.erpCode, e)}
-            className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
+            className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
               isFavorite
                 ? 'bg-red-500/90 border-red-400 text-white'
-                : 'bg-slate-950/60 border-white/10 text-slate-300 hover:text-red-400'
+                : 'bg-slate-950/60 border-white/10 text-slate-300 hover:text-red-400 hover:scale-110'
             }`}
             aria-label="Save"
           >
@@ -874,16 +966,16 @@ const PropertyListItem: React.FC<{
           </button>
 
           {property.images.length > 1 && realImg && (
-            <span className="absolute bottom-3 right-3 text-[10px] bg-slate-950/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white">
+            <span className="absolute bottom-4 right-4 text-[10px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white">
               {property.images.length} photos
             </span>
           )}
         </div>
 
-        <div className="flex-1 min-w-0 p-4 sm:p-5 flex flex-col justify-between">
+        <div className="flex-1 min-w-0 p-6 flex flex-col justify-between">
           <div className="min-w-0">
-            <div className="flex items-start gap-3 mb-2 min-w-0">
-              <h3 className="font-heading font-bold text-base sm:text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug flex-1 min-w-0 line-clamp-2">
+            <div className="flex items-start gap-3 mb-3 min-w-0">
+              <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug flex-1 min-w-0 line-clamp-2">
                 {property.title}
               </h3>
 
@@ -894,43 +986,44 @@ const PropertyListItem: React.FC<{
                   </span>
                 )}
                 {isNew && (
-                  <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 whitespace-nowrap">
+                  <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 whitespace-nowrap">
+                    <Zap className="w-2.5 h-2.5" />
                     New
                   </span>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3 min-w-0">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-4 min-w-0">
               <MapPin className="w-3.5 h-3.5 text-[#F5A623] shrink-0" />
               <span className="truncate">
                 {property.precinct || property.project || 'Bahria Town Karachi'}
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 text-xs mb-3">
+            <div className="grid grid-cols-3 gap-4 text-xs mb-2">
               <div className="min-w-0">
-                <div className="text-slate-500 mb-0.5 uppercase tracking-wider text-[10px]">Size</div>
+                <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-mono">Size</div>
                 <div className="text-white font-semibold truncate">
                   {property.size} {property.sizeUnit}
                 </div>
               </div>
               <div className="min-w-0">
-                <div className="text-slate-500 mb-0.5 uppercase tracking-wider text-[10px]">Price</div>
+                <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-mono">Price</div>
                 <div className="text-[#F5A623] font-bold font-mono truncate">
                   {property.priceFormatted}
                 </div>
               </div>
               {property.ownership && (
                 <div className="min-w-0">
-                  <div className="text-slate-500 mb-0.5 uppercase tracking-wider text-[10px]">Ownership</div>
+                  <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-mono">Ownership</div>
                   <div className="text-white font-semibold truncate">{property.ownership}</div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="pt-3 mt-1 border-t border-slate-800 flex items-center justify-between gap-2 min-w-0">
+          <div className="pt-4 mt-2 border-t border-white/[0.06] flex items-center justify-between gap-2 min-w-0">
             <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1 truncate min-w-0">
               <Building2 className="w-3 h-3 shrink-0" />
               <span className="truncate">{property.erpCode}</span>
@@ -942,7 +1035,7 @@ const PropertyListItem: React.FC<{
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="w-9 h-9 rounded-lg bg-[#25D366] hover:bg-[#1ebe5b] text-white flex items-center justify-center transition-all shadow-md shadow-[#25D366]/30"
+                className="w-10 h-10 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white flex items-center justify-center transition-all duration-300 shadow-md shadow-[#25D366]/30 hover:shadow-[#25D366]/50 hover:scale-105"
                 aria-label="WhatsApp"
                 title="Chat on WhatsApp"
               >
@@ -950,7 +1043,7 @@ const PropertyListItem: React.FC<{
               </a>
               <button
                 onClick={handleClick}
-                className="px-3.5 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-[#2490EF] rounded-lg transition-all flex items-center gap-1 group/btn whitespace-nowrap"
+                className="px-4 py-2.5 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#2490EF] border border-white/[0.08] hover:border-[#2490EF] rounded-xl transition-all duration-300 flex items-center gap-1.5 group/btn whitespace-nowrap"
               >
                 <span>View Details</span>
                 <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
