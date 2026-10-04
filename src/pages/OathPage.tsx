@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   PenTool,
   RotateCcw,
-  Sparkles,
   Calendar,
   User,
   CreditCard,
@@ -213,7 +212,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
 
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] mb-3">
-              <Sparkles className="w-4 h-4" />
+              <span className="w-1.5 h-1.5 rounded-full bg-current" />
               <span>Founding Member Registered</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-3">

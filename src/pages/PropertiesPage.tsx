@@ -17,7 +17,7 @@ import {
   Bed,
   Bath,
   ImageOff,
-  Sparkles,
+  Zap,
   ArrowUpDown,
   Filter,
   Tag,
@@ -736,7 +736,7 @@ const PropertyCard: React.FC<{
                 )}
                 {isNew && (
                   <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-md">
-                    <Sparkles className="w-2.5 h-2.5" />
+                    <Zap className="w-2.5 h-2.5" />
                     New
                   </span>
                 )}

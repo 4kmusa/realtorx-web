@@ -12,7 +12,6 @@ import {
   Building2,
   Briefcase,
   ChevronRight,
-  Sparkles,
 } from 'lucide-react';
 
 interface ProfilePageProps {
@@ -66,7 +65,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
       {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] bg-[#2490EF]/10 border border-[#2490EF]/30 px-3.5 py-1.5 rounded-full mb-4">
-          <Sparkles className="w-3.5 h-3.5" />
+          <span className="w-1.5 h-1.5 rounded-full bg-current" />
           <span>Your Account</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading">

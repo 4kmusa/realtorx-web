@@ -16,7 +16,6 @@ import {
   AlertCircle,
   Loader2,
   LogOut,
-  Sparkles,
   Home,
   Briefcase,
   CreditCard,
@@ -181,7 +180,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] bg-[#2490EF]/10 border border-[#2490EF]/30 px-3 py-1 rounded-full mb-3">
-            <Sparkles className="w-3 h-3" />
+            <span className="w-1.5 h-1.5 rounded-full bg-current" />
             <span>Customer Dashboard</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading">

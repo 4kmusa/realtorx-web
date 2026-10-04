@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageId, Language } from '../types';
 import { MANIFESTO_CONTENT, BRAND_TAGLINES } from '../data/cultureData';
-import { BookOpen, Sparkles, ArrowRight, Clock, Share2, CheckCircle2 } from 'lucide-react';
+import { BookOpen, ArrowRight, Clock, Share2, CheckCircle2 } from 'lucide-react';
 
 interface ManifestoPageProps {
   onNavigate: (page: PageId) => void;

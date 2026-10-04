@@ -3,7 +3,7 @@ import { OATH_CONTENT } from '../data/cultureData';
 import { MemberRecord, Language, ERPNextConfig } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
 import { syncMemberToERPNext } from '../services/erpnextService';
-import { ShieldCheck, Check, PenTool, Database, Award, RefreshCw, Sparkles, Building, User, Mail, MapPin } from 'lucide-react';
+import { ShieldCheck, Check, PenTool, Database, Award, RefreshCw, Building, User, Mail, MapPin } from 'lucide-react';
 
 interface OathCeremonyProps {
   language: Language;

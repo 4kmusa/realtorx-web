@@ -16,7 +16,7 @@ import {
   Award,
   CheckCircle2,
   ChevronRight,
-  Sparkles,
+  Heart,
   Star,
   BadgeCheck,
 } from 'lucide-react';
@@ -258,7 +258,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-950 via-[#0B1A30] to-slate-950 border border-slate-800 p-8 sm:p-14 lg:p-16 text-center shadow-2xl">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] mb-4">
-            <Sparkles className="w-4 h-4 text-[#F5A623]" />
+            <Heart className="w-4 h-4 text-[#F5A623]" />
             <span>The Heart of Realtor X</span>
           </div>
 

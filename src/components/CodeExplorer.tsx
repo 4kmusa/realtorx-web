@@ -13,7 +13,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
-  Sparkles,
 } from 'lucide-react';
 
 interface CodeExplorerProps {
@@ -143,7 +142,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
 
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-1">
-                <Sparkles className="w-3 h-3" />
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
                 <span>Principle #{activeTenet.number}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading leading-tight">

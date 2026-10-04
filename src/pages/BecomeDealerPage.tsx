@@ -6,7 +6,7 @@ import { OATH_CONTENT } from '../data/cultureData';
 import { fetchDealerApplicationByEmail, DealerApplication } from '../services/propertyService';
 import {
   User, CreditCard, Calendar, Phone, Mail, MapPin, FileText, Banknote, Briefcase,
-  ShieldCheck, Loader2, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, Sparkles,
+  ShieldCheck, Loader2, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft,
   Check, Video, Upload, X, Play, Info, Percent, Users, Award, TrendingUp, BookOpen,
   FileCheck, HelpCircle, Camera, Clock, XCircle,
 } from 'lucide-react';
@@ -508,7 +508,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
       <div className="py-12 space-y-16 sm:space-y-20">
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-4 py-1.5 rounded-full mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Briefcase className="w-3.5 h-3.5" />
             <span>Realtor X Dealer Program</span>
           </div>
 
@@ -728,7 +728,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1.5 rounded-full mb-4">
-          <Sparkles className="w-3.5 h-3.5" />
+          <Briefcase className="w-3.5 h-3.5" />
           <span>Dealer Application</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-3">Complete Your Application</h1>

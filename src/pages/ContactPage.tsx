@@ -13,7 +13,6 @@ import {
   Loader2,
   AlertCircle,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 
 interface ContactPageProps {
@@ -96,7 +95,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] bg-[#2490EF]/10 border border-[#2490EF]/30 px-4 py-1.5 rounded-full">
-          <Sparkles className="w-3.5 h-3.5" />
+          <span className="w-1.5 h-1.5 rounded-full bg-current" />
           <span>Bahria Town Karachi Hub</span>
         </div>
 

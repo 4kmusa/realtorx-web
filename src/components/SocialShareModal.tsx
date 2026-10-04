@@ -7,7 +7,6 @@ import {
   Check,
   Copy,
   ExternalLink,
-  Sparkles,
   Quote,
   Eye,
   Code2,
