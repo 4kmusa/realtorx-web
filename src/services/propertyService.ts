@@ -7,7 +7,7 @@ const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
-// Production mein Vercel proxy, dev mein direct ERPNext
+// Use Vercel proxy in production, direct ERPNext in dev
 const NO_IMAGE_PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(

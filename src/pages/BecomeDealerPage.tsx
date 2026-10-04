@@ -828,7 +828,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               <div className="sm:col-span-2 pt-4 border-t border-slate-800">
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Profile Image</label>
                 <p className="text-[11px] text-slate-500 mb-3">
-                  Ye photo home page par "Registered Dealers" section mein dikhegi.
+                  This photo will appear in the "Registered Dealers" section on the home page.
                 </p>
 
                 {!formData.profile_image_file ? (
@@ -1008,7 +1008,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                     <li>Duration: <strong className="text-white">1-2 minutes</strong></li>
                     <li>Max file size: <strong className="text-white">50 MB</strong></li>
                     <li>Format: <strong className="text-white">MP4, WebM, MOV</strong></li>
-                    <li>Apna naam, CNIC number aur address bolein</li>
+                    <li>State your name, CNIC number, and address</li>
                   </ul>
                 </div>
               </div>

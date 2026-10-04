@@ -157,12 +157,12 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
           Welcome, Customer!
         </h1>
         <p className="text-slate-400 mb-6">
-          Aapka customer account ban gaya hai. Ab aap properties book kar sakte hain, payments
-          track kar sakte hain, aur documents manage kar sakte hain.
+          Your customer account has been created. You can now book properties, track payments,
+          and manage documents.
         </p>
         <div className="inline-flex items-center gap-2 text-sm text-[#2490EF]">
           <Loader2 className="w-4 h-4 animate-spin" />
-          Customer Portal load ho raha hai...
+          Loading Customer Portal...
         </div>
       </div>
     );
@@ -250,7 +250,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                 />
               </div>
               <p className="text-[10px] text-slate-500 mt-1">
-                Local format ya international (+92) — dono chalenge
+                Local or international (+92) format — both accepted
               </p>
             </div>
 
