@@ -7,20 +7,8 @@ export default async function handler(req: any, res: any) {
   const API_KEY = process.env.ERPNEXT_API_KEY;
   const API_SECRET = process.env.ERPNEXT_API_SECRET;
 
-  console.log('[PROXY INIT]', {
-    hasUrl: !!ERPNEXT_URL,
-    urlValue: ERPNEXT_URL,
-    hasKey: !!API_KEY,
-    keyPreview: API_KEY ? API_KEY.slice(0, 8) + '...' : 'MISSING',
-    hasSecret: !!API_SECRET,
-    secretPreview: API_SECRET ? API_SECRET.slice(0, 8) + '...' : 'MISSING',
-  });
-
   if (!ERPNEXT_URL || !API_KEY || !API_SECRET) {
-    return res.status(500).json({
-      error: 'Server configuration missing',
-      env_check: { url: !!ERPNEXT_URL, key: !!API_KEY, secret: !!API_SECRET },
-    });
+    return res.status(500).json({ error: 'Server config missing' });
   }
 
   try {
@@ -44,11 +32,7 @@ export default async function handler(req: any, res: any) {
       method: req.method,
       headers: {
         'Authorization': `token ${API_KEY}:${API_SECRET}`,
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-        'User-Agent': 'curl/7.81.0',
-        'Host': parsed.hostname,
       },
     };
 
@@ -58,18 +42,9 @@ export default async function handler(req: any, res: any) {
         : null;
 
     if (bodyString) {
+      options.headers['Content-Type'] = 'application/json';
       options.headers['Content-Length'] = Buffer.byteLength(bodyString);
     }
-
-    console.log('[PROXY REQUEST]', {
-      target: targetUrl,
-      hostname: options.hostname,
-      path: options.path,
-      method: options.method,
-      authPrefix: options.headers['Authorization'].slice(0, 25),
-      userAgent: options.headers['User-Agent'],
-      ngrokSkip: options.headers['ngrok-skip-browser-warning'],
-    });
 
     const erpResponse = await new Promise<{ status: number; headers: any; body: string }>(
       (resolve, reject) => {
@@ -92,18 +67,12 @@ export default async function handler(req: any, res: any) {
       }
     );
 
-    console.log('[PROXY RESPONSE]', {
-      status: erpResponse.status,
-      contentType: erpResponse.headers['content-type'],
-      bodyPreview: erpResponse.body.slice(0, 300),
-    });
-
     res.status(erpResponse.status);
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
     res.send(erpResponse.body);
   } catch (err: any) {
-    console.error('[PROXY ERROR]', err);
+    console.error('Proxy error:', err);
     res.status(500).json({ error: 'Proxy failed', message: err?.message || 'Unknown' });
   }
 }
