@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node@3.2.0"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/erp/(.*)", "destination": "/api/erp/[...path]" }
+  ]
+}
