@@ -771,7 +771,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* 10. REGISTERED DEALERS — sirf Approved/Active */}
+      {/* 10. REGISTERED DEALERS — Approved/Active only */}
       {dealers.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
