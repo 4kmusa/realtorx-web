@@ -129,7 +129,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [gridCols, setGridCols] = useState<GridCols>(3);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -159,7 +159,6 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
         if (f.selectedBedrooms) setSelectedBedrooms(f.selectedBedrooms);
         if (f.selectedPriceRange) setSelectedPriceRange(f.selectedPriceRange);
         if (f.sortBy) setSortBy(f.sortBy);
-        if (f.viewMode) setViewMode(f.viewMode);
         if (f.gridCols) setGridCols(f.gridCols);
       }
     } catch {}

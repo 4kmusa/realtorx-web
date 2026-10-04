@@ -1,3 +1,4 @@
+// src/pages/PropertyDetailPage.tsx
 import React, { useState, useEffect } from 'react';
 import { PageId, Language } from '../types';
 import { fetchProperty, fetchProperties, Property } from '../services/propertyService';
@@ -37,10 +38,11 @@ interface PropertyDetailPageProps {
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
 const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
-const WHATSAPP_NUMBER = '923008472910';
+const WHATSAPP_NUMBER = '923049383785';
 const FAVORITES_KEY = 'realtorx_favorites';
+const PHONE_DISPLAY = '+92 304 9383785';
+const PHONE_TEL = '+923049383785';
+const EMAIL_PRIMARY = 'info@realtorx.co';
 
 const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
   <svg
@@ -58,6 +60,45 @@ const hasRealImage = (url?: string): boolean => {
   if (!url) return false;
   return !url.startsWith('data:');
 };
+
+// ═══════════════════════════════════════════════════════
+// Scroll Reveal Hook
+// ═══════════════════════════════════════════════════════
+function useScrollReveal(deps: React.DependencyList = []) {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    const checkAndObserve = () => {
+      document.querySelectorAll('.scroll-reveal:not(.is-visible)').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) el.classList.add('is-visible');
+        else observer.observe(el);
+      });
+    };
+
+    checkAndObserve();
+
+    const mutationObserver = new MutationObserver(() => checkAndObserve());
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
 
 export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
   propertyId,
@@ -82,7 +123,8 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
-  // Fetch property data from ERPNext
+  useScrollReveal([similarProperties.length, loading]);
+
   useEffect(() => {
     async function loadProperty() {
       setLoading(true);
@@ -94,7 +136,6 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
           setProperty(null);
         } else {
           setProperty(data);
-
           const all = await fetchProperties();
           const similar = all
             .filter((p) => p.erpCode !== propertyId && p.category === data.category)
@@ -111,7 +152,6 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
     if (propertyId) loadProperty();
   }, [propertyId]);
 
-  // Check if current property is favorite
   useEffect(() => {
     if (!property) return;
     try {
@@ -135,7 +175,6 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
     } catch {}
   };
 
-  // Handle Site Visit booking → creates RX Lead in ERPNext
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!visitorName.trim() || !visitorPhone.trim()) {
@@ -162,10 +201,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
 
       const leadResponse = await fetch(`${API_BASE}/resource/RX Lead`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `token ${API_KEY}:${API_SECRET}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(leadData),
       });
 
@@ -190,7 +226,8 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  const isNew = property?.dateAdded &&
+  const isNew =
+    property?.dateAdded &&
     Date.now() - new Date(property.dateAdded).getTime() < 7 * 24 * 60 * 60 * 1000;
 
   // ═══════════════════════════════════════════════════
@@ -198,17 +235,17 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
   // ═══════════════════════════════════════════════════
   if (loading) {
     return (
-      <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-4 bg-slate-800/60 rounded w-40 mb-6 animate-pulse" />
+      <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="h-4 bg-slate-800/60 rounded w-40 mb-8 animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="h-[420px] bg-slate-800/60 rounded-3xl animate-pulse" />
-            <div className="h-10 bg-slate-800/60 rounded w-3/4 animate-pulse" />
+            <div className="h-[460px] bg-slate-800/60 rounded-3xl animate-pulse" />
+            <div className="h-12 bg-slate-800/60 rounded w-3/4 animate-pulse" />
             <div className="h-6 bg-slate-800/40 rounded w-1/2 animate-pulse" />
-            <div className="h-32 bg-slate-800/40 rounded-2xl animate-pulse" />
+            <div className="h-36 bg-slate-800/40 rounded-3xl animate-pulse" />
           </div>
           <div className="lg:col-span-1">
-            <div className="h-[520px] bg-slate-800/60 rounded-3xl animate-pulse" />
+            <div className="h-[560px] bg-slate-800/60 rounded-3xl animate-pulse" />
           </div>
         </div>
       </div>
@@ -220,20 +257,21 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
   // ═══════════════════════════════════════════════════
   if (error || !property) {
     return (
-      <div className="py-20 max-w-2xl mx-auto px-4 text-center">
-        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center">
-          <AlertCircle className="w-10 h-10 text-red-400" />
+      <div className="py-24 max-w-2xl mx-auto px-4 text-center">
+        <div className="w-24 h-24 mx-auto mb-7 rounded-3xl bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+          <AlertCircle className="w-12 h-12 text-red-400" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Property Not Found</h2>
-        <p className="text-slate-400 mb-8">
+        <h2 className="text-3xl font-bold text-white mb-3 font-heading">Property Not Found</h2>
+        <p className="text-slate-400 mb-10 max-w-md mx-auto leading-relaxed">
           {error || 'This property may have been sold or removed.'}
         </p>
         <button
           onClick={() => onNavigate('properties')}
-          className="px-6 py-3 bg-[#2490EF] hover:bg-[#1b7ecf] text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2 shadow-lg shadow-[#2490EF]/25"
+          className="relative px-7 py-3.5 bg-[#2490EF] hover:bg-[#1b7ecf] text-white font-bold rounded-2xl transition-all inline-flex items-center gap-2 shadow-xl shadow-[#2490EF]/25 active:scale-[0.98] overflow-hidden group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Properties
+          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+          <ArrowLeft className="w-4 h-4 relative z-10" />
+          <span className="relative z-10">Back to Properties</span>
         </button>
       </div>
     );
@@ -246,8 +284,8 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
   const activeImage = images[activeImageIndex] || images[0];
   const activeImageIsReal = hasRealImage(activeImage);
 
-  // Avoid duplicate project/precinct if same
-  const projectDisplay = property.project && property.project !== property.erpCode ? property.project : '';
+  const projectDisplay =
+    property.project && property.project !== property.erpCode ? property.project : '';
   const precinctDisplay = property.precinct || '';
   const locationDisplay = property.location || '';
 
@@ -255,32 +293,32 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
       {/* ═════ BACK + ACTIONS ═════ */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => onNavigate('properties')}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-all group px-3 py-2 rounded-xl hover:bg-white/[0.04]"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           <span>Back to Properties</span>
         </button>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => onOpenSocialModal?.()}
-            className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-xl transition-colors"
+            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all"
             title="Share"
           >
             <Share2 className="w-4 h-4" />
           </button>
           <button
             onClick={toggleFavorite}
-            className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${
+            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${
               isFavorite
-                ? 'bg-red-500/90 text-white shadow-lg shadow-red-500/30'
-                : 'text-slate-400 hover:text-red-400 bg-slate-800/80 hover:bg-slate-700'
+                ? 'bg-red-500/90 text-white shadow-lg shadow-red-500/40 scale-105'
+                : 'text-slate-400 hover:text-red-400 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-red-500/30'
             }`}
             title={isFavorite ? 'Saved' : 'Save'}
           >
@@ -297,13 +335,13 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
 
           {/* Image Gallery */}
           <div className="space-y-3">
-            <div className="relative h-[420px] sm:h-[500px] w-full rounded-3xl overflow-hidden border border-slate-800 bg-slate-950">
+            <div className="relative h-[420px] sm:h-[520px] w-full rounded-3xl overflow-hidden border border-white/[0.08] bg-slate-950 shadow-2xl shadow-black/30 group">
               {activeImageIsReal ? (
                 <img
                   src={activeImage}
                   alt={property.title}
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1200ms] ease-out-expo"
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
@@ -312,20 +350,20 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
                 </div>
               )}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent pointer-events-none" />
 
               {/* Top-left badges */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                <span className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-950/80 backdrop-blur-md border border-white/10 text-white">
+                <span className="px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
                   {property.category}
                 </span>
                 {property.status && (
-                  <span className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-[#28A745] text-white shadow-md">
+                  <span className="px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#28A745] text-white shadow-lg shadow-[#28A745]/30">
                     {property.status}
                   </span>
                 )}
                 {isNew && (
-                  <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-md">
+                  <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/30">
                     <Zap className="w-3 h-3" />
                     New
                   </span>
@@ -333,14 +371,16 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
               </div>
 
               {/* Property Code */}
-              <div className="absolute bottom-4 right-4 bg-slate-950/80 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
-                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Property Code</div>
+              <div className="absolute bottom-4 right-4 bg-slate-950/85 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10">
+                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
+                  Property Code
+                </div>
                 <div className="font-mono text-sm font-bold text-white">{property.erpCode}</div>
               </div>
 
               {/* Photos count */}
               {images.length > 1 && activeImageIsReal && (
-                <span className="absolute bottom-4 left-4 text-[11px] bg-slate-950/80 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg font-mono text-white">
+                <span className="absolute bottom-4 left-4 text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg font-mono text-white">
                   {activeImageIndex + 1} / {images.length} photos
                 </span>
               )}
@@ -348,17 +388,17 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
 
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
+              <div className="flex gap-2.5 overflow-x-auto pb-2 hide-scrollbar">
                 {images.map((img, idx) => {
                   const isReal = hasRealImage(img);
                   return (
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`w-24 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
+                      className={`w-24 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition-all duration-300 ${
                         activeImageIndex === idx
-                          ? 'border-[#2490EF] ring-2 ring-[#2490EF]/30'
-                          : 'border-slate-800 hover:border-slate-600'
+                          ? 'border-[#2490EF] ring-2 ring-[#2490EF]/30 scale-105'
+                          : 'border-white/[0.08] hover:border-white/[0.2]'
                       }`}
                     >
                       {isReal ? (
@@ -381,138 +421,104 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
           </div>
 
           {/* Title + Location */}
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading leading-tight mb-3">
+          <div className="scroll-reveal">
+            <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-white font-heading leading-tight tracking-[-0.02em] mb-4">
               {property.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-300">
               {(precinctDisplay || projectDisplay) && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#F5A623]" />
-                  <span>{precinctDisplay || projectDisplay}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
+                    <MapPin className="w-3.5 h-3.5 text-[#F5A623]" />
+                  </div>
+                  <span className="font-medium">{precinctDisplay || projectDisplay}</span>
                 </div>
               )}
               {locationDisplay && locationDisplay !== precinctDisplay && (
-                <>
-                  <span className="text-slate-600">·</span>
-                  <div className="flex items-center gap-1.5">
-                    <Building className="w-4 h-4 text-[#2490EF]" />
-                    <span>{locationDisplay}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                    <Building className="w-3.5 h-3.5 text-[#2490EF]" />
                   </div>
-                </>
+                  <span>{locationDisplay}</span>
+                </div>
               )}
             </div>
           </div>
 
           {/* Price Box */}
-          <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-900 to-[#0B1A30] border border-[#2490EF]/30 flex flex-wrap items-center justify-between gap-4 shadow-lg">
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mb-1">
-                Asking Price
+          <div className="relative rounded-3xl overflow-hidden border border-[#2490EF]/25 shadow-2xl shadow-[#2490EF]/10 scroll-reveal">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-[#0B1A30] to-slate-900" />
+            <div
+              className="absolute inset-0 opacity-60"
+              style={{
+                background:
+                  'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
+              }}
+            />
+            <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
+
+            <div className="relative p-7 sm:p-8 flex flex-wrap items-center justify-between gap-6">
+              <div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 mb-2">
+                  Asking Price
+                </div>
+                <div className="text-3xl sm:text-4xl font-bold text-[#F5A623] font-mono leading-none drop-shadow-lg">
+                  {property.priceFormatted}
+                </div>
               </div>
-              <div className="text-3xl sm:text-4xl font-bold text-[#F5A623] font-mono leading-none">
-                {property.priceFormatted}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mb-1">
-                Size
-              </div>
-              <div className="text-2xl font-bold text-white font-heading">
-                {property.size} {property.sizeUnit}
+              <div className="text-right">
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 mb-2">
+                  Size
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-white font-heading">
+                  {property.size} {property.sizeUnit}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Key Details Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                <Tag className="w-3 h-3" />
-                Category
-              </div>
-              <div className="text-sm font-semibold text-white truncate">{property.category}</div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                <FileText className="w-3 h-3" />
-                Ownership
-              </div>
-              <div className="text-sm font-semibold text-white truncate">
-                {property.ownership || '—'}
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                <CheckCircle2 className="w-3 h-3" />
-                Status
-              </div>
-              <div className="text-sm font-semibold text-[#28A745] truncate">
-                {property.status || '—'}
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                <Ruler className="w-3 h-3" />
-                Precinct
-              </div>
-              <div className="text-sm font-semibold text-white truncate">
-                {property.precinct || '—'}
-              </div>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 scroll-reveal">
+            <DetailBox icon={Tag} color="#2490EF" label="Category" value={property.category} />
+            <DetailBox icon={FileText} color="#F5A623" label="Ownership" value={property.ownership || '—'} />
+            <DetailBox
+              icon={CheckCircle2}
+              color="#28A745"
+              label="Status"
+              value={property.status || '—'}
+              valueColor="#28A745"
+            />
+            <DetailBox icon={Ruler} color="#8B5CF6" label="Precinct" value={property.precinct || '—'} />
 
             {property.bedrooms ? (
-              <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                  <Bed className="w-3 h-3" />
-                  Bedrooms
-                </div>
-                <div className="text-sm font-semibold text-white">{property.bedrooms}</div>
-              </div>
+              <DetailBox icon={Bed} color="#2490EF" label="Bedrooms" value={String(property.bedrooms)} />
             ) : null}
-
             {property.bathrooms ? (
-              <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                  <Bath className="w-3 h-3" />
-                  Bathrooms
-                </div>
-                <div className="text-sm font-semibold text-white">{property.bathrooms}</div>
-              </div>
+              <DetailBox icon={Bath} color="#2490EF" label="Bathrooms" value={String(property.bathrooms)} />
             ) : null}
 
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                <Wallet className="w-3 h-3" />
-                Listing Type
-              </div>
-              <div className="text-sm font-semibold text-white truncate">
-                {property.listing_type || '—'}
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 font-mono mb-1.5">
-                <Calendar className="w-3 h-3" />
-                Listed On
-              </div>
-              <div className="text-sm font-semibold text-white truncate">
-                {property.dateAdded || '—'}
-              </div>
-            </div>
+            <DetailBox
+              icon={Wallet}
+              color="#F5A623"
+              label="Listing Type"
+              value={property.listing_type || '—'}
+            />
+            <DetailBox
+              icon={Calendar}
+              color="#28A745"
+              label="Listed On"
+              value={property.dateAdded || '—'}
+            />
           </div>
 
           {/* Description */}
           {property.description && property.description.trim() ? (
-            <div className="p-6 rounded-3xl bg-slate-900/50 border border-slate-800">
-              <h2 className="text-lg font-bold text-white mb-3 font-heading flex items-center gap-2">
-                <span className="w-1 h-5 rounded-full bg-[#2490EF]" />
+            <div className="p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] scroll-reveal">
+              <h2 className="text-xl font-bold text-white mb-4 font-heading flex items-center gap-3">
+                <span className="w-1 h-6 rounded-full bg-[#2490EF]" />
                 Description
               </h2>
-              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed whitespace-pre-line">
                 {property.description}
               </p>
             </div>
@@ -520,19 +526,21 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
 
           {/* Features */}
           {property.features && property.features.length > 0 && (
-            <div className="p-6 rounded-3xl bg-slate-900/50 border border-slate-800">
-              <h2 className="text-lg font-bold text-white mb-4 font-heading flex items-center gap-2">
-                <span className="w-1 h-5 rounded-full bg-[#F5A623]" />
+            <div className="p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] scroll-reveal">
+              <h2 className="text-xl font-bold text-white mb-5 font-heading flex items-center gap-3">
+                <span className="w-1 h-6 rounded-full bg-[#F5A623]" />
                 Key Features
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {property.features.map((f, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-950/40 border border-slate-800/60"
+                    className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] hover:border-[#28A745]/30 transition-all group"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-[#28A745] shrink-0 mt-0.5" />
-                    <span className="text-sm text-slate-300">{f}</span>
+                    <div className="w-5 h-5 rounded-full bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />
+                    </div>
+                    <span className="text-sm text-slate-300 leading-relaxed">{f}</span>
                   </div>
                 ))}
               </div>
@@ -540,18 +548,21 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
           )}
 
           {/* Trust Badge */}
-          <div className="p-5 rounded-3xl bg-gradient-to-r from-[#28A745]/10 to-transparent border border-[#28A745]/30 flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5 text-[#28A745]" />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-white mb-1">
-                100% Verified with Bahria Town Records
+          <div className="relative p-6 rounded-3xl overflow-hidden border border-[#28A745]/30 scroll-reveal">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#28A745]/10 via-transparent to-transparent" />
+            <div className="relative flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-6 h-6 text-[#28A745]" />
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                This property's documents, plot map, and NDC status have been verified by Realtor X
-                before listing. Zero hidden disputes guaranteed.
-              </p>
+              <div>
+                <div className="text-base font-bold text-white mb-1.5">
+                  100% Verified with Bahria Town Records
+                </div>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  This property's documents, plot map, and NDC status have been verified by Realtor
+                  X before listing. Zero hidden disputes guaranteed.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -561,129 +572,145 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
           <div className="space-y-4 lg:sticky lg:top-24">
 
             {/* BOOKING FORM */}
-            <div className="p-6 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-900/70 border border-[#2490EF]/30 shadow-2xl">
-              <div className="flex items-center gap-2.5 mb-5">
-                <div className="w-9 h-9 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-[#2490EF]" />
+            <div className="relative rounded-3xl overflow-hidden border border-[#2490EF]/30 shadow-2xl shadow-[#2490EF]/10">
+              <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-900/70" />
+              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
+
+              <div className="relative p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-[#2490EF]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white font-heading leading-tight">
+                      Book Site Visit
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider mt-0.5">
+                      Free · No obligation
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-white font-heading">Book Site Visit</h3>
-              </div>
 
-              {bookingSubmitted ? (
-                <div className="text-center py-6 space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-[#28A745]/15 border-2 border-[#28A745]/40 flex items-center justify-center">
-                    <Check className="w-8 h-8 text-[#28A745]" />
-                  </div>
-                  <h4 className="text-lg font-bold text-white">Request Sent!</h4>
-                  <p className="text-sm text-slate-400 leading-relaxed">
-                    Our dealer will contact you within 24 hours to confirm your site visit.
-                  </p>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full py-3 px-4 text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5b] rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/30"
-                  >
-                    <WhatsAppIcon className="w-4 h-4" />
-                    Continue on WhatsApp
-                  </a>
-                </div>
-              ) : (
-                <form onSubmit={handleBookingSubmit} className="space-y-3.5">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
-                      Your Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={visitorName}
-                      onChange={(e) => setVisitorName(e.target.value)}
-                      placeholder="Enter full name"
-                      className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
-                      Phone / WhatsApp *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={visitorPhone}
-                      onChange={(e) => setVisitorPhone(e.target.value)}
-                      placeholder="+92 300 1234567"
-                      className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
-                      Email (Optional)
-                    </label>
-                    <input
-                      type="email"
-                      value={visitorEmail}
-                      onChange={(e) => setVisitorEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+                {bookingSubmitted ? (
+                  <div className="text-center py-8 space-y-5">
+                    <div className="w-20 h-20 mx-auto rounded-3xl bg-[#28A745]/15 border-2 border-[#28A745]/40 flex items-center justify-center">
+                      <Check className="w-10 h-10 text-[#28A745]" />
+                    </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
-                        Date
+                      <h4 className="text-lg font-bold text-white mb-2">Request Sent!</h4>
+                      <p className="text-sm text-slate-400 leading-relaxed max-w-xs mx-auto">
+                        Our dealer will contact you within 24 hours to confirm your site visit.
+                      </p>
+                    </div>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-3 px-4 text-sm font-bold text-white bg-[#25D366] hover:bg-[#1ebe5b] rounded-xl transition-all inline-flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/30"
+                    >
+                      <WhatsAppIcon className="w-4 h-4" />
+                      Continue on WhatsApp
+                    </a>
+                  </div>
+                ) : (
+                  <form onSubmit={handleBookingSubmit} className="space-y-3.5">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                        Your Name *
                       </label>
                       <input
-                        type="date"
-                        value={preferredDate}
-                        onChange={(e) => setPreferredDate(e.target.value)}
-                        className="w-full px-3 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
+                        type="text"
+                        required
+                        value={visitorName}
+                        onChange={(e) => setVisitorName(e.target.value)}
+                        placeholder="Enter full name"
+                        className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
                       />
                     </div>
+
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
-                        Time
+                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                        Phone / WhatsApp *
                       </label>
-                      <select
-                        value={timeSlot}
-                        onChange={(e) => setTimeSlot(e.target.value)}
-                        className="w-full px-3 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
-                      >
-                        <option>11:00 AM – 1:00 PM</option>
-                        <option>2:00 PM – 4:00 PM</option>
-                        <option>4:00 PM – 6:00 PM</option>
-                      </select>
+                      <input
+                        type="tel"
+                        required
+                        value={visitorPhone}
+                        onChange={(e) => setVisitorPhone(e.target.value)}
+                        placeholder="+92 300 1234567"
+                        className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                      />
                     </div>
-                  </div>
 
-                  {bookingError && (
-                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-300">
-                      {bookingError}
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                        Email (Optional)
+                      </label>
+                      <input
+                        type="email"
+                        value={visitorEmail}
+                        onChange={(e) => setVisitorEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                      />
                     </div>
-                  )}
 
-                  <button
-                    type="submit"
-                    disabled={bookingLoading}
-                    className="w-full py-3 px-4 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-xl transition-all shadow-lg shadow-[#2490EF]/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {bookingLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        Request Site Visit
-                      </>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                          Date
+                        </label>
+                        <input
+                          type="date"
+                          value={preferredDate}
+                          onChange={(e) => setPreferredDate(e.target.value)}
+                          className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-xs text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                          Time
+                        </label>
+                        <select
+                          value={timeSlot}
+                          onChange={(e) => setTimeSlot(e.target.value)}
+                          className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-xs text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all cursor-pointer"
+                        >
+                          <option>11:00 AM – 1:00 PM</option>
+                          <option>2:00 PM – 4:00 PM</option>
+                          <option>4:00 PM – 6:00 PM</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {bookingError && (
+                      <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-300 flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span>{bookingError}</span>
+                      </div>
                     )}
-                  </button>
-                </form>
-              )}
+
+                    <button
+                      type="submit"
+                      disabled={bookingLoading}
+                      className="relative w-full py-3.5 px-4 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-xl transition-all shadow-lg shadow-[#2490EF]/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98]"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                      {bookingLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin relative z-10" />
+                          <span className="relative z-10">Submitting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 relative z-10" />
+                          <span className="relative z-10">Request Site Visit</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
 
             {/* WHATSAPP DIRECT */}
@@ -691,71 +718,71 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
               href={whatsappUrl}
               target="_blank"
               rel="noreferrer"
-              className="w-full py-3.5 px-4 text-sm font-bold text-white bg-[#25D366] hover:bg-[#1ebe5b] rounded-2xl transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-[#25D366]/30"
+              className="relative w-full py-4 px-4 text-sm font-bold text-white bg-[#25D366] hover:bg-[#1ebe5b] rounded-2xl transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-[#25D366]/30 hover:shadow-[#25D366]/50 overflow-hidden group active:scale-[0.98]"
             >
-              <WhatsAppIcon className="w-5 h-5" />
-              Chat on WhatsApp
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <WhatsAppIcon className="w-5 h-5 relative z-10" />
+              <span className="relative z-10">Chat on WhatsApp</span>
             </a>
 
             {/* QUICK CONTACT */}
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.1em] mb-2">
+            <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] space-y-3.5">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-2">
                 Need Help?
               </div>
               <a
-                href="tel:+923008472910"
-                className="flex items-center gap-2.5 text-sm text-slate-300 hover:text-white transition-colors"
+                href={`tel:${PHONE_TEL}`}
+                className="flex items-center gap-3 text-sm text-slate-300 hover:text-white transition-colors group"
               >
-                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                  <Phone className="w-3.5 h-3.5 text-[#2490EF]" />
+                <div className="w-9 h-9 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Phone className="w-4 h-4 text-[#2490EF]" />
                 </div>
-                <span>+92 300 8472910</span>
+                <span>{PHONE_DISPLAY}</span>
               </a>
               <a
-                href="mailto:info@realtorx.pk"
-                className="flex items-center gap-2.5 text-sm text-slate-300 hover:text-white transition-colors"
+                href={`mailto:${EMAIL_PRIMARY}`}
+                className="flex items-center gap-3 text-sm text-slate-300 hover:text-white transition-colors group"
               >
-                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                  <Mail className="w-3.5 h-3.5 text-[#F5A623]" />
+                <div className="w-9 h-9 rounded-xl bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Mail className="w-4 h-4 text-[#F5A623]" />
                 </div>
-                <span>info@realtorx.pk</span>
+                <span>{EMAIL_PRIMARY}</span>
               </a>
-              <div className="flex items-center gap-2.5 text-sm text-slate-300">
-                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                  <Clock className="w-3.5 h-3.5 text-[#28A745]" />
+              <div className="flex items-center gap-3 text-sm text-slate-300">
+                <div className="w-9 h-9 rounded-xl bg-[#28A745]/15 border border-[#28A745]/30 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 text-[#28A745]" />
                 </div>
                 <span>Mon – Sat: 10 AM – 8 PM</span>
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
       {/* ═════ SIMILAR PROPERTIES ═════ */}
       {similarProperties.length > 0 && (
-        <div className="pt-10 border-t border-slate-800">
-          <div className="flex items-end justify-between mb-6">
+        <div className="pt-12 border-t border-white/[0.06]">
+          <div className="flex items-end justify-between mb-8 gap-4">
             <div>
-              <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2490EF]" />
+              <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-3">
+                <span className="w-6 h-[1px] bg-[#2490EF]/60" />
                 <span>You may also like</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-heading tracking-[-0.02em]">
                 Similar Properties
               </h2>
             </div>
             <button
               onClick={() => onNavigate('properties')}
-              className="text-xs sm:text-sm font-semibold text-[#2490EF] hover:text-[#1b7ecf] flex items-center gap-1.5"
+              className="text-xs sm:text-sm font-semibold text-[#2490EF] hover:text-white flex items-center gap-2 px-4 py-2 rounded-xl border border-[#2490EF]/30 hover:border-[#2490EF] hover:bg-[#2490EF]/10 transition-all group whitespace-nowrap"
             >
               <span>View All</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {similarProperties.map((sp) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {similarProperties.map((sp, idx) => {
               const isReal = hasRealImage(sp.images[0]);
               const spIsNew =
                 sp.dateAdded &&
@@ -765,16 +792,17 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
                 <button
                   key={sp.id}
                   onClick={() => onNavigate('property-detail', sp.erpCode)}
-                  className="group text-left bg-slate-900/70 border border-slate-800 hover:border-[#2490EF]/60 rounded-3xl overflow-hidden transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1 flex flex-col"
+                  className="group text-left bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1.5 flex flex-col scroll-reveal"
+                  style={{ animationDelay: `${idx * 80}ms` }}
                 >
-                  <div className="relative h-52 overflow-hidden bg-slate-950">
+                  <div className="relative h-56 overflow-hidden bg-slate-950">
                     {isReal ? (
                       <img
                         src={sp.images[0]}
                         alt={sp.title}
                         referrerPolicy="no-referrer"
                         loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95"
+                        className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-[900ms] ease-out-expo brightness-95"
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
@@ -785,17 +813,15 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
 
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent pointer-events-none" />
 
-                    {/* Top-left: category */}
-                    <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/80 backdrop-blur-md border border-white/10 text-white">
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
                         {sp.category}
                       </span>
                     </div>
 
-                    {/* Bottom overlay */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1.5">
+                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
+                      <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           {sp.status && (
                             <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#28A745] text-white shadow-md">
                               {sp.status}
@@ -812,15 +838,15 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
                           {sp.priceFormatted}
                         </div>
                       </div>
-                      <span className="text-[11px] bg-slate-950/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white shrink-0">
+                      <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-mono text-white shrink-0">
                         {sp.size} {sp.sizeUnit}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
-                    <div className="space-y-2">
-                      <h3 className="font-heading font-bold text-base text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2 min-h-[2.6rem]">
+                  <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                    <div className="space-y-2.5">
+                      <h3 className="font-heading font-bold text-base text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2 min-h-[2.75rem]">
                         {sp.title}
                       </h3>
                       <div className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -831,11 +857,11 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                    <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between gap-2">
                       <div className="text-[10px] text-slate-500 font-mono truncate min-w-0">
                         {sp.erpCode}
                       </div>
-                      <span className="text-xs font-semibold text-[#2490EF] group-hover:text-white flex items-center gap-1">
+                      <span className="text-xs font-bold text-[#2490EF] group-hover:text-white flex items-center gap-1 transition-colors">
                         Details
                         <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </span>
@@ -850,3 +876,36 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
     </div>
   );
 };
+
+// ═══════════════════════════════════════════════════════
+// DETAIL BOX
+// ═══════════════════════════════════════════════════════
+const DetailBox: React.FC<{
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  color: string;
+  label: string;
+  value: string;
+  valueColor?: string;
+}> = ({ icon: Icon, color, label, value, valueColor }) => (
+  <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 group">
+    <div
+      className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] font-mono mb-2 transition-colors"
+      style={{ color: 'rgb(148, 163, 184)' }}
+    >
+      <span
+        className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
+        style={{ backgroundColor: `${color}18`, border: `1px solid ${color}30` }}
+      >
+        <Icon className="w-3 h-3" style={{ color }} />
+      </span>
+      <span>{label}</span>
+    </div>
+    <div
+      className="text-sm font-semibold truncate"
+      style={{ color: valueColor || '#ffffff' }}
+      title={value}
+    >
+      {value}
+    </div>
+  </div>
+);
