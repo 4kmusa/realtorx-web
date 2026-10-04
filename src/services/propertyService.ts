@@ -5,6 +5,9 @@ const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
+const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
+
+// Production mein Vercel proxy, dev mein direct ERPNext
 const NO_IMAGE_PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
@@ -151,7 +154,7 @@ async function loadProjectNameCache(): Promise<Map<string, string>> {
 
     try {
       const metaRes = await fetch(
-        `${ERPNEXT_URL}/api/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent(doctype)}`,
+        `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent(doctype)}`,
         { headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' } }
       );
       if (metaRes.ok) {
@@ -169,7 +172,7 @@ async function loadProjectNameCache(): Promise<Map<string, string>> {
     if (nameField) fields.push(nameField);
 
     const url =
-      `${ERPNEXT_URL}/api/resource/${encodeURIComponent(doctype)}` +
+      `${API_BASE}/resource/${encodeURIComponent(doctype)}` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}&limit_page_length=0`;
 
     const res = await fetch(url, {
@@ -250,7 +253,7 @@ export async function fetchProperties(): Promise<Property[]> {
     const filters = [['status', '=', 'Available']];
 
     const url =
-      `${ERPNEXT_URL}/api/resource/Property` +
+      `${API_BASE}/resource/Property` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
       `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
       `&limit_page_length=100&order_by=creation+desc`;
@@ -282,7 +285,7 @@ export async function fetchProperties(): Promise<Property[]> {
 // ═══════════════════════════════════════════════════════
 export async function fetchProperty(id: string): Promise<Property | null> {
   try {
-    const url = `${ERPNEXT_URL}/api/resource/Property/${encodeURIComponent(id)}`;
+    const url = `${API_BASE}/resource/Property/${encodeURIComponent(id)}`;
     const [response, projectMap] = await Promise.all([
       fetch(url, {
         method: 'GET',
@@ -330,7 +333,7 @@ async function getMemberFieldMeta(): Promise<MemberFieldMeta> {
   const empty: MemberFieldMeta = { fieldnames: [], labelMap: new Map() };
 
   try {
-    const url = `${ERPNEXT_URL}/api/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RealtorX Member')}`;
+    const url = `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RealtorX Member')}`;
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
     });
@@ -416,7 +419,7 @@ export async function fetchDealers(): Promise<Dealer[]> {
     }
 
     const url =
-      `${ERPNEXT_URL}/api/resource/${encodeURIComponent(doctype)}` +
+      `${API_BASE}/resource/${encodeURIComponent(doctype)}` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
       (filters.length > 0 ? `&filters=${encodeURIComponent(JSON.stringify(filters))}` : '') +
       `&limit_page_length=12&order_by=creation+desc`;
@@ -502,7 +505,7 @@ export async function fetchDealerApplicationByEmail(
     const filters = [['email', '=', email]];
 
     const url =
-      `${ERPNEXT_URL}/api/resource/RealtorX Member` +
+      `${API_BASE}/resource/RealtorX Member` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
       `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
       `&limit_page_length=1&order_by=creation+desc`;
@@ -569,7 +572,7 @@ async function getProjectFieldMeta(): Promise<ProjectFieldMeta> {
   const empty: ProjectFieldMeta = { fieldnames: [], labelMap: new Map() };
 
   try {
-    const url = `${ERPNEXT_URL}/api/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RX Project')}`;
+    const url = `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RX Project')}`;
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
     });
@@ -641,7 +644,7 @@ export async function fetchProjects(): Promise<Project[]> {
     addIf(precinctsField); addIf(imageField);
 
     const url =
-      `${ERPNEXT_URL}/api/resource/${encodeURIComponent(doctype)}` +
+      `${API_BASE}/resource/${encodeURIComponent(doctype)}` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
       `&limit_page_length=0&order_by=creation+asc`;
 
@@ -716,7 +719,7 @@ export async function fetchWebsiteLinks(section?: string): Promise<WebsiteLink[]
     if (section) filters.push(['section', '=', section]);
 
     const url =
-      `${ERPNEXT_URL}/api/resource/Website Link` +
+      `${API_BASE}/resource/Website Link` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
       `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
       `&order_by=display_order+asc&limit_page_length=0`;
