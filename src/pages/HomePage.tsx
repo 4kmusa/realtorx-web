@@ -19,10 +19,10 @@ import {
   Heart,
   Star,
   BadgeCheck,
-  Sparkle,
   Compass,
   Zap,
   TrendingUp,
+  BookOpen,
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -31,9 +31,9 @@ interface HomePageProps {
 }
 
 // ═══════════════════════════════════════════════════════
-// Scroll reveal hook — fades in elements as they enter viewport
+// Scroll Reveal Hook
 // ═══════════════════════════════════════════════════════
-function useScrollReveal() {
+function useScrollReveal(deps: React.DependencyList = []) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -44,18 +44,33 @@ function useScrollReveal() {
           }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
     );
 
-    const elements = document.querySelectorAll('.scroll-reveal');
-    elements.forEach((el) => observer.observe(el));
+    const checkAndObserve = () => {
+      document.querySelectorAll('.scroll-reveal:not(.is-visible)').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) el.classList.add('is-visible');
+        else observer.observe(el);
+      });
+    };
 
-    return () => observer.disconnect();
-  }, []);
+    checkAndObserve();
+
+    const mutationObserver = new MutationObserver(() => checkAndObserve());
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
 }
 
 // ═══════════════════════════════════════════════════════
-// Animated counter hook
+// Animated counter
 // ═══════════════════════════════════════════════════════
 function useAnimatedCount(target: number, duration = 1200) {
   const [count, setCount] = useState(0);
@@ -105,7 +120,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
   const featuredRef = useRef<HTMLElement>(null);
 
-  useScrollReveal();
+  useScrollReveal([properties.length, dealers.length, loading]);
 
   useEffect(() => {
     async function loadData() {
@@ -174,36 +189,34 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
   const dealersCounter = useAnimatedCount(dealers.length);
 
   return (
-    <div className="space-y-14 sm:space-y-20 lg:space-y-24">
+    <div className="space-y-12 sm:space-y-16 lg:space-y-20">
+
       {/* ═══════════════════════════════════════════════════
           1. HERO
          ═══════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden pt-16 pb-24 lg:pt-24 lg:pb-36 bg-[#0A1628]">
-        {/* Ambient gradient background */}
+      <section className="relative overflow-hidden pt-12 pb-16 lg:pt-16 lg:pb-20 bg-[#0A1628]">
         <div
-          className="absolute inset-0 pointer-events-none opacity-70 animate-fade-in"
+          className="absolute inset-0 pointer-events-none opacity-70"
           style={{
             background:
-              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(36, 144, 239, 0.20) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(245, 166, 35, 0.10) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 20% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 60%)',
+              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(245, 166, 35, 0.08) 0%, transparent 60%)',
           }}
         />
-        {/* Grid pattern */}
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{
             backgroundImage:
               'linear-gradient(rgba(148,163,184,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.5) 1px, transparent 1px)',
             backgroundSize: '64px 64px',
-            maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%)',
+            maskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
             WebkitMaskImage:
-              'radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%)',
+              'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
           }}
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-4xl mx-auto mb-14">
-            {/* Eyebrow badge */}
-            <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] bg-[#2490EF]/[0.08] border border-[#2490EF]/25 px-4 py-1.5 rounded-full mb-8 animate-fade-in-down backdrop-blur-sm">
+          <div className="text-center max-w-4xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] bg-[#2490EF]/[0.08] border border-[#2490EF]/25 px-4 py-1.5 rounded-full mb-7 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
@@ -211,48 +224,30 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               <span>Bahria Town Karachi's Premier Community Marketplace</span>
             </div>
 
-            {/* Main heading */}
-            <h1
-              className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-bold tracking-[-0.03em] text-white leading-[1.02] font-heading animate-fade-in-up text-balance"
-              style={{ animationDelay: '100ms' }}
-            >
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] font-bold tracking-[-0.03em] text-white leading-[1.02] font-heading text-balance">
               Real Estate.{' '}
-              <span className="relative inline-block">
-                <span className="gradient-text">Reimagined.</span>
-              </span>
+              <span className="gradient-text">Reimagined.</span>
             </h1>
 
-            {/* Subtext */}
-            <p
-              className="mt-7 text-base sm:text-lg lg:text-xl text-slate-300/90 max-w-2xl mx-auto leading-relaxed animate-fade-in-up"
-              style={{ animationDelay: '200ms' }}
-            >
+            <p className="mt-6 text-base sm:text-lg lg:text-xl text-slate-300/90 max-w-2xl mx-auto leading-relaxed">
               Connect with verified dealers, explore real residential and commercial properties,
               and invest with complete trust in Bahria Town Karachi.
             </p>
 
-            {/* Urdu tagline */}
-            <div
-              className="mt-5 font-urdu text-xl sm:text-2xl text-[#F5A623]/90 animate-fade-in-up"
-              style={{ animationDelay: '300ms' }}
-            >
+            <div className="mt-4 font-urdu text-xl text-[#F5A623]/90">
               {BRAND_TAGLINES.urduTagline}
             </div>
           </div>
 
           {/* Search Filter Box */}
-          <div
-            className="max-w-5xl mx-auto animate-fade-in-up"
-            style={{ animationDelay: '400ms' }}
-          >
+          <div className="max-w-5xl mx-auto">
             <div className="relative rounded-3xl bg-gradient-to-b from-slate-900/95 to-slate-900/70 border border-white/[0.08] shadow-2xl shadow-black/40 backdrop-blur-2xl overflow-hidden">
-              {/* Top gradient line */}
               <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
 
-              <div className="p-5 sm:p-7">
+              <div className="p-5 sm:p-6">
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end"
+                  className="grid grid-cols-1 sm:grid-cols-4 gap-3.5 items-end"
                 >
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase font-mono tracking-[0.14em]">
@@ -309,7 +304,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   <div>
                     <button
                       type="submit"
-                      className="relative w-full py-3 px-5 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-xl shadow-lg shadow-[#2490EF]/25 hover:shadow-[#2490EF]/40 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98]"
+                      className="relative w-full py-3 px-5 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-xl shadow-lg shadow-[#2490EF]/25 hover:shadow-[#2490EF]/40 transition-all flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98]"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                       <Search className="w-4 h-4 relative z-10" />
@@ -318,7 +313,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   </div>
                 </form>
 
-                <div className="mt-5 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
+                <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#28A745]" />
                     <span className="font-medium">
@@ -349,10 +344,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </div>
 
           {/* Hero CTAs */}
-          <div
-            className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up"
-            style={{ animationDelay: '500ms' }}
-          >
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => onNavigate('properties')}
               className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2 group active:scale-[0.98]"
@@ -368,10 +360,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             >
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <Award className="w-4 h-4 relative z-10" />
-              <span className="relative z-10">Become a Realtor X Dealer</span>
-              <span className="relative z-10 text-[10px] bg-slate-950 text-[#F5A623] px-2 py-0.5 rounded-full font-mono font-bold">
-                60%
-              </span>
+              <span className="relative z-10">Become a Dealer</span>
             </button>
           </div>
         </div>
@@ -382,9 +371,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
         <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/30">
-          {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#050C16] via-[#0B1A30] to-[#050C16]" />
-          {/* Ambient glow */}
           <div
             className="absolute inset-0 pointer-events-none opacity-60"
             style={{
@@ -392,24 +379,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 'radial-gradient(ellipse at 30% 20%, rgba(36, 144, 239, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(245, 166, 35, 0.10) 0%, transparent 50%)',
             }}
           />
-          {/* Top line */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/50 to-transparent" />
 
-          <div className="relative p-10 sm:p-16 lg:p-20 text-center">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-1.5 rounded-full mb-8">
+          <div className="relative p-8 sm:p-12 lg:p-14 text-center">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-1.5 rounded-full mb-7">
               <Heart className="w-3.5 h-3.5" />
               <span>The Heart of Realtor X</span>
             </div>
 
-            <blockquote className="text-2xl sm:text-3xl lg:text-[2.5rem] font-display italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
+            <blockquote className="text-xl sm:text-2xl lg:text-3xl font-display italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
               "{BRAND_TAGLINES.philosophy}"
             </blockquote>
 
-            <div className="mt-8 font-urdu text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-loose">
+            <div className="mt-6 font-urdu text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-loose">
               {BRAND_TAGLINES.philosophyUrdu}
             </div>
 
-            <div className="mt-10 pt-8 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-slate-400 font-mono tracking-wider">
+            <div className="mt-8 pt-6 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-slate-400 font-mono tracking-wider">
               <span className="text-[#2490EF] font-semibold">CONNECT.</span>
               <span className="text-slate-600">·</span>
               <span className="text-[#2490EF] font-semibold">COLLABORATE.</span>
@@ -432,7 +418,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           3. FEATURED PROPERTIES
          ═══════════════════════════════════════════════════ */}
       <section ref={featuredRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div className="max-w-xl">
             <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-3">
               <span className="w-6 h-[1px] bg-[#2490EF]/60" />
@@ -450,9 +436,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
           <button
             onClick={() => onNavigate('properties')}
-            className="text-xs sm:text-sm font-semibold text-[#2490EF] hover:text-white flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl border border-[#2490EF]/30 hover:border-[#2490EF] hover:bg-[#2490EF]/10 transition-all group"
+            className="text-xs sm:text-sm font-semibold text-[#2490EF] hover:text-white flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl border border-[#2490EF]/30 hover:border-[#2490EF] hover:bg-[#2490EF]/10 transition-all group whitespace-nowrap"
           >
-            <span>View All Listings</span>
+            <span>View All</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
@@ -508,7 +494,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             filteredProperties.slice(0, 6).map((property, idx) => (
               <div
                 key={property.id}
-                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1.5 flex flex-col justify-between"
+                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div>
@@ -534,11 +520,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                       )}
                     </div>
 
-                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white">
-                      <span className="text-xl font-bold text-[#F5A623] font-mono drop-shadow-lg">
+                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white gap-2">
+                      <span className="text-xl font-bold text-[#F5A623] font-mono drop-shadow-lg truncate">
                         {property.priceFormatted}
                       </span>
-                      <span className="text-[11px] bg-slate-950/80 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-mono">
+                      <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-mono shrink-0">
                         {property.size} {property.sizeUnit}
                       </span>
                     </div>
@@ -579,7 +565,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   </div>
                 </div>
 
-                <div className="px-6 pb-6">
+                <div className="p-6 pt-0">
                   <div className="border-t border-white/[0.06] pt-4 flex items-center justify-between gap-3">
                     <div className="text-[11px] text-slate-500 font-mono truncate min-w-0">
                       {property.listing_type ? (
@@ -619,14 +605,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 scroll-reveal">
+          <div className="text-center max-w-3xl mx-auto mb-12 scroll-reveal">
             <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
               <span className="w-6 h-[1px] bg-[#2490EF]/60" />
               <span>The Realtor X Difference</span>
               <span className="w-6 h-[1px] bg-[#2490EF]/60" />
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-              Why Homeowners & Dealers Choose Us
+              Why Homeowners &amp; Dealers Choose Us
             </h2>
             <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed max-w-2xl mx-auto">
               Transforming the real estate transaction into a transparent, collaborative, and
@@ -638,25 +624,21 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             {[
               {
                 icon: ShieldCheck,
-                color: '#2490EF',
                 title: 'Verified Listings',
                 desc: 'Zero fake ads or disputed files. Every plot, villa, and shop is audited with Bahria Town transfer office records.',
               },
               {
                 icon: Users,
-                color: '#F5A623',
                 title: 'Trusted Dealers',
                 desc: 'Our dealers take the Realtor X Founding Oath, committing to absolute honesty and client-first service.',
               },
               {
                 icon: Percent,
-                color: '#28A745',
-                title: 'Fair 40/60 Commission',
+                title: 'Fair 40/60 Split',
                 desc: 'We empower realtors with 60% commission split to the closing agent, creating a supportive fraternity.',
               },
               {
                 icon: Award,
-                color: '#8B5CF6',
                 title: 'Community First',
                 desc: 'Dedicated allottee advocacy desk. We resolve construction delays and transfer bottlenecks together.',
               },
@@ -665,17 +647,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               return (
                 <div
                   key={idx}
-                  className="group relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500 hover:-translate-y-1 shadow-lg hover:shadow-2xl scroll-reveal"
+                  className="group p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500 hover:-translate-y-1 shadow-lg hover:shadow-2xl scroll-reveal"
                   style={{ animationDelay: `${idx * 80}ms` }}
                 >
-                  <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-                    style={{
-                      backgroundColor: `${item.color}18`,
-                      border: `1px solid ${item.color}35`,
-                    }}
-                  >
-                    <Icon className="w-6 h-6" style={{ color: item.color }} />
+                  <div className="w-14 h-14 rounded-2xl bg-[#2490EF]/[0.12] border border-[#2490EF]/25 flex items-center justify-center mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                    <Icon className="w-6 h-6 text-[#2490EF]" />
                   </div>
                   <h3 className="font-heading font-bold text-lg text-white mb-2.5">
                     {item.title}
@@ -748,7 +724,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           6. HOW IT WORKS
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16 scroll-reveal">
+        <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
           <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
             <span className="w-6 h-[1px] bg-[#2490EF]/60" />
             <span>Simple, Transparent, Secured</span>
@@ -762,17 +738,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </p>
         </div>
 
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Connecting line */}
-          <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-transparent via-[#2490EF]/20 to-transparent" />
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {HOW_IT_WORKS_STEPS.map((step, idx) => (
             <div
               key={idx}
               className="group relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/40 transition-all duration-500 hover:-translate-y-1 scroll-reveal"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
-              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2490EF] to-[#1b7ecf] flex items-center justify-center text-white font-black font-heading text-xl mb-5 shadow-lg shadow-[#2490EF]/25 group-hover:scale-110 transition-transform duration-500">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2490EF] to-[#1b7ecf] flex items-center justify-center text-white font-black font-heading text-xl mb-5 shadow-lg shadow-[#2490EF]/25 group-hover:scale-110 transition-transform duration-500">
                 {step.step}
               </div>
               <h3 className="font-heading font-bold text-lg text-white mb-1.5">
@@ -793,7 +766,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
         <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] bg-[#0B1A30] shadow-2xl shadow-black/40">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-            <div className="lg:col-span-7 p-10 sm:p-14 lg:p-16 space-y-6">
+            <div className="lg:col-span-7 p-10 sm:p-12 lg:p-14 space-y-6">
               <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-1.5 rounded-full">
                 <Building className="w-3.5 h-3.5" />
                 <span>The Flagship Master Development</span>
@@ -858,7 +831,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           8. CULTURE PREVIEW
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16 scroll-reveal">
+        <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
           <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-4">
             <span className="w-6 h-[1px] bg-[#F5A623]/60" />
             <span>Our Guiding Pillars</span>
@@ -876,69 +849,65 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           {[
             {
               doc: 'Document 01 · Why We Exist',
-              color: '#2490EF',
               title: 'The RealtorX Manifesto',
               quote:
                 '"Real estate is not just about land, buildings or transactions. It is about people. It is about dreams. It is about trust."',
               cta: 'Read Full Manifesto',
               route: 'manifesto' as PageId,
+              icon: BookOpen,
             },
             {
               doc: 'Document 02 · What We Promise',
-              color: '#F5A623',
               title: 'The Founding Member Oath',
               quote:
                 'The solemn commitments taken by every custodian dealer. Place ethics before profit and never mislead this community.',
               cta: 'Affirm & Sign Oath',
               route: 'oath' as PageId,
+              icon: Award,
             },
             {
               doc: 'Document 03 · How We Behave',
-              color: '#28A745',
               title: 'The RealtorX Code (8 Tenets)',
               quote:
                 'Integrity First, Collaboration Before Competition, Solutions Over Excuses. Concrete rules for client transparency.',
               cta: 'Explore The 8 Principles',
               route: 'code' as PageId,
+              icon: ShieldCheck,
             },
-          ].map((card, idx) => (
-            <div
-              key={idx}
-              onClick={() => onNavigate(card.route)}
-              className="group cursor-pointer relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.15] transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden scroll-reveal"
-              style={{ animationDelay: `${idx * 100}ms` }}
-            >
+          ].map((card, idx) => {
+            const CardIcon = card.icon;
+            return (
               <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{
-                  background: `radial-gradient(ellipse at 50% 0%, ${card.color}15 0%, transparent 60%)`,
-                }}
-              />
-
-              <div className="relative">
-                <div
-                  className="text-[10px] font-mono uppercase tracking-[0.16em] mb-3 font-semibold"
-                  style={{ color: card.color }}
-                >
-                  {card.doc}
-                </div>
-                <h3 className="font-heading font-bold text-xl text-white leading-tight mb-3 transition-colors">
-                  {card.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  {card.quote}
-                </p>
-              </div>
-
-              <div
-                className="relative mt-7 flex items-center gap-1.5 text-xs font-semibold"
-                style={{ color: card.color }}
+                key={idx}
+                onClick={() => onNavigate(card.route)}
+                className="group cursor-pointer p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/40 transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+                style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <span>{card.cta}</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <div>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-9 h-9 rounded-xl bg-[#2490EF]/[0.12] border border-[#2490EF]/25 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                      <CardIcon className="w-4 h-4 text-[#2490EF]" />
+                    </div>
+                    <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-slate-500 font-semibold">
+                      {card.doc}
+                    </div>
+                  </div>
+
+                  <h3 className="font-heading font-bold text-xl text-white group-hover:text-[#2490EF] transition-colors leading-tight mb-3">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    {card.quote}
+                  </p>
+                </div>
+
+                <div className="mt-7 flex items-center gap-1.5 text-xs font-semibold text-[#2490EF]">
+                  <span>{card.cta}</span>
+                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -955,7 +924,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 scroll-reveal">
+          <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
             <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
               <span className="w-6 h-[1px] bg-[#2490EF]/60" />
               <span>Real Stories</span>
@@ -970,7 +939,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             {TESTIMONIALS.map((t, idx) => (
               <div
                 key={idx}
-                className="relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.15] transition-all duration-500 flex flex-col justify-between scroll-reveal"
+                className="p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.15] transition-all duration-500 flex flex-col justify-between scroll-reveal"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div className="space-y-5">
@@ -1002,8 +971,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           10. REGISTERED DEALERS
          ═══════════════════════════════════════════════════ */}
       {dealers.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 scroll-reveal">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
+          <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-4">
               <span className="w-6 h-[1px] bg-[#F5A623]/60" />
               <span>Meet The Fraternity</span>
@@ -1089,7 +1058,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       {/* ═══════════════════════════════════════════════════
           11. DUAL CTA
          ═══════════════════════════════════════════════════ */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6 scroll-reveal">
         <div className="relative rounded-[2rem] overflow-hidden border border-[#2490EF]/20 shadow-2xl shadow-[#2490EF]/10">
           <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
           <div
@@ -1099,16 +1068,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
             }}
           />
-          {/* Top line */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
 
-          <div className="relative p-10 sm:p-14 text-center space-y-7">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
-              <TrendingUp className="w-7 h-7 text-slate-950" />
+          <div className="relative p-10 sm:p-14 text-center space-y-6">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
+              <TrendingUp className="w-6 h-6 text-slate-950" />
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-white font-heading tracking-[-0.02em] leading-tight max-w-3xl mx-auto text-balance">
-              Join the Realtor X Movement in Bahria Town
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold text-white font-heading tracking-[-0.02em] leading-tight max-w-3xl mx-auto text-balance">
+              Join the Realtor X Movement
             </h2>
 
             <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">

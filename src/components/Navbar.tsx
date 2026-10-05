@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// src/components/Navbar.tsx
-// Premium glassmorphism navbar with scroll effects
-// ═══════════════════════════════════════════════════════
 import React, { useState, useRef, useEffect } from 'react';
 import { PageId, Language } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -37,7 +33,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [scrolled, setScrolled] = useState(false);
   const userRef = useRef<HTMLDivElement>(null);
 
-  // Scroll detection for glass effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     handleScroll();
@@ -55,16 +50,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Lock body scroll when mobile menu open
   useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [mobileMenuOpen]);
 
   const handleNav = (id: PageId) => {
@@ -97,12 +85,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       <header className="sticky top-0 z-50">
-        {/* MAIN NAVBAR */}
         <div
-          className={`transition-all duration-500 ease-out-expo ${
+          className={`transition-all duration-500 ${
             scrolled
-              ? 'bg-[#0A1628]/80 backdrop-blur-xl border-b border-white/[0.06] shadow-2xl shadow-black/20'
-              : 'bg-[#0A1628]/95 backdrop-blur-md border-b border-slate-800'
+              ? 'bg-[#080F1C]/85 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/20'
+              : 'bg-transparent border-b border-transparent'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -114,20 +101,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Logo */}
               <button
                 onClick={() => handleNav('home')}
-                className="flex items-center text-left transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="flex items-center text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <RealtorXLogo size="xl" showSubtitle={false} />
               </button>
 
               {/* Desktop Nav */}
-              <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-slate-300">
+              <nav className="hidden lg:flex items-center gap-0.5 text-sm font-medium text-slate-300">
                 {navItems.slice(0, 5).map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNav(item.id)}
-                    className={`relative px-3.5 py-2 rounded-lg transition-all duration-300 group ${
+                    className={`relative px-3.5 py-2 rounded-xl transition-all duration-300 ${
                       isActive(item.id)
-                        ? 'text-[#2490EF]'
+                        ? 'text-white'
                         : 'hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
@@ -141,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {/* Become a Dealer — highlighted CTA */}
                 <button
                   onClick={() => handleNav('become-dealer')}
-                  className={`ml-2 transition-all duration-300 py-2 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-[13px] relative overflow-hidden group ${
+                  className={`ml-3 relative transition-all duration-300 py-2 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-[13px] overflow-hidden group ${
                     currentPage === 'become-dealer'
                       ? 'bg-gradient-to-r from-[#F5A623] to-[#FFA500] text-slate-950 shadow-lg shadow-[#F5A623]/30'
                       : 'text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/30 hover:bg-[#F5A623]/15 hover:border-[#F5A623]/50 hover:shadow-lg hover:shadow-[#F5A623]/10'
@@ -156,9 +143,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => handleNav(item.id)}
-                    className={`relative px-3.5 py-2 rounded-lg transition-all duration-300 ${
+                    className={`relative px-3.5 py-2 rounded-xl transition-all duration-300 ${
                       isActive(item.id)
-                        ? 'text-[#2490EF]'
+                        ? 'text-white'
                         : 'hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
@@ -170,9 +157,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ))}
               </nav>
 
-              {/* Right Buttons */}
+              {/* Right Actions */}
               <div className="flex items-center gap-2.5">
-                {/* Language toggle */}
+                {/* Language */}
                 <button
                   onClick={onToggleLanguage}
                   className="hidden sm:flex items-center gap-1.5 text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-3 py-2 rounded-xl border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 group"
@@ -229,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </button>
 
                     {userDropdownOpen && (
-                      <div className="absolute top-full right-0 mt-3 w-64 bg-slate-900/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 p-2 z-50 space-y-1 animate-scale-in">
+                      <div className="absolute top-full right-0 mt-3 w-64 bg-[#080F1C]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 p-2 z-50 space-y-1 animate-scale-in">
                         <div className="px-3 py-3 border-b border-white/[0.06]">
                           <div className="text-sm font-semibold text-white truncate">
                             {user.full_name}
@@ -281,7 +268,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 )}
 
-                {/* Mobile menu button */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="lg:hidden p-2 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all duration-300"
@@ -295,17 +281,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Overlay */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm animate-fade-in"
+          className="lg:hidden fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm animate-fade-in"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Mobile Menu Panel */}
       <div
-        className={`lg:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-[#0A1628] border-l border-white/[0.06] shadow-2xl z-50 transform transition-transform duration-500 ease-out-expo ${
+        className={`lg:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-[#080F1C] border-l border-white/[0.06] shadow-2xl z-50 transform transition-transform duration-500 ease-out-expo ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -320,16 +306,15 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="overflow-y-auto h-[calc(100vh-5rem)] px-5 py-6 space-y-1">
-          {navItems.slice(0, 5).map((item, idx) => (
+          {navItems.slice(0, 5).map((item) => (
             <button
               key={item.id}
               onClick={() => handleNav(item.id)}
-              style={{ animationDelay: `${idx * 40}ms` }}
               className={`w-full text-left py-3 px-4 rounded-xl text-base font-medium transition-all duration-300 ${
                 isActive(item.id)
                   ? 'bg-[#2490EF]/10 text-[#2490EF]'
                   : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
-              } ${mobileMenuOpen ? 'animate-slide-in-right' : ''}`}
+              }`}
             >
               {item.label}
             </button>

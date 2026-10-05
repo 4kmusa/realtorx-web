@@ -20,14 +20,6 @@ import {
   Phone,
   MapPin,
   Sparkle,
-  Award,
-  Heart,
-  Users,
-  Lightbulb,
-  Handshake,
-  BookOpen,
-  Gift,
-  TrendingUp,
 } from 'lucide-react';
 
 interface OathPageProps {
@@ -39,15 +31,15 @@ const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8
 const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 const OATH_PROMISES = [
-  { text: 'I will always place ethics before personal gain.', icon: ShieldCheck, color: '#2490EF' },
-  { text: 'I will respect every member regardless of their size, experience or background.', icon: Users, color: '#F5A623' },
-  { text: 'I will contribute knowledge, opportunities and support whenever I can.', icon: Gift, color: '#28A745' },
-  { text: 'I will never intentionally mislead, exploit or damage the trust of this community.', icon: Heart, color: '#EC4899' },
-  { text: 'I understand that RealtorX is built on collaboration, not selfish competition.', icon: Handshake, color: '#8B5CF6' },
-  { text: 'I will protect the reputation of RealtorX through my actions.', icon: Award, color: '#F5A623' },
-  { text: 'I will help solve problems rather than create them.', icon: Lightbulb, color: '#28A745' },
-  { text: 'I will represent professionalism in every interaction.', icon: BookOpen, color: '#2490EF' },
-  { text: 'I join RealtorX not only to grow my own business, but to help strengthen the real estate industry for everyone.', icon: TrendingUp, color: '#F5A623' },
+  'I will always place ethics before personal gain.',
+  'I will respect every member regardless of their size, experience or background.',
+  'I will contribute knowledge, opportunities and support whenever I can.',
+  'I will never intentionally mislead, exploit or damage the trust of this community.',
+  'I understand that RealtorX is built on collaboration, not selfish competition.',
+  'I will protect the reputation of RealtorX through my actions.',
+  'I will help solve problems rather than create them.',
+  'I will represent professionalism in every interaction.',
+  'I join RealtorX not only to grow my own business, but to help strengthen the real estate industry for everyone.',
 ];
 
 // ═══════════════════════════════════════════════════════
@@ -376,34 +368,106 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {[
-                { label: 'Full Name *', icon: User, value: fullName, set: setFullName, placeholder: 'Muhammad Ahmed Khan', type: 'text' },
-                { label: 'CNIC / ID Number *', icon: CreditCard, value: cnic, set: setCnic, placeholder: '42101-1234567-1', type: 'text' },
-                { label: 'Email *', icon: Mail, value: email, set: setEmail, placeholder: 'you@example.com', type: 'email' },
-                { label: 'Phone / WhatsApp *', icon: Phone, value: phone, set: setPhone, placeholder: '+92 300 1234567', type: 'tel' },
-                { label: 'City *', icon: MapPin, value: city, set: setCity, placeholder: 'Karachi', type: 'text' },
-                { label: 'Agency / Firm (Optional)', icon: Building2, value: agencyName, set: setAgencyName, placeholder: 'Your agency name', type: 'text' },
-              ].map((field, idx) => {
-                const FIcon = field.icon;
-                return (
-                  <div key={idx}>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
-                      {field.label}
-                    </label>
-                    <div className="relative group">
-                      <FIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
-                      <input
-                        type={field.type}
-                        required={field.label.includes('*')}
-                        value={field.value}
-                        onChange={(e) => field.set(e.target.value)}
-                        placeholder={field.placeholder}
-                        className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  Full Name *
+                </label>
+                <div className="relative group">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Muhammad Ahmed Khan"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  CNIC / ID Number *
+                </label>
+                <div className="relative group">
+                  <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="text"
+                    required
+                    value={cnic}
+                    onChange={(e) => setCnic(e.target.value)}
+                    placeholder="42101-1234567-1"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  Email *
+                </label>
+                <div className="relative group">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  Phone / WhatsApp *
+                </label>
+                <div className="relative group">
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+92 300 1234567"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  City *
+                </label>
+                <div className="relative group">
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="text"
+                    required
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Karachi"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  Agency / Firm (Optional)
+                </label>
+                <div className="relative group">
+                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="text"
+                    value={agencyName}
+                    onChange={(e) => setAgencyName(e.target.value)}
+                    placeholder="Your agency name"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
 
               <div>
                 <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
@@ -484,29 +548,19 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
             <div className="space-y-3">
               {OATH_PROMISES.map((promise, idx) => {
                 const isChecked = !!checkedPromises[idx];
-                const PIcon = promise.icon;
                 return (
                   <button
                     type="button"
                     key={idx}
                     onClick={() => togglePromise(idx)}
-                    className={`group w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-start gap-3.5 overflow-hidden relative ${
+                    className={`group w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-start gap-3.5 ${
                       isChecked
                         ? 'bg-[#28A745]/[0.08] border-[#28A745]/40 shadow-lg shadow-[#28A745]/5'
                         : 'bg-slate-950/50 border-white/[0.06] hover:border-white/[0.15] hover:bg-white/[0.03]'
                     }`}
                   >
                     <div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                      style={{
-                        background: isChecked
-                          ? 'radial-gradient(ellipse at 0% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 60%)'
-                          : `radial-gradient(ellipse at 0% 50%, ${promise.color}10 0%, transparent 60%)`,
-                      }}
-                    />
-
-                    <div
-                      className={`relative w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 ${
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 ${
                         isChecked
                           ? 'bg-[#28A745] border-[#28A745] scale-105'
                           : 'border-slate-600 group-hover:border-slate-500'
@@ -515,28 +569,16 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                       {isChecked && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
                     </div>
 
-                    <div
-                      className="relative w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
-                      style={{
-                        backgroundColor: `${promise.color}15`,
-                        border: `1px solid ${promise.color}30`,
-                      }}
+                    <span
+                      className={`flex-1 min-w-0 pt-0.5 text-sm leading-relaxed transition-colors ${
+                        isChecked ? 'text-white font-medium' : 'text-slate-300'
+                      }`}
                     >
-                      <PIcon className="w-4 h-4" style={{ color: promise.color }} />
-                    </div>
-
-                    <div className="relative flex-1 min-w-0 pt-1">
-                      <span
-                        className={`text-sm leading-relaxed transition-colors ${
-                          isChecked ? 'text-white font-medium' : 'text-slate-300'
-                        }`}
-                      >
-                        <span className="text-[10px] font-mono text-slate-500 mr-2">
-                          {String(idx + 1).padStart(2, '0')}.
-                        </span>
-                        {promise.text}
+                      <span className="text-[10px] font-mono text-slate-500 mr-2">
+                        {String(idx + 1).padStart(2, '0')}.
                       </span>
-                    </div>
+                      {promise}
+                    </span>
                   </button>
                 );
               })}
@@ -621,7 +663,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
 
         {/* ═════ ERROR ═════ */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 animate-fade-in">
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
             <div className="text-sm text-red-300 leading-relaxed">{error}</div>
           </div>

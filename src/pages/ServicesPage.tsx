@@ -155,11 +155,11 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                   style={{
-                    backgroundColor: `${srv.color}18`,
-                    border: `1px solid ${srv.color}35`,
+                    backgroundColor: 'rgba(36,144,239,0.10)',
+                    border: '1px solid rgba(36,144,239,0.25)',
                   }}
                 >
-                  <Icon className="w-7 h-7" style={{ color: srv.color }} />
+                  <Icon className="w-7 h-7" className="text-[#2490EF]" />
                 </div>
 
                 <h3 className="font-heading font-bold text-lg text-white leading-snug min-h-[3.5rem]">
@@ -179,7 +179,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                 <button
                   onClick={() => onNavigate('contact')}
                   className="inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-300 group/btn"
-                  style={{ color: srv.color }}
+                  className="text-[#2490EF]"
                 >
                   <span>Inquire Now</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -277,11 +277,11 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                   style={{
-                    backgroundColor: `${item.color}18`,
-                    border: `1px solid ${item.color}35`,
+                    backgroundColor: 'rgba(36,144,239,0.10)',
+                    border: '1px solid rgba(36,144,239,0.25)',
                   }}
                 >
-                  <Icon className="w-5 h-5" style={{ color: item.color }} />
+                  <Icon className="w-5 h-5" className="text-[#2490EF]" />
                 </div>
                 <h3 className="font-heading font-bold text-base text-white mb-2">
                   {item.title}

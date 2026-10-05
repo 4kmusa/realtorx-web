@@ -339,11 +339,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                   <div
                     className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                     style={{
-                      backgroundColor: `${v.color}18`,
-                      border: `1px solid ${v.color}35`,
+                      backgroundColor: 'rgba(36,144,239,0.10)',
+                      border: '1px solid rgba(36,144,239,0.25)',
                     }}
                   >
-                    <Icon className="w-5 h-5" style={{ color: v.color }} />
+                    <Icon className="w-5 h-5" className="text-[#2490EF]" />
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-heading font-bold text-base text-white mb-1.5">
