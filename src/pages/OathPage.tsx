@@ -1,3 +1,4 @@
+// src/pages/OathPage.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { PageId, Language } from '../types';
 import { RealtorXLogo } from '../components/RealtorXLogo';
@@ -18,6 +19,15 @@ import {
   Mail,
   Phone,
   MapPin,
+  Sparkle,
+  Award,
+  Heart,
+  Users,
+  Lightbulb,
+  Handshake,
+  BookOpen,
+  Gift,
+  TrendingUp,
 } from 'lucide-react';
 
 interface OathPageProps {
@@ -27,20 +37,57 @@ interface OathPageProps {
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
 const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 const OATH_PROMISES = [
-  'I will always place ethics before personal gain.',
-  'I will respect every member regardless of their size, experience or background.',
-  'I will contribute knowledge, opportunities and support whenever I can.',
-  'I will never intentionally mislead, exploit or damage the trust of this community.',
-  'I understand that RealtorX is built on collaboration, not selfish competition.',
-  'I will protect the reputation of RealtorX through my actions.',
-  'I will help solve problems rather than create them.',
-  'I will represent professionalism in every interaction.',
-  'I join RealtorX not only to grow my own business, but to help strengthen the real estate industry for everyone.',
+  { text: 'I will always place ethics before personal gain.', icon: ShieldCheck, color: '#2490EF' },
+  { text: 'I will respect every member regardless of their size, experience or background.', icon: Users, color: '#F5A623' },
+  { text: 'I will contribute knowledge, opportunities and support whenever I can.', icon: Gift, color: '#28A745' },
+  { text: 'I will never intentionally mislead, exploit or damage the trust of this community.', icon: Heart, color: '#EC4899' },
+  { text: 'I understand that RealtorX is built on collaboration, not selfish competition.', icon: Handshake, color: '#8B5CF6' },
+  { text: 'I will protect the reputation of RealtorX through my actions.', icon: Award, color: '#F5A623' },
+  { text: 'I will help solve problems rather than create them.', icon: Lightbulb, color: '#28A745' },
+  { text: 'I will represent professionalism in every interaction.', icon: BookOpen, color: '#2490EF' },
+  { text: 'I join RealtorX not only to grow my own business, but to help strengthen the real estate industry for everyone.', icon: TrendingUp, color: '#F5A623' },
 ];
+
+// ═══════════════════════════════════════════════════════
+// Scroll Reveal Hook
+// ═══════════════════════════════════════════════════════
+function useScrollReveal(deps: React.DependencyList = []) {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
+    );
+
+    const checkAndObserve = () => {
+      document.querySelectorAll('.scroll-reveal:not(.is-visible)').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) el.classList.add('is-visible');
+        else observer.observe(el);
+      });
+    };
+
+    checkAndObserve();
+
+    const mutationObserver = new MutationObserver(() => checkAndObserve());
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
 
 export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
   const [checkedPromises, setCheckedPromises] = useState<Record<number, boolean>>({});
@@ -55,13 +102,13 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [memberName, setMemberName] = useState('');
-  const [statusMessage, setStatusMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // Signature canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
+
+  useScrollReveal([submitted]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -107,9 +154,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
     ctx.stroke();
   };
 
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
+  const stopDrawing = () => setIsDrawing(false);
 
   const clearSignature = () => {
     const canvas = canvasRef.current;
@@ -124,14 +169,11 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
     setCheckedPromises((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const allPromisesChecked = OATH_PROMISES.every((_, i) => checkedPromises[i]);
+  const checkedCount = OATH_PROMISES.filter((_, i) => checkedPromises[i]).length;
+  const allPromisesChecked = checkedCount === OATH_PROMISES.length;
+
   const isFormValid =
-    fullName.trim() &&
-    cnic.trim() &&
-    email.trim() &&
-    phone.trim() &&
-    allPromisesChecked &&
-    hasSignature;
+    fullName.trim() && cnic.trim() && email.trim() && phone.trim() && allPromisesChecked && hasSignature;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,10 +208,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
 
       const response = await fetch(`${API_BASE}/resource/RealtorX Member`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `token ${API_KEY}:${API_SECRET}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
@@ -181,12 +220,8 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
       }
 
       const result = await response.json();
-      const createdName = result.data?.name || memberId;
-
-      setMemberName(createdName);
-      setStatusMessage(`Registered as ${createdName}`);
+      setMemberName(result.data?.name || memberId);
       setSubmitted(true);
-      console.log('✅ RealtorX Member created:', createdName);
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Failed to submit. Please try again.');
@@ -195,396 +230,427 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   // SUCCESS SCREEN
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   if (submitted) {
     return (
       <div className="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-6 p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#0E2849] to-[#0A1628] border border-[#28A745]/40 shadow-2xl">
-          <div className="w-24 h-24 mx-auto rounded-full bg-[#28A745]/15 border-2 border-[#28A745]/40 flex items-center justify-center">
-            <Check className="w-12 h-12 text-[#28A745]" />
-          </div>
+        <div className="relative rounded-[2rem] overflow-hidden border border-[#28A745]/30 shadow-2xl shadow-[#28A745]/10 scroll-reveal">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+          <div
+            className="absolute inset-0 opacity-60"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 30%, rgba(40, 167, 69, 0.20) 0%, transparent 60%), radial-gradient(ellipse at 70% 70%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
+            }}
+          />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#28A745]/60 to-transparent" />
 
-          <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-current" />
-              <span>Founding Member Registered</span>
+          <div className="relative p-8 sm:p-12 text-center space-y-7">
+            <div className="w-24 h-24 mx-auto rounded-3xl bg-[#28A745]/15 border-2 border-[#28A745]/40 flex items-center justify-center shadow-xl shadow-[#28A745]/20">
+              <Check className="w-12 h-12 text-[#28A745] stroke-[3]" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-3">
-              Welcome to Realtor X, {fullName.split(' ')[0]}!
-            </h1>
-            <p className="text-slate-300 max-w-xl mx-auto leading-relaxed">
-              Your oath has been recorded in the RealtorX community registry. Your
-              Founding Member Custodian ID: <span className="text-[#F5A623] font-mono font-bold">{memberName}</span>
-            </p>
-          </div>
 
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-left space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">Member ID</span>
-              <span className="text-white font-mono font-bold">{memberName}</span>
+            <div>
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-3">
+                <Sparkle className="w-3 h-3" />
+                <span>Founding Member Registered</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading tracking-[-0.02em] leading-tight mb-3">
+                Welcome to Realtor X, {fullName.split(' ')[0]}!
+              </h1>
+              <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
+                Your oath has been recorded in the RealtorX community registry. Your Founding
+                Member Custodian ID:{' '}
+                <span className="text-[#F5A623] font-mono font-bold">{memberName}</span>
+              </p>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">Full Name</span>
-              <span className="text-white font-semibold">{fullName}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">Email</span>
-              <span className="text-white">{email}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">City</span>
-              <span className="text-white">{city}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">Tier</span>
-              <span className="text-[#F5A623] font-bold">Founding Member</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">Oath Date</span>
-              <span className="text-white">{date}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-400">Status</span>
-              <span className="flex items-center gap-1.5 text-[#28A745] font-bold">
-                <CheckCircle2 className="w-4 h-4" /> Verified
-              </span>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-all"
-            >
-              <Printer className="w-4 h-4" />
-              Print Certificate
-            </button>
-            <button
-              onClick={() => onNavigate('home')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 rounded-xl shadow-md transition-all"
-            >
-              Back to Home
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="p-6 rounded-2xl bg-slate-950/60 border border-white/[0.06] text-left space-y-3">
+              {[
+                { label: 'Member ID', value: memberName, mono: true, highlight: true },
+                { label: 'Full Name', value: fullName },
+                { label: 'Email', value: email },
+                { label: 'City', value: city },
+                { label: 'Tier', value: 'Founding Member', highlight: true },
+                { label: 'Oath Date', value: date },
+              ].map((row, idx) => (
+                <div key={idx} className="flex items-center justify-between text-sm gap-3">
+                  <span className="text-slate-400 shrink-0">{row.label}</span>
+                  <span
+                    className={`truncate ${row.mono ? 'font-mono' : ''} ${
+                      row.highlight ? 'text-[#F5A623] font-bold' : 'text-white font-semibold'
+                    }`}
+                  >
+                    {row.value}
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between text-sm pt-3 border-t border-white/[0.06]">
+                <span className="text-slate-400">Status</span>
+                <span className="flex items-center gap-1.5 text-[#28A745] font-bold">
+                  <CheckCircle2 className="w-4 h-4" /> Verified
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] rounded-2xl transition-all"
+              >
+                <Printer className="w-4 h-4" />
+                Print Certificate
+              </button>
+              <button
+                onClick={() => onNavigate('home')}
+                className="relative inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-2xl shadow-xl shadow-[#F5A623]/30 transition-all overflow-hidden group active:scale-[0.98]"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <span className="relative z-10">Back to Home</span>
+                <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   // MAIN OATH FORM
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   return (
-    <div className="py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Hero */}
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <div className="flex justify-center mb-6">
+    <div className="py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      {/* ═════ HERO ═════ */}
+      <div className="text-center max-w-3xl mx-auto mb-14 scroll-reveal">
+        <div className="flex justify-center mb-8">
           <RealtorXLogo size="lg" showSubtitle={false} />
         </div>
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1.5 rounded-full mb-6">
-          <ShieldCheck className="w-3.5 h-3.5" />
+
+        <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-2 rounded-full mb-7 backdrop-blur-sm">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
+          </span>
           <span>Foundational Charter 02 · The Oath</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold text-white font-heading leading-tight mb-4">
-          THE REALTORX OATH
+
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.03em] text-white font-heading leading-[1.05] mb-6 text-balance">
+          The RealtorX <span className="gradient-text">Oath</span>
         </h1>
-        <p className="text-base text-slate-300 leading-relaxed">
-          By taking this oath, you commit to upholding the values of Realtor X. This is
-          a personal promise — a custodian's covenant with the community.
+
+        <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          By taking this oath, you commit to upholding the values of Realtor X. This is a
+          personal promise — a custodian's covenant with the community.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Step 1: Personal Info */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/70 border border-slate-800">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-              <User className="w-5 h-5 text-[#2490EF]" />
+
+        {/* ═════ STEP 1: PERSONAL DETAILS ═════ */}
+        <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 scroll-reveal">
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 to-slate-900/40" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
+
+          <div className="relative p-6 sm:p-8">
+            <div className="flex items-center gap-3.5 mb-7 pb-5 border-b border-white/[0.06]">
+              <div className="w-12 h-12 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                <User className="w-6 h-6 text-[#2490EF]" />
+              </div>
+              <div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-1">
+                  Step 01
+                </div>
+                <h2 className="text-xl font-bold text-white font-heading tracking-[-0.01em]">
+                  Your Details
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Required fields are marked with *
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white font-heading">
-                Step 1 — Your Details
-              </h2>
-              <p className="text-xs text-slate-400">All fields are required</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {[
+                { label: 'Full Name *', icon: User, value: fullName, set: setFullName, placeholder: 'Muhammad Ahmed Khan', type: 'text' },
+                { label: 'CNIC / ID Number *', icon: CreditCard, value: cnic, set: setCnic, placeholder: '42101-1234567-1', type: 'text' },
+                { label: 'Email *', icon: Mail, value: email, set: setEmail, placeholder: 'you@example.com', type: 'email' },
+                { label: 'Phone / WhatsApp *', icon: Phone, value: phone, set: setPhone, placeholder: '+92 300 1234567', type: 'tel' },
+                { label: 'City *', icon: MapPin, value: city, set: setCity, placeholder: 'Karachi', type: 'text' },
+                { label: 'Agency / Firm (Optional)', icon: Building2, value: agencyName, set: setAgencyName, placeholder: 'Your agency name', type: 'text' },
+              ].map((field, idx) => {
+                const FIcon = field.icon;
+                return (
+                  <div key={idx}>
+                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                      {field.label}
+                    </label>
+                    <div className="relative group">
+                      <FIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                      <input
+                        type={field.type}
+                        required={field.label.includes('*')}
+                        value={field.value}
+                        onChange={(e) => field.set(e.target.value)}
+                        placeholder={field.placeholder}
+                        className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  Realtor License / Broker ID (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={licenseNo}
+                  onChange={(e) => setLicenseNo(e.target.value)}
+                  placeholder="License number"
+                  className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                  Date
+                </label>
+                <div className="relative group">
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  />
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                Full Name *
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Muhammad Ahmed Khan"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
-                />
+        {/* ═════ STEP 2: PROMISES ═════ */}
+        <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 scroll-reveal">
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 to-slate-900/40" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/50 to-transparent" />
+
+          <div className="relative p-6 sm:p-8">
+            <div className="flex items-start justify-between gap-4 mb-7 pb-5 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 text-[#F5A623]" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#F5A623] mb-1">
+                    Step 02
+                  </div>
+                  <h2 className="text-xl font-bold text-white font-heading tracking-[-0.01em]">
+                    Affirm Every Promise
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Check each box to acknowledge your commitment
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0">
+                <div className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-center min-w-[80px]">
+                  <div className="text-lg font-bold text-white tabular-nums leading-none">
+                    {checkedCount}
+                    <span className="text-slate-500">/{OATH_PROMISES.length}</span>
+                  </div>
+                  <div className="text-[9px] font-mono uppercase tracking-wider text-slate-500 mt-1">
+                    Affirmed
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                CNIC / ID Number *
-              </label>
-              <div className="relative">
-                <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="text"
-                  required
-                  value={cnic}
-                  onChange={(e) => setCnic(e.target.value)}
-                  placeholder="42101-1234567-1"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                Email *
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                Phone / WhatsApp *
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+92 300 1234567"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                City *
-              </label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="text"
-                  required
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Karachi"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                Agency / Firm (Optional)
-              </label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="text"
-                  value={agencyName}
-                  onChange={(e) => setAgencyName(e.target.value)}
-                  placeholder="Your agency or firm name"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                Realtor License / Broker ID (Optional)
-              </label>
-              <input
-                type="text"
-                value={licenseNo}
-                onChange={(e) => setLicenseNo(e.target.value)}
-                placeholder="License number"
-                className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+            {/* Progress bar */}
+            <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden mb-6">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#28A745] to-[#20c997] transition-all duration-500"
+                style={{ width: `${(checkedCount / OATH_PROMISES.length) * 100}%` }}
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">
-                Date
-              </label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]"
-                />
-              </div>
+            <div className="space-y-3">
+              {OATH_PROMISES.map((promise, idx) => {
+                const isChecked = !!checkedPromises[idx];
+                const PIcon = promise.icon;
+                return (
+                  <button
+                    type="button"
+                    key={idx}
+                    onClick={() => togglePromise(idx)}
+                    className={`group w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-start gap-3.5 overflow-hidden relative ${
+                      isChecked
+                        ? 'bg-[#28A745]/[0.08] border-[#28A745]/40 shadow-lg shadow-[#28A745]/5'
+                        : 'bg-slate-950/50 border-white/[0.06] hover:border-white/[0.15] hover:bg-white/[0.03]'
+                    }`}
+                  >
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      style={{
+                        background: isChecked
+                          ? 'radial-gradient(ellipse at 0% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 60%)'
+                          : `radial-gradient(ellipse at 0% 50%, ${promise.color}10 0%, transparent 60%)`,
+                      }}
+                    />
+
+                    <div
+                      className={`relative w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 ${
+                        isChecked
+                          ? 'bg-[#28A745] border-[#28A745] scale-105'
+                          : 'border-slate-600 group-hover:border-slate-500'
+                      }`}
+                    >
+                      {isChecked && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                    </div>
+
+                    <div
+                      className="relative w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
+                      style={{
+                        backgroundColor: `${promise.color}15`,
+                        border: `1px solid ${promise.color}30`,
+                      }}
+                    >
+                      <PIcon className="w-4 h-4" style={{ color: promise.color }} />
+                    </div>
+
+                    <div className="relative flex-1 min-w-0 pt-1">
+                      <span
+                        className={`text-sm leading-relaxed transition-colors ${
+                          isChecked ? 'text-white font-medium' : 'text-slate-300'
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono text-slate-500 mr-2">
+                          {String(idx + 1).padStart(2, '0')}.
+                        </span>
+                        {promise.text}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Step 2: Promises */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/70 border border-slate-800">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-[#F5A623]" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white font-heading">
-                Step 2 — Affirm Every Promise
-              </h2>
-              <p className="text-xs text-slate-400">
-                Check each box to acknowledge your commitment
-              </p>
-            </div>
-          </div>
+        {/* ═════ STEP 3: SIGNATURE ═════ */}
+        <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 scroll-reveal">
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 to-slate-900/40" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
 
-          <div className="space-y-3">
-            {OATH_PROMISES.map((promise, idx) => (
-              <button
-                type="button"
-                key={idx}
-                onClick={() => togglePromise(idx)}
-                className={`w-full text-left p-4 rounded-xl border transition-all flex items-start gap-3 ${
-                  checkedPromises[idx]
-                    ? 'bg-[#28A745]/10 border-[#28A745]/40'
-                    : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                    checkedPromises[idx]
-                      ? 'bg-[#28A745] border-[#28A745]'
-                      : 'border-slate-600'
-                  }`}
-                >
-                  {checkedPromises[idx] && (
-                    <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
-                  )}
+          <div className="relative p-6 sm:p-8">
+            <div className="flex items-center justify-between gap-4 mb-7 pb-5 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
+                  <PenTool className="w-6 h-6 text-[#2490EF]" />
                 </div>
-                <span
-                  className={`text-sm leading-relaxed ${
-                    checkedPromises[idx] ? 'text-white' : 'text-slate-300'
-                  }`}
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-1">
+                    Step 03
+                  </div>
+                  <h2 className="text-xl font-bold text-white font-heading tracking-[-0.01em]">
+                    Sign Below
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Draw your signature with mouse or touch
+                  </p>
+                </div>
+              </div>
+              {hasSignature && (
+                <button
+                  type="button"
+                  onClick={clearSignature}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] rounded-xl transition-all"
                 >
-                  {promise}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Step 3: Signature */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/70 border border-slate-800">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                <PenTool className="w-5 h-5 text-[#2490EF]" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white font-heading">
-                  Step 3 — Sign Below
-                </h2>
-                <p className="text-xs text-slate-400">Draw your signature with mouse or touch</p>
-              </div>
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Clear
+                </button>
+              )}
             </div>
-            <button
-              type="button"
-              onClick={clearSignature}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Clear
-            </button>
-          </div>
 
-          <div className="relative">
-            <canvas
-              ref={canvasRef}
-              width={800}
-              height={200}
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-              className="w-full h-[200px] bg-slate-950 border-2 border-dashed border-slate-700 rounded-xl cursor-crosshair touch-none"
-            />
-            {!hasSignature && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="text-sm text-slate-600 italic">Sign here...</span>
-              </div>
-            )}
-          </div>
+            <div className="relative">
+              <canvas
+                ref={canvasRef}
+                width={800}
+                height={200}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+                className={`w-full h-[200px] bg-slate-950/80 border-2 border-dashed rounded-2xl cursor-crosshair touch-none transition-colors ${
+                  hasSignature
+                    ? 'border-[#2490EF]/40'
+                    : 'border-white/[0.1] hover:border-white/[0.2]'
+                }`}
+              />
+              {!hasSignature && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-center space-y-2">
+                    <PenTool className="w-8 h-8 text-slate-700 mx-auto" />
+                    <span className="text-sm text-slate-600 italic block">Sign here...</span>
+                  </div>
+                </div>
+              )}
+            </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <span className="text-slate-400">
-              By signing, you agree to all 9 promises above
-            </span>
-            <span className="text-[#28A745] font-mono">
-              🔒 Digital signature stored securely
-            </span>
+            <div className="mt-5 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-xs">
+              <span className="text-slate-400">
+                By signing, you agree to all 9 promises above
+              </span>
+              <span className="flex items-center gap-1.5 text-[#28A745] font-mono">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Digital signature stored securely
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Error */}
+        {/* ═════ ERROR ═════ */}
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3">
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 animate-fade-in">
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-            <div className="text-sm text-red-300">{error}</div>
+            <div className="text-sm text-red-300 leading-relaxed">{error}</div>
           </div>
         )}
 
-        {/* Submit */}
-        <div className="text-center space-y-4">
+        {/* ═════ SUBMIT ═════ */}
+        <div className="text-center space-y-5 scroll-reveal">
           <button
             type="submit"
             disabled={!isFormValid || isSubmitting}
-            className="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 rounded-xl shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative inline-flex items-center gap-2.5 px-8 py-4 text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-2xl shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100 overflow-hidden group active:scale-[0.98]"
           >
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             {isSubmitting ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Submitting Oath...
+                <Loader2 className="w-5 h-5 animate-spin relative z-10" />
+                <span className="relative z-10">Submitting Oath...</span>
               </>
             ) : (
               <>
-                <ShieldCheck className="w-5 h-5" />
-                Take the Realtor X Oath
+                <ShieldCheck className="w-5 h-5 relative z-10" />
+                <span className="relative z-10">Take the Realtor X Oath</span>
               </>
             )}
           </button>
 
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Your oath will be permanently recorded in the Realtor X community registry.
-            You will receive a Founding Member Custodian ID.
+          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+            Your oath will be permanently recorded in the Realtor X community registry. You will
+            receive a Founding Member Custodian ID.
           </p>
         </div>
       </form>
