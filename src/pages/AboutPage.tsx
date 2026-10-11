@@ -122,13 +122,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <RealtorXLogo size="lg" showSubtitle={false} />
         </div>
 
-        <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] bg-[#2490EF]/[0.08] border border-[#2490EF]/25 px-4 py-2 rounded-full mb-7 backdrop-blur-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
-          </span>
-          <span>Our Story &amp; Purpose</span>
-        </div>
+        <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                  color: '#2490EF'
+                }}>Our Story &amp; Purpose</span>
+              </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white font-heading tracking-[-0.03em] leading-[1.05] mb-6 text-balance">
           Real Estate.{' '}
@@ -155,10 +154,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/50 to-transparent" />
 
         <div className="relative p-10 sm:p-16 text-center">
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-1.5 rounded-full mb-7">
-            <Star className="w-3.5 h-3.5" />
-            <span>The Realtor X Founding Core Belief</span>
-          </div>
+          <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>The Realtor X Founding Core Belief</span>
+              </div>
 
           <blockquote className="text-2xl sm:text-3xl lg:text-[2.25rem] font-display italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
             "{BRAND_TAGLINES.philosophy}"

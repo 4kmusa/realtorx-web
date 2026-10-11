@@ -120,10 +120,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
               <div className="relative p-8 sm:p-10">
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] bg-[#2490EF]/[0.08] border border-[#2490EF]/25 px-3.5 py-1.5 rounded-full mb-5">
-                    <Sparkle className="w-3 h-3" />
-                    <span>Member Login</span>
-                  </div>
+                  <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#2490EF' }}>Member Login</span>
+              </div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-white font-heading tracking-[-0.02em] mb-2">
                     Welcome Back
                   </h1>

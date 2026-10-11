@@ -324,13 +324,12 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
           <RealtorXLogo size="lg" showSubtitle={false} />
         </div>
 
-        <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-2 rounded-full mb-7 backdrop-blur-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
-          </span>
-          <span>Foundational Charter 02 · The Oath</span>
-        </div>
+        <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                  color: '#F5A623'
+                }}>Foundational Charter 02 · The Oath</span>
+              </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.03em] text-white font-heading leading-[1.05] mb-6 text-balance">
           The RealtorX <span className="gradient-text">Oath</span>

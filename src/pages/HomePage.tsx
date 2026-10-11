@@ -216,13 +216,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] bg-[#2490EF]/[0.08] border border-[#2490EF]/25 px-4 py-1.5 rounded-full mb-7 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
-              </span>
-              <span>Bahria Town Karachi's Premier Community Marketplace</span>
-            </div>
+            <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                  color: '#2490EF'
+                }}>Bahria Town Karachi's Premier Community Marketplace</span>
+              </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] font-bold tracking-[-0.03em] text-white leading-[1.02] font-heading text-balance">
               Real Estate.{' '}
@@ -382,10 +381,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/50 to-transparent" />
 
           <div className="relative p-8 sm:p-12 lg:p-14 text-center">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-1.5 rounded-full mb-7">
-              <Heart className="w-3.5 h-3.5" />
-              <span>The Heart of Realtor X</span>
-            </div>
+            <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>The Heart of Realtor X</span>
+              </div>
 
             <blockquote className="text-xl sm:text-2xl lg:text-3xl font-display italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
               "{BRAND_TAGLINES.philosophy}"
@@ -767,9 +766,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] bg-[#0B1A30] shadow-2xl shadow-black/40">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
             <div className="lg:col-span-7 p-10 sm:p-12 lg:p-14 space-y-6">
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-1.5 rounded-full">
-                <Building className="w-3.5 h-3.5" />
-                <span>The Flagship Master Development</span>
+              <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>The Flagship Master Development</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">

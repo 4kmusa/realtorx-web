@@ -103,13 +103,12 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
 
         {/* ═════ HEADER ═════ */}
         <div className="text-center space-y-6 max-w-3xl mx-auto scroll-reveal">
-          <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-4 py-2 rounded-full backdrop-blur-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
-            </span>
-            <span>Foundational Charter 01 · 2 min read</span>
-          </div>
+          <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                  color: '#F5A623'
+                }}>Foundational Charter 01 · 2 min read</span>
+              </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.03em] text-white font-heading leading-[1.02] text-balance">
             {language === 'en' ? (

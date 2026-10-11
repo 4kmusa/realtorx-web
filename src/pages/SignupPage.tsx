@@ -112,7 +112,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
       <div className="relative w-full max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* ═════ LEFT: Brand Panel ═════ */}
-          <div className="hidden lg:flex lg:col-span-5 flex-col justify-center px-8 space-y-8">
+          <div className="hidden lg:flex lg:col-span-6 flex-col justify-center px-8 space-y-8">
             <RealtorXLogo size="lg" showSubtitle={false} />
 
             <div className="space-y-5">
@@ -154,7 +154,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
           </div>
 
           {/* ═════ RIGHT: Signup Form ═════ */}
-          <div className="lg:col-span-7 w-full max-w-xl mx-auto lg:mx-0">
+          <div className="lg:col-span-6 w-full max-w-lg mx-auto lg:mx-0">
             <div className="lg:hidden flex justify-center mb-8">
               <RealtorXLogo size="lg" showSubtitle={false} />
             </div>
@@ -165,10 +165,10 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
               <div className="relative p-8 sm:p-10">
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/25 px-3.5 py-1.5 rounded-full mb-5">
-                    <Sparkle className="w-3 h-3" />
-                    <span>Create Account</span>
-                  </div>
+                  <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>Create Account</span>
+              </div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-white font-heading tracking-[-0.02em] mb-2">
                     Join Realtor X
                   </h1>

@@ -115,13 +115,12 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
 
       {/* ═════ HEADER ═════ */}
       <div className="text-center max-w-3xl mx-auto scroll-reveal">
-        <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] bg-[#2490EF]/[0.08] border border-[#2490EF]/25 px-4 py-2 rounded-full mb-7 backdrop-blur-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5A623] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5A623]" />
-          </span>
-          <span>Professional Excellence</span>
-        </div>
+        <div className="inline-flex items-center gap-3 mb-5">
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                  color: '#2490EF'
+                }}>Professional Excellence</span>
+              </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white font-heading tracking-[-0.03em] leading-[1.05] mb-5 text-balance">
           Our Real Estate <span className="gradient-text">Services</span>
