@@ -25,8 +25,8 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
   const [dealValue, setDealValue] = useState<number>(25000000); // 2.5 Crore
   const [commissionRate, setCommissionRate] = useState<number>(1.5); // 1.5% average
   const totalCommission = (dealValue * commissionRate) / 100;
-  const dealerShare = totalCommission * 0.60; // 60%
-  const realtorXShare = totalCommission * 0.40; // 40%
+  const dealerShare = totalCommission * 0.80; // 80%
+  const realtorXShare = totalCommission * 0.20; // 20%
 
   // Quick Site Visit State
   const [visitName, setVisitName] = useState('');
@@ -292,7 +292,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   Why 80/20 Split is Industry-Leading:
                 </div>
                 <p className="text-slate-400 leading-relaxed">
-                  Traditional agencies take 50% or more from their agents. Realtor X only retains <strong>40%</strong> for portal infrastructure, legal NDC checks, buyer escort vehicles, and system integration, allowing the field dealer to retain <strong>60%</strong> of the earned commission.
+                  Traditional agencies take 50% or more from their agents. Realtor X only retains <strong>20%</strong> for portal infrastructure, legal NDC checks, buyer escort vehicles, and system integration, allowing the field dealer to retain <strong>80%</strong> of the earned commission.
                 </p>
               </div>
             </div>
@@ -313,11 +313,11 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-left">
-                {/* Dealer 60% */}
+                {/* Dealer 80% */}
                 <div className="p-3 bg-emerald-950/40 border border-emerald-800/40 rounded-xl">
                   <div className="flex items-center justify-between text-[11px] text-emerald-400 font-mono font-semibold">
                     <span>Dealer / You</span>
-                    <span>60%</span>
+                    <span>80%</span>
                   </div>
                   <div className="text-base sm:text-lg font-extrabold text-emerald-300 font-mono mt-1">
                     {formatPkr(dealerShare)}
@@ -327,11 +327,11 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   </div>
                 </div>
 
-                {/* RealtorX 40% */}
+                {/* RealtorX 20% */}
                 <div className="p-3 bg-[#2490EF]/10 border border-[#2490EF]/30 rounded-xl">
                   <div className="flex items-center justify-between text-[11px] text-sky-400 font-mono font-semibold">
                     <span>Realtor X</span>
-                    <span>40%</span>
+                    <span>20%</span>
                   </div>
                   <div className="text-base sm:text-lg font-bold text-sky-300 font-mono mt-1">
                     {formatPkr(realtorXShare)}
@@ -346,7 +346,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                 onClick={() => onNavigate('become-dealer')}
                 className="w-full py-2.5 px-4 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2"
               >
-                <span>Register as a 60% Partner Dealer</span>
+                <span>Register as a 80% Partner Dealer</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
