@@ -262,9 +262,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
       const response = await fetch(`${API_BASE}/method/realtorx.api.become_dealer`, {
         method: 'POST',
-          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
-          credentials: 'omit',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: `token ${API_KEY}:${API_SECRET}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'omit',
         body: JSON.stringify(payload),
       });
 
