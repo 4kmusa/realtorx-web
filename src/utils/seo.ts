@@ -149,7 +149,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
 
   oath: () => ({
     title: 'Founding Member Oath — Digital Signature | Realtor X',
-    description: `${REALTORX_PHILOSOPHY_QUOTE} Swear the RealtorX Founding Member Oath. Receive your verified digital certificate, lock in the 80/20 split, and sync directly with ERPNext.`,
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Swear the RealtorX Founding Member Oath. Receive your verified digital certificate, lock in the 80/20 split, and get your verified digital certificate.`,
     ogTitle: 'The RealtorX Founding Member Oath | Realtor X',
     ogDescription: REALTORX_PHILOSOPHY_QUOTE,
     ogImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
@@ -209,7 +209,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
 
   'become-dealer': () => ({
     title: 'Become a Partner Dealer — 80% Split | Realtor X',
-    description: `${REALTORX_PHILOSOPHY_QUOTE} Join Realtor X as a partner dealer in Bahria Town Karachi. 8-step verification, transparent 80/20 split, verified leads, and instant ERPNext ID.`,
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Join Realtor X as a partner dealer in Bahria Town Karachi. 8-step verification, transparent 80/20 split, verified leads, and instant verified dealer ID.`,
     ogTitle: 'Become a Partner Dealer — 80% Split | Realtor X',
     ogDescription: REALTORX_PHILOSOPHY_QUOTE,
     ogImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
