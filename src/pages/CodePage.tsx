@@ -243,8 +243,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
 
               {/* Giant number watermark */}
               <div
-                className="absolute -top-6 -right-4 text-[8rem] sm:text-[10rem] font-black leading-none opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none select-none"
-                className="text-[#2490EF]"
+                className="absolute -top-6 -right-4 text-[8rem] sm:text-[10rem] font-black leading-none opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none select-none text-[#2490EF]"
               >
                 {principle.number}
               </div>
@@ -260,8 +259,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
                     }}
                   >
                     <Icon
-                      className="w-7 h-7"
-                      className="text-[#2490EF]"
+                      className="w-7 h-7 text-[#2490EF]"
                     />
                   </div>
 
@@ -281,8 +279,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
 
                 {/* Motto */}
                 <p
-                  className="text-sm font-display italic mb-4 leading-relaxed"
-                  className="text-[#2490EF]"
+                  className="text-sm font-display italic mb-4 leading-relaxed text-[#2490EF]"
                 >
                   "{principle.motto}"
                 </p>

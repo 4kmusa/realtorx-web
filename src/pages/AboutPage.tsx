@@ -343,7 +343,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                       border: '1px solid rgba(36,144,239,0.25)',
                     }}
                   >
-                    <Icon className="w-5 h-5" className="text-[#2490EF]" />
+                    <Icon className="w-5 h-5 text-[#2490EF]" />
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-heading font-bold text-base text-white mb-1.5">
