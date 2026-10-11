@@ -333,7 +333,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                       onClick={() => onNavigate('become-dealer')}
                       className="text-[#F5A623] hover:text-[#FFB84D] font-semibold inline-flex items-center gap-1 group"
                     >
-                      <span>Become a Dealer — 60% Split</span>
+                      <span>Become a Dealer — 80% Split</span>
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </button>
                   </div>
@@ -633,8 +633,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               },
               {
                 icon: Percent,
-                title: 'Fair 40/60 Split',
-                desc: 'We empower realtors with 60% commission split to the closing agent, creating a supportive fraternity.',
+                title: 'Fair 80/20 Split',
+                desc: 'We empower realtors with 80% commission split to the closing agent, creating a supportive fraternity.',
               },
               {
                 icon: Award,
@@ -700,7 +700,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
             <div>
               <div className="text-4xl sm:text-5xl font-extrabold text-[#28A745] font-heading tabular-nums">
-                40/60
+                80/20
               </div>
               <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Commission Split
@@ -1080,7 +1080,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
             <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
               Whether you are buying a dream villa, securing an investment plot, or are a local
-              dealer looking for a fair 40/60 partnership, we welcome you.
+              dealer looking for a fair 80/20 partnership, we welcome you.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-3">

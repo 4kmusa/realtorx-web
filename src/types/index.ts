@@ -47,7 +47,7 @@ export interface Property {
     isVerified: boolean;
     photo?: string;
   };
-  commissionSplit: string; // e.g. "40% Realtor X / 60% Dealer"
+  commissionSplit: string; // e.g. "20% Realtor X / 60% Dealer"
   dateAdded: string;
 }
 
@@ -87,7 +87,7 @@ export interface DealerApplication {
   email: string;
   licenseNumber?: string;
   experienceYears: string;
-  agreedToSplit: boolean; // 40/60 split agreement
+  agreedToSplit: boolean; // 80/20 split agreement
   agreedToOath: boolean;
   notes?: string;
 }

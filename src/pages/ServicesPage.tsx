@@ -106,7 +106,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
   const stats = [
     { value: '6', label: 'Core Services', icon: Compass, color: '#2490EF' },
     { value: '48h', label: 'Response Time', icon: Clock, color: '#F5A623' },
-    { value: '40/60', label: 'Commission Split', icon: Percent, color: '#28A745' },
+    { value: '80/20', label: 'Commission Split', icon: Percent, color: '#28A745' },
     { value: '100%', label: 'Verified Documents', icon: ShieldCheck, color: '#8B5CF6' },
   ];
 
@@ -255,7 +255,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
             {
               icon: Award,
               color: '#28A745',
-              title: 'Fair 40/60 Split',
+              title: 'Fair 80/20 Split',
               desc: 'Highest dealer commission in the market. Empowering realtor fraternity.',
             },
             {

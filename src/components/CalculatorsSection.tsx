@@ -21,7 +21,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
   const totalInstallmentsCount = paymentFrequency === 'quarterly' ? tenureYears * 4 : tenureYears * 12;
   const installmentAmount = totalInstallmentsCount > 0 ? remainingBalance / totalInstallmentsCount : 0;
 
-  // 40/60 Commission Calculator State
+  // 80/20 Commission Calculator State
   const [dealValue, setDealValue] = useState<number>(25000000); // 2.5 Crore
   const [commissionRate, setCommissionRate] = useState<number>(1.5); // 1.5% average
   const totalCommission = (dealValue * commissionRate) / 100;
@@ -65,7 +65,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               Bahria Investment &amp; Commission Calculators
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-              Transparent financial modeling for Bahria Town Karachi. Calculate quarterly installments, see exact 40/60 dealer earnings, or request an escorted site visit.
+              Transparent financial modeling for Bahria Town Karachi. Calculate quarterly installments, see exact 80/20 dealer earnings, or request an escorted site visit.
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               }`}
             >
               <Percent className="w-3.5 h-3.5" />
-              <span>40/60 Split</span>
+              <span>80/20 Split</span>
             </button>
 
             <button
@@ -235,7 +235,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
           </div>
         )}
 
-        {/* Tab 2: 40/60 Commission Split Calculator */}
+        {/* Tab 2: 80/20 Commission Split Calculator */}
         {activeTab === 'commission' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-6">
@@ -289,7 +289,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               <div className="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2 text-xs text-slate-300">
                 <div className="font-semibold text-white flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#2490EF]" />
-                  Why 40/60 Split is Industry-Leading:
+                  Why 80/20 Split is Industry-Leading:
                 </div>
                 <p className="text-slate-400 leading-relaxed">
                   Traditional agencies take 50% or more from their agents. Realtor X only retains <strong>40%</strong> for portal infrastructure, legal NDC checks, buyer escort vehicles, and system integration, allowing the field dealer to retain <strong>60%</strong> of the earned commission.

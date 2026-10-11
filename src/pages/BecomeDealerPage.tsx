@@ -473,7 +473,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   // ═══════════════════════════════════════════════════════
   if (mode === 'info') {
     const benefits = [
-      { icon: Percent, title: '60% Commission Split', desc: 'Industry-leading payout. You keep 60% of every closed deal — we only retain 40% for portal, legal, and infrastructure.', color: '#F5A623' },
+      { icon: Percent, title: '60% Commission Split', desc: 'Industry-leading payout. You keep 80% of every closed deal — we only retain 20% for portal, legal, and infrastructure.', color: '#F5A623' },
       { icon: Users, title: 'Verified Buyer Leads', desc: 'Real, qualified leads from our digital marketing. No fake contacts, no wasted time on cold calls.', color: '#2490EF' },
       { icon: Award, title: 'Pro Training & Oath', desc: 'Free onboarding, sales training, and the Realtor X Founding Oath that builds community trust.', color: '#28A745' },
       { icon: TrendingUp, title: 'Co-Brokering Network', desc: 'Collaborate with hundreds of verified dealers. Share listings, split deals, grow together.', color: '#8B5CF6' },
@@ -498,7 +498,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
     const faqs = [
       { q: 'How long does approval take?', a: 'Typically 24-48 hours after you submit the complete form and Video KYC. If additional verification is needed, our team will contact you.' },
-      { q: 'What is the 60/40 commission split?', a: 'For every closed deal, you receive 60% of the total commission. Realtor X retains 40% to cover portal infrastructure, legal NDC verification, buyer escort services, and marketing.' },
+      { q: 'What is the 60/40 commission split?', a: 'For every closed deal, you receive 60% of the total commission. Realtor X retains 20% to cover portal infrastructure, legal NDC verification, buyer escort services, and marketing.' },
       { q: 'Is there any joining fee?', a: 'No. Joining Realtor X is completely free. We earn only when you close a deal.' },
       { q: 'What is the Founding Member Oath?', a: 'A solemn commitment every Realtor X dealer takes — 9 promises about ethics, transparency, client protection, and community.' },
       { q: 'Can I keep my existing brokerage?', a: 'Yes. Realtor X is a cooperative network. You can continue your existing practice and still list deals through our platform.' },
@@ -517,7 +517,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
-            Join Bahria Town Karachi's most ethical real estate fraternity. Earn <strong className="text-[#F5A623]">60% commission</strong> on every closed deal, get verified buyer leads, and be part of a community that puts integrity first.
+            Join Bahria Town Karachi's most ethical real estate fraternity. Earn <strong className="text-[#F5A623]">80% commission</strong> on every closed deal, get verified buyer leads, and be part of a community that puts integrity first.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -1097,7 +1097,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
               <div className="text-sm text-slate-300 leading-relaxed">
                 I accept the <strong className="text-white">Realtor X Terms & Conditions</strong>,
-                commission structure (60% dealer / 40% company), and understand that final activation
+                commission structure (80% dealer / 20% company), and understand that final activation
                 requires admin approval and taking the Founding Member Oath.
               </div>
             </button>

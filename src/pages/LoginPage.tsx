@@ -85,7 +85,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               {[
                 { icon: ShieldCheck, text: 'Verified listings & documents' },
                 { icon: Users, text: 'Trusted dealer fraternity' },
-                { icon: Award, text: 'Fair 40/60 commission split' },
+                { icon: Award, text: 'Fair 80/20 commission split' },
               ].map((item, idx) => {
                 const Icon = item.icon;
                 return (

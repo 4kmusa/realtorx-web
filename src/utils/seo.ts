@@ -24,7 +24,7 @@ const DEFAULT_IMAGE = '/images/realtorx_engraved_wall_1790597184603.jpg';
 export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetadata> = {
   home: () => ({
     title: 'Realtor X — Real Estate. Reimagined. | Bahria Town Karachi',
-    description: `${REALTORX_PHILOSOPHY_QUOTE} Bahria Town Karachi's premier community-first property marketplace with verified listings and fair 40/60 commission model.`,
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Bahria Town Karachi's premier community-first property marketplace with verified listings and fair 80/20 commission model.`,
     ogTitle: 'Realtor X — Real Estate. Reimagined. | Bahria Town Karachi',
     ogDescription: REALTORX_PHILOSOPHY_QUOTE,
     ogImage: DEFAULT_IMAGE,
@@ -58,7 +58,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     const p = property || MOCK_PROPERTIES[0];
     return {
       title: `${p.title} — ${p.priceFormatted} | Realtor X Bahria Town`,
-      description: `${REALTORX_PHILOSOPHY_QUOTE} ${p.title} (${p.size} ${p.sizeUnit}) located in ${p.precinct}, ${p.project}. Verified dealer listing with 40/60 commission transparency.`,
+      description: `${REALTORX_PHILOSOPHY_QUOTE} ${p.title} (${p.size} ${p.sizeUnit}) located in ${p.precinct}, ${p.project}. Verified dealer listing with 80/20 commission transparency.`,
       ogTitle: `${p.title} — ${p.priceFormatted} | Realtor X`,
       ogDescription: `${REALTORX_PHILOSOPHY_QUOTE} Located in ${p.precinct}, Bahria Town Karachi. Verified listing.`,
       ogImage: p.images[0] || '/images/villa_bahria_luxury_1790600936792.jpg',
@@ -89,7 +89,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
 
   about: () => ({
     title: 'About Realtor X — Transforming Pakistan Real Estate',
-    description: `${REALTORX_PHILOSOPHY_QUOTE} Learn how Realtor X is revolutionizing Pakistani property brokerage through radical transparency, 40/60 dealer splits, and community custodianship.`,
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Learn how Realtor X is revolutionizing Pakistani property brokerage through radical transparency, 80/20 dealer splits, and community custodianship.`,
     ogTitle: 'About Realtor X — Transforming Pakistan Real Estate',
     ogDescription: REALTORX_PHILOSOPHY_QUOTE,
     ogImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
@@ -149,7 +149,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
 
   oath: () => ({
     title: 'Founding Member Oath — Digital Signature | Realtor X',
-    description: `${REALTORX_PHILOSOPHY_QUOTE} Swear the RealtorX Founding Member Oath. Receive your verified digital certificate, lock in the 40/60 split, and sync directly with ERPNext.`,
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Swear the RealtorX Founding Member Oath. Receive your verified digital certificate, lock in the 80/20 split, and sync directly with ERPNext.`,
     ogTitle: 'The RealtorX Founding Member Oath | Realtor X',
     ogDescription: REALTORX_PHILOSOPHY_QUOTE,
     ogImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
@@ -208,14 +208,14 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
   }),
 
   'become-dealer': () => ({
-    title: 'Become a Partner Dealer — 60% Split | Realtor X',
-    description: `${REALTORX_PHILOSOPHY_QUOTE} Join Realtor X as a partner dealer in Bahria Town Karachi. 8-step verification, transparent 40/60 split, verified leads, and instant ERPNext ID.`,
-    ogTitle: 'Become a Partner Dealer — 60% Split | Realtor X',
+    title: 'Become a Partner Dealer — 80% Split | Realtor X',
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Join Realtor X as a partner dealer in Bahria Town Karachi. 8-step verification, transparent 80/20 split, verified leads, and instant ERPNext ID.`,
+    ogTitle: 'Become a Partner Dealer — 80% Split | Realtor X',
     ogDescription: REALTORX_PHILOSOPHY_QUOTE,
     ogImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
     ogType: 'website',
     twitterCard: 'summary_large_image',
-    twitterTitle: 'Become a Partner Dealer — 60% Split | Realtor X',
+    twitterTitle: 'Become a Partner Dealer — 80% Split | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
     canonicalPath: '/#become-dealer',

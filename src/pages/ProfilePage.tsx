@@ -151,7 +151,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
     !user.is_dealer
       ? {
           label: 'Become a Dealer',
-          desc: 'Join 60% commission split partner program',
+          desc: 'Join 80% commission split partner program',
           icon: Briefcase,
           color: '#F5A623',
           action: () => onNavigate('become-dealer'),

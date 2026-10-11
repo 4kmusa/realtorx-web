@@ -381,7 +381,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     <option>Book a Guided Site Visit</option>
                     <option>Plot Title / NDC Verification</option>
                     <option>List My Bahria Property</option>
-                    <option>Dealer Partnership (40/60 Split)</option>
+                    <option>Dealer Partnership (80/20 Split)</option>
                     <option>Allottee Relief / Dispute Help</option>
                     <option>General Inquiry</option>
                   </select>

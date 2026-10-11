@@ -110,7 +110,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
     { value: '2024', label: 'Founded', icon: Compass, color: '#2490EF' },
     { value: '500+', label: 'Allottees Helped', icon: Users, color: '#F5A623' },
     { value: '100%', label: 'Document Verified', icon: ShieldCheck, color: '#28A745' },
-    { value: '40/60', label: 'Fair Split', icon: Percent, color: '#8B5CF6' },
+    { value: '80/20', label: 'Fair Split', icon: Percent, color: '#8B5CF6' },
   ];
 
   return (
@@ -196,13 +196,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
               Realtor X changed this by creating an open brotherhood. We introduced the{' '}
-              <strong className="text-[#F5A623]">40/60 commission split</strong> where closing
-              agents keep 60% of the commission, legal assistance is shared freely, and verified
+              <strong className="text-[#F5A623]">80/20 commission split</strong> where closing
+              agents keep 80% of the commission, legal assistance is shared freely, and verified
               listings are accessible to all member custodians without hidden fees.
             </p>
 
             <div className="pt-2 flex flex-wrap gap-3">
-              {['Transparent Documents', 'Fair 40/60 Split', 'Verified Custodians'].map((tag) => (
+              {['Transparent Documents', 'Fair 80/20 Split', 'Verified Custodians'].map((tag) => (
                 <span
                   key={tag}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-white/[0.04] border border-white/[0.08] text-slate-300"

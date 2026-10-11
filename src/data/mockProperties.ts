@@ -105,7 +105,7 @@ export const MOCK_PROPERTIES: Property[] = [
       whatsapp: "+923008472910",
       isVerified: true
     },
-    commissionSplit: "40% Realtor X / 60% Dealer",
+    commissionSplit: "20% Realtor X / 60% Dealer",
     dateAdded: "2026-09-20"
   },
   {
@@ -145,7 +145,7 @@ export const MOCK_PROPERTIES: Property[] = [
       whatsapp: "+923219928103",
       isVerified: true
     },
-    commissionSplit: "40% Realtor X / 60% Dealer",
+    commissionSplit: "20% Realtor X / 60% Dealer",
     dateAdded: "2026-09-22"
   },
   {
@@ -185,7 +185,7 @@ export const MOCK_PROPERTIES: Property[] = [
       whatsapp: "+923334455610",
       isVerified: true
     },
-    commissionSplit: "40% Realtor X / 60% Dealer",
+    commissionSplit: "20% Realtor X / 60% Dealer",
     dateAdded: "2026-09-24"
   },
   {
@@ -223,7 +223,7 @@ export const MOCK_PROPERTIES: Property[] = [
       whatsapp: "+923008472910",
       isVerified: true
     },
-    commissionSplit: "40% Realtor X / 60% Dealer",
+    commissionSplit: "20% Realtor X / 60% Dealer",
     dateAdded: "2026-09-25"
   },
   {
@@ -261,7 +261,7 @@ export const MOCK_PROPERTIES: Property[] = [
       whatsapp: "+923219928103",
       isVerified: true
     },
-    commissionSplit: "40% Realtor X / 60% Dealer",
+    commissionSplit: "20% Realtor X / 60% Dealer",
     dateAdded: "2026-09-26"
   },
   {
@@ -299,7 +299,7 @@ export const MOCK_PROPERTIES: Property[] = [
       whatsapp: "+923334455610",
       isVerified: true
     },
-    commissionSplit: "40% Realtor X / 60% Dealer",
+    commissionSplit: "20% Realtor X / 60% Dealer",
     dateAdded: "2026-09-27"
   }
 ];
@@ -339,7 +339,7 @@ export const TESTIMONIALS = [
     location: "Bought 500 Sq Yards Villa in Precinct 27"
   },
   {
-    quote: "The 40/60 commission model gives dealers genuine respect and pride. We are not competitors here; we are custodians helping real families build lifelong homes.",
+    quote: "The 80/20 commission model gives dealers genuine respect and pride. We are not competitors here; we are custodians helping real families build lifelong homes.",
     author: "M. Tariq Alvi",
     role: "Verified Dealer Member",
     location: "Alvi Capital, Bahria Town Karachi"
