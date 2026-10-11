@@ -1,7 +1,4 @@
-// ═══════════════════════════════════════════════════════
 // src/components/Footer.tsx
-// Premium 5-column footer with newsletter & back-to-top
-// ═══════════════════════════════════════════════════════
 import React, { useState, useEffect } from 'react';
 import { PageId, Language } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
@@ -24,6 +21,7 @@ import {
   Users,
   Scale,
   Compass,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface FooterProps {
@@ -32,10 +30,33 @@ interface FooterProps {
   onOpenSocialModal?: () => void;
 }
 
+// ═══════════════════════════════════════════════════════
+// Scroll Reveal Hook
+// ═══════════════════════════════════════════════════════
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -20px 0px' }
+    );
+    document.querySelectorAll('.footer-reveal').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+}
+
 export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSocialModal }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [showTop, setShowTop] = useState(false);
+
+  useScrollReveal();
 
   useEffect(() => {
     const handleScroll = () => setShowTop(window.scrollY > 400);
@@ -57,6 +78,37 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
 
   const currentYear = new Date().getFullYear();
 
+  const socialLinks = [
+    {
+      name: 'Facebook',
+      href: 'https://facebook.com',
+      icon: Facebook,
+      hoverBg: 'hover:bg-[#1877F2]',
+      hoverBorder: 'hover:border-[#1877F2]',
+    },
+    {
+      name: 'Instagram',
+      href: 'https://instagram.com',
+      icon: Instagram,
+      hoverBg: 'hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF]',
+      hoverBorder: 'hover:border-transparent',
+    },
+    {
+      name: 'LinkedIn',
+      href: 'https://linkedin.com',
+      icon: Linkedin,
+      hoverBg: 'hover:bg-[#0A66C2]',
+      hoverBorder: 'hover:border-[#0A66C2]',
+    },
+    {
+      name: 'YouTube',
+      href: 'https://youtube.com',
+      icon: Youtube,
+      hoverBg: 'hover:bg-red-600',
+      hoverBorder: 'hover:border-red-600',
+    },
+  ];
+
   return (
     <>
       <footer className="relative bg-gradient-to-b from-[#050C16] to-[#02060C] border-t border-white/[0.06] text-slate-400 overflow-hidden">
@@ -70,18 +122,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
         />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
           {/* ═════ Newsletter Band ═════ */}
-          <div className="pt-14 pb-12 border-b border-white/[0.06]">
+          <div className="pt-14 pb-12 border-b border-white/[0.06] footer-reveal scroll-reveal">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-6">
                 <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.15em] text-[#F5A623] mb-3">
                   <Send className="w-3.5 h-3.5" />
                   <span>Stay Updated</span>
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-bold text-white font-heading leading-tight">
+                <h3 className="text-2xl sm:text-3xl font-bold text-white font-heading leading-tight tracking-[-0.02em]">
                   New listings, straight to your inbox.
                 </h3>
-                <p className="text-sm text-slate-400 mt-2 max-w-lg">
+                <p className="text-sm text-slate-400 mt-2 max-w-lg leading-relaxed">
                   Be the first to know about verified Bahria Town properties, price drops, and
                   exclusive Realtor X listings.
                 </p>
@@ -91,7 +144,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                 {subscribed ? (
                   <div className="p-5 rounded-2xl bg-[#28A745]/10 border border-[#28A745]/30 flex items-center gap-3 animate-fade-in">
                     <div className="w-10 h-10 rounded-full bg-[#28A745]/20 flex items-center justify-center shrink-0">
-                      <Send className="w-5 h-5 text-[#28A745]" />
+                      <CheckCircle2 className="w-5 h-5 text-[#28A745]" />
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-white">Subscribed!</div>
@@ -110,7 +163,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full pl-11 pr-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:bg-white/[0.05] focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        className="w-full pl-11 pr-4 py-3.5 bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:bg-white/[0.05] focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
                       />
                     </div>
                     <button
@@ -129,8 +182,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
 
           {/* ═════ Main Grid ═════ */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 py-14 border-b border-white/[0.06]">
+
             {/* Brand Column */}
-            <div className="lg:col-span-4 space-y-5">
+            <div className="lg:col-span-3 space-y-5 footer-reveal scroll-reveal scroll-reveal">
               <RealtorXLogo size="xl" showSubtitle={false} />
 
               <p className="text-xs text-slate-300 italic font-display leading-relaxed max-w-sm">
@@ -148,47 +202,26 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
 
               {/* Social Icons */}
               <div className="flex items-center gap-2 pt-2">
-                <a
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-[#1877F2] border border-white/[0.06] hover:border-[#1877F2] flex items-center justify-center transition-all duration-300 group"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                </a>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] border border-white/[0.06] hover:border-transparent flex items-center justify-center transition-all duration-300 group"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-[#0A66C2] border border-white/[0.06] hover:border-[#0A66C2] flex items-center justify-center transition-all duration-300 group"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                </a>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-red-600 border border-white/[0.06] hover:border-red-600 flex items-center justify-center transition-all duration-300 group"
-                  aria-label="YouTube"
-                >
-                  <Youtube className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                </a>
+                {socialLinks.map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.06] ${social.hoverBg} ${social.hoverBorder} flex items-center justify-center transition-all duration-300 group`}
+                      aria-label={social.name}
+                    >
+                      <Icon className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                    </a>
+                  );
+                })}
               </div>
             </div>
 
             {/* Explore Properties */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
                 <Building2 className="w-3.5 h-3.5 text-[#2490EF]" />
                 <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
@@ -205,7 +238,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   <li key={item.label}>
                     <button
                       onClick={() => onNavigate(item.route)}
-                      className="text-slate-400 hover:text-white transition-colors relative group inline-flex items-center gap-1.5"
+                      className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group"
                     >
                       <span className="w-0 h-[1px] bg-[#2490EF] group-hover:w-3 transition-all duration-300" />
                       <span>{item.label}</span>
@@ -216,7 +249,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             </div>
 
             {/* Community & Culture */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
                 <Users className="w-3.5 h-3.5 text-[#F5A623]" />
                 <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
@@ -234,7 +267,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   <li key={item.label}>
                     <button
                       onClick={() => onNavigate(item.route)}
-                      className="text-slate-400 hover:text-white transition-colors relative group inline-flex items-center gap-1.5"
+                      className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group"
                     >
                       <span className="w-0 h-[1px] bg-[#F5A623] group-hover:w-3 transition-all duration-300" />
                       <span>{item.label}</span>
@@ -245,7 +278,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             </div>
 
             {/* Legal */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
                 <Scale className="w-3.5 h-3.5 text-[#28A745]" />
                 <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
@@ -260,9 +293,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   'Disclaimer',
                 ].map((label) => (
                   <li key={label}>
-                    <button
-                      className="text-slate-400 hover:text-white transition-colors relative group inline-flex items-center gap-1.5"
-                    >
+                    <button className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group">
                       <span className="w-0 h-[1px] bg-[#28A745] group-hover:w-3 transition-all duration-300" />
                       <span>{label}</span>
                     </button>
@@ -272,18 +303,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             </div>
 
             {/* Contact */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-3 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
                 <Compass className="w-3.5 h-3.5 text-[#2490EF]" />
                 <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
-                  Get in Touch
+                  Contact
                 </h4>
               </div>
               <div className="space-y-3.5 text-xs">
                 <div className="flex items-start gap-2.5 text-slate-400">
                   <MapPin className="w-3.5 h-3.5 text-[#F5A623] shrink-0 mt-0.5" />
                   <span className="leading-relaxed">
-                    Suite 402, Opal Mall, Main Jinnah Avenue, Bahria Town Karachi
+                    Suite 402, Opal Mall, Jinnah Avenue, Bahria Town Karachi
                   </span>
                 </div>
                 <a
@@ -318,7 +349,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
           </div>
 
           {/* ═════ Bottom Bar ═════ */}
-          <div className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <div className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs footer-reveal scroll-reveal">
             <div className="text-slate-500 text-center sm:text-left">
               © {currentYear} Realtor X. All Rights Reserved.
             </div>
@@ -348,7 +379,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
       <button
         onClick={scrollToTop}
         aria-label="Back to top"
-        className={`fixed bottom-24 right-4 sm:right-6 z-40 w-11 h-11 rounded-full bg-white/[0.06] hover:bg-[#2490EF] backdrop-blur-md border border-white/[0.1] hover:border-[#2490EF] flex items-center justify-center text-slate-300 hover:text-white transition-all duration-500 group ${
+        className={`fixed bottom-24 right-4 sm:right-6 z-40 w-11 h-11 rounded-full bg-[#080F1C]/85 hover:bg-[#2490EF] backdrop-blur-md border border-white/[0.1] hover:border-[#2490EF] flex items-center justify-center text-slate-300 hover:text-white transition-all duration-500 group shadow-2xl shadow-black/40 ${
           showTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
       >
