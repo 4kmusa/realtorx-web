@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
 const API_BASE = '/api/erp';
+const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
+const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 const STORAGE_KEY = 'realtorx_auth_user';
 
 export interface AuthUser {
@@ -97,8 +99,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await fetch(
         `${API_BASE}/method/frappe.auth.get_logged_user`,
         {
-          credentials: 'include',
           headers: { Accept: 'application/json' },
+          credentials: 'include',
         }
       );
 
@@ -111,18 +113,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!email || email === 'Guest') return;
 
-      const userResponse = await fetch(
-        `${API_BASE}/resource/User/${encodeURIComponent(email)}`,
-        {
-          credentials: 'include',
+      // Fetch user + roles in parallel (roles via custom API bypasses filtering)
+      const [userResponse, rolesResponse] = await Promise.all([
+        fetch(`${API_BASE}/resource/User/${encodeURIComponent(email)}`, {
           headers: { Accept: 'application/json' },
-        }
-      );
+          credentials: 'include',
+        }),
+        fetch(`${API_BASE}/method/realtorx.api.get_my_roles`, {
+          headers: { Accept: 'application/json' },
+          credentials: 'include',
+        }),
+      ]);
 
       if (!userResponse.ok) return;
 
       const userData = await userResponse.json();
-      const authUser = buildAuthUser(userData.data);
+      const user = userData.data;
+
+      // Inject roles from custom API (bypasses field filtering)
+      if (rolesResponse.ok) {
+        try {
+          const rolesData = await rolesResponse.json();
+          const rolesFromApi = rolesData.message?.roles || [];
+          if (rolesFromApi.length > 0) {
+            user.roles = rolesFromApi.map((r: string) => ({ role: r }));
+          }
+        } catch (e) {
+          console.warn('Failed to parse roles:', e);
+        }
+      }
+
+      const authUser = buildAuthUser(user);
 
       setUser(authUser);
       saveUserToStorage(authUser);
@@ -158,7 +179,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         `${API_BASE}/method/realtorx.api.signup`,
         {
           method: 'POST',
-          credentials: 'include',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         }
@@ -213,6 +235,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await fetch(`${API_BASE}/method/login`, {
         method: 'POST',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
       });
@@ -277,7 +300,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await refreshUser();
+      // Only refresh from backend if user was previously logged in (localStorage)
+      const stored = readUserFromStorage();
+      if (stored) {
+        await refreshUser();
+      }
       setLoading(false);
     })();
   }, []);

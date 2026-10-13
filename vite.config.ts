@@ -19,6 +19,8 @@ export default defineConfig(() => {
           target: 'http://192.168.52.241:8000',
           changeOrigin: true,
           secure: false,
+          cookieDomainRewrite: 'localhost',
+          cookiePathRewrite: '/',
           rewrite: (p) => p.replace(/^\/api\/erp/, '/api'),
           configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq) => {
