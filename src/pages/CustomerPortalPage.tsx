@@ -29,7 +29,9 @@ interface CustomerPortalPageProps {
 }
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
-const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
+const API_BASE = '/api/erp';
+const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
+const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 type TabType = 'overview' | 'bookings' | 'deals' | 'payments' | 'visits';
 
@@ -89,7 +91,11 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
           `${API_BASE}/method/realtorx.api.customer_dashboard`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              Authorization: `token ${API_KEY}:${API_SECRET}`,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'omit',
             body: JSON.stringify({ user_email: user.email }),
           }
         );
