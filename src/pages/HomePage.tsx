@@ -24,6 +24,7 @@ import {
   TrendingUp,
   BookOpen,
 } from 'lucide-react';
+import { AnimatedNumber } from '../components/AnimatedNumber';
 
 interface HomePageProps {
   onNavigate: (page: PageId, extraId?: string) => void;
@@ -72,41 +73,6 @@ function useScrollReveal(deps: React.DependencyList = []) {
 // ═══════════════════════════════════════════════════════
 // Animated counter
 // ═══════════════════════════════════════════════════════
-function useAnimatedCount(target: number, duration = 1200) {
-  const [count, setCount] = useState(0);
-  const startedRef = useRef(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (target <= 0) {
-      setCount(0);
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !startedRef.current) {
-            startedRef.current = true;
-            const start = performance.now();
-            const tick = (now: number) => {
-              const p = Math.min((now - start) / duration, 1);
-              const eased = 1 - Math.pow(1 - p, 3);
-              setCount(Math.floor(eased * target));
-              if (p < 1) requestAnimationFrame(tick);
-              else setCount(target);
-            };
-            requestAnimationFrame(tick);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target, duration]);
-
-  return { count, ref };
-}
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
   const [selectedType, setSelectedType] = useState<string>('All');
@@ -185,8 +151,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
     featuredRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const propertiesCounter = useAnimatedCount(properties.length);
-  const dealersCounter = useAnimatedCount(dealers.length);
 
   return (
     <div className="space-y-12 sm:space-y-16 lg:space-y-20">
@@ -650,18 +614,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           />
 
           <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-8 p-10 sm:p-12 text-center">
-            <div ref={propertiesCounter.ref}>
+            <div>
               <div className="text-4xl sm:text-5xl font-extrabold text-[#94A3B8] font-heading tabular-nums">
-                {properties.length > 0 ? `${propertiesCounter.count}+` : '0'}
+                {properties.length > 0 ? <><AnimatedNumber value={properties.length} />+</> : '0'}
               </div>
               <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Verified Listings
               </div>
             </div>
 
-            <div ref={dealersCounter.ref}>
+            <div>
               <div className="text-4xl sm:text-5xl font-extrabold text-[#F5A623] font-heading tabular-nums">
-                {dealers.length > 0 ? `${dealersCounter.count}+` : '—'}
+                {dealers.length > 0 ? <><AnimatedNumber value={dealers.length} />+</> : '—'}
               </div>
               <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Registered Dealers

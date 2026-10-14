@@ -25,6 +25,7 @@ import {
   Ruler,
   Wallet,
 } from 'lucide-react';
+import { AnimatedNumber } from '../components/AnimatedNumber';
 
 interface PropertiesPageProps {
   onNavigate: (page: PageId, extraId?: string) => void;
@@ -366,7 +367,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                 {filteredProperties.length}
               </span>{' '}
               of{' '}
-              <span className="text-white font-semibold tabular-nums">{properties.length}</span>{' '}
+              <span className="text-white font-semibold tabular-nums"><AnimatedNumber value={properties.length} duration={800} /></span>{' '}
               {properties.length === 1 ? 'property' : 'properties'}
               {hasActiveFilters ? ' matching your filters' : ' available'}
             </p>
