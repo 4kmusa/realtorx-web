@@ -22,6 +22,7 @@ import {
   MapPinned,
   ChevronRight,
 } from 'lucide-react';
+import { AnimatedNumber } from '../components/AnimatedNumber';
 
 interface CustomerPortalPageProps {
   onNavigate: (page: PageId, extraId?: string) => void;
@@ -263,7 +264,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
             </span>
           </div>
           <div className="text-2xl font-bold text-white font-heading">
-            {formatPKR(totalBooked)}
+            <AnimatedNumber value={totalBooked ?? 0} format={formatPKR} duration={1400} />
           </div>
           <div className="text-xs text-slate-400 mt-1">Booked Properties</div>
         </div>
@@ -276,7 +277,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
             </span>
           </div>
           <div className="text-2xl font-bold text-white font-heading">
-            {formatPKR(totalPaid)}
+            <AnimatedNumber value={totalPaid ?? 0} format={formatPKR} duration={1400} />
           </div>
           <div className="text-xs text-slate-400 mt-1">Payments Received</div>
         </div>
@@ -289,7 +290,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
             </span>
           </div>
           <div className="text-2xl font-bold text-white font-heading">
-            {formatPKR(totalPending)}
+            <AnimatedNumber value={totalPending ?? 0} format={formatPKR} duration={1400} />
           </div>
           <div className="text-xs text-slate-400 mt-1">Pending Payment</div>
         </div>

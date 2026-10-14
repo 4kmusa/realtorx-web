@@ -32,6 +32,7 @@ import {
   Compass,
   ArrowRight,
 } from 'lucide-react';
+import { AnimatedNumber } from '../components/AnimatedNumber';
 
 interface DealerPortalPageProps {
   onNavigate: (page: PageId, extraId?: string) => void;
@@ -252,28 +253,28 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
   const statCards = [
     {
       label: 'Total Deals',
-      value: formatPKR(totalDealsValue),
+      rawValue: totalDealsValue,
       sub: `${deals.length} Deals Closed`,
       icon: TrendingUp,
       color: '#F5A623',
     },
     {
       label: 'Earned',
-      value: formatPKR(totalCommissionEarned),
+      rawValue: totalCommissionEarned,
       sub: 'Commission Earned',
       icon: Award,
       color: '#28A745',
     },
     {
       label: 'Paid Out',
-      value: formatPKR(totalPaidOut),
+      rawValue: totalPaidOut,
       sub: 'Total Received',
       icon: CheckCircle2,
       color: '#2490EF',
     },
     {
       label: 'Pending',
-      value: formatPKR(pendingPayout),
+      rawValue: pendingPayout,
       sub: 'Awaiting Payout',
       icon: Clock,
       color: '#8B5CF6',
@@ -388,7 +389,11 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                 </div>
 
                 <div className="text-2xl font-bold text-white font-heading tabular-nums tracking-[-0.02em]">
-                  {stat.value}
+                  <AnimatedNumber
+                    value={stat.rawValue ?? 0}
+                    format={formatPKR}
+                    duration={1400}
+                  />
                 </div>
                 <div className="text-xs text-slate-400 mt-1.5">{stat.sub}</div>
               </div>

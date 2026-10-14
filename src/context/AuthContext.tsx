@@ -181,7 +181,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         }
       );
@@ -235,7 +234,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await fetch(`${API_BASE}/method/login`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
       });
