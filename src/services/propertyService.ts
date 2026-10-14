@@ -5,7 +5,7 @@ const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
-const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
+const API_BASE = '/api/erp';  // Always use Vite proxy for LAN + prod
 
 // Use Vercel proxy in production, direct ERPNext in dev
 const NO_IMAGE_PLACEHOLDER =
@@ -109,7 +109,8 @@ function getCategoryLabel(cat: string | undefined): string {
 function resolveImageUrl(path: string | undefined | null): string | null {
   if (!path || !path.trim()) return null;
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  return `${ERPNEXT_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  // Use relative path — Vite proxy /files/ forwards to ERPNext
+  return path.startsWith('/') ? path : `/${path}`;
 }
 
 function extractPrecinct(title: string | undefined): string {
@@ -155,7 +156,7 @@ async function loadProjectNameCache(): Promise<Map<string, string>> {
     try {
       const metaRes = await fetch(
         `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent(doctype)}`,
-        { headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' } }
+        { headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' }, credentials: 'omit' }
       );
       if (metaRes.ok) {
         const metaData = await metaRes.json();
@@ -177,6 +178,7 @@ async function loadProjectNameCache(): Promise<Map<string, string>> {
 
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      credentials: 'omit',
     });
 
     if (!res.ok) { projectNameCache = map; return map; }
@@ -262,6 +264,7 @@ export async function fetchProperties(): Promise<Property[]> {
       fetch(url, {
         method: 'GET',
         headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+        credentials: 'omit',
       }),
       loadProjectNameCache(),
     ]);
@@ -290,6 +293,7 @@ export async function fetchProperty(id: string): Promise<Property | null> {
       fetch(url, {
         method: 'GET',
         headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+        credentials: 'omit',
       }),
       loadProjectNameCache(),
     ]);
@@ -336,6 +340,7 @@ async function getMemberFieldMeta(): Promise<MemberFieldMeta> {
     const url = `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RealtorX Member')}`;
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      credentials: 'omit',
     });
     if (!res.ok) { cachedMemberMeta = empty; return empty; }
 
@@ -426,6 +431,7 @@ export async function fetchDealers(): Promise<Dealer[]> {
 
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      credentials: 'omit',
     });
     if (!res.ok) return [];
 
@@ -512,6 +518,7 @@ export async function fetchDealerApplicationByEmail(
 
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      credentials: 'omit',
     });
 
     if (!res.ok) return null;
@@ -575,6 +582,7 @@ async function getProjectFieldMeta(): Promise<ProjectFieldMeta> {
     const url = `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RX Project')}`;
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      credentials: 'omit',
     });
     if (!res.ok) { cachedProjectMeta = empty; return empty; }
 
@@ -651,6 +659,7 @@ export async function fetchProjects(): Promise<Project[]> {
     const [res, allProperties] = await Promise.all([
       fetch(url, {
         headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+        credentials: 'omit',
       }),
       fetchProperties(),
     ]);
@@ -726,6 +735,7 @@ export async function fetchWebsiteLinks(section?: string): Promise<WebsiteLink[]
 
     const res = await fetch(url, {
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      credentials: 'omit',
     });
 
     if (!res.ok) return [];

@@ -26,6 +26,14 @@ export default defineConfig(() => {
       },
     },
     server: {
+      host: '0.0.0.0',
+      allowedHosts: [
+        'localhost',
+        '127.0.0.1',
+        '192.168.83.85',
+        '192.168.52.241',
+        '.local',
+      ],
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
       proxy: {
@@ -33,16 +41,34 @@ export default defineConfig(() => {
           target: 'http://192.168.52.241:8000',
           changeOrigin: true,
           secure: false,
-          cookieDomainRewrite: 'localhost',
+          cookieDomainRewrite: '',
           cookiePathRewrite: '/',
           rewrite: (p) => p.replace(/^\/api\/erp/, '/api'),
           configure: (proxy) => {
-            proxy.on('proxyReq', (proxyReq) => {
-              // Strip the header that makes Werkzeug return 417
+            proxy.on('proxyReq', (proxyReq, req) => {
+              // Debug log — dekho kaunse headers ja rahe hain
+              if (req.url?.includes('/resource/Property') || req.url?.includes('getdoctype')) {
+                console.log('[PROXY-DEBUG]', req.method, req.url);
+                console.log('  Authorization:', proxyReq.getHeader('authorization')?.toString()?.slice(0, 40) || 'MISSING');
+                console.log('  Cookie:', proxyReq.getHeader('cookie')?.toString()?.slice(0, 60) || 'none');
+                console.log('  Origin:', proxyReq.getHeader('origin') || 'none');
+              }
               proxyReq.removeHeader('expect');
               proxyReq.removeHeader('Expect');
             });
           },
+        },
+        // Files served by ERPNext at /files/ and /private/
+        // We proxy them so LAN clients (phone) can also load images
+        '/files': {
+          target: 'http://192.168.52.241:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/private': {
+          target: 'http://192.168.52.241:8000',
+          changeOrigin: true,
+          secure: false,
         },
       },
     },
