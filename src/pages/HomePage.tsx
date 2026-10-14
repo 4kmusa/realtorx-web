@@ -208,12 +208,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           <div className="max-w-3xl mx-auto">
             <form
               onSubmit={handleSearchSubmit}
-              className="flex items-stretch gap-1.5 p-1.5 rounded-2xl bg-[#0B1A30]/95 backdrop-blur-xl border border-white/[0.12] shadow-2xl shadow-black/50"
+              className="flex flex-col sm:flex-row items-stretch gap-1.5 p-1.5 rounded-2xl bg-[#0B1A30]/95 backdrop-blur-xl border border-white/[0.12] shadow-2xl shadow-black/50"
             >
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors"
+                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors w-full"
               >
                 <option value="All" className="bg-[#0B1A30]">All Categories</option>
                 <option value="Residential Plot" className="bg-[#0B1A30]">Residential Plots</option>
@@ -223,12 +223,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 <option value="Shop" className="bg-[#0B1A30]">Commercial Shops</option>
               </select>
 
-              <div className="w-px my-2.5 bg-white/[0.12]" />
+              <div className="hidden sm:block w-px my-2.5 bg-white/[0.12]" />
 
               <select
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors"
+                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors w-full"
               >
                 <option value="All" className="bg-[#0B1A30]">All Projects</option>
                 <option value="BTK-1" className="bg-[#0B1A30]">Bahria Town Karachi</option>
@@ -237,12 +237,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 <option value="Jinnah Avenue" className="bg-[#0B1A30]">Jinnah Avenue</option>
               </select>
 
-              <div className="w-px my-2.5 bg-white/[0.12]" />
+              <div className="hidden sm:block w-px my-2.5 bg-white/[0.12]" />
 
               <select
                 value={budgetRange}
                 onChange={(e) => setBudgetRange(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors"
+                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors w-full"
               >
                 <option value="All" className="bg-[#0B1A30]">Any Price</option>
                 <option value="under-50-lakh" className="bg-[#0B1A30]">Under 50 Lakh</option>
@@ -253,7 +253,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
               <button
                 type="submit"
-                className="shrink-0 px-5 py-3 rounded-xl bg-[#F5A623] hover:bg-[#E59615] text-[#0B1A30] font-semibold text-sm transition-colors flex items-center gap-2"
+                className="shrink-0 px-5 py-3 rounded-xl bg-[#F5A623] hover:bg-[#E59615] text-[#0B1A30] font-semibold text-sm transition-colors flex items-center justify-center gap-2 sm:w-auto w-full"
               >
                 <Search className="w-4 h-4" />
                 <span className="hidden sm:inline">Search</span>
@@ -376,7 +376,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
               <div
@@ -427,11 +427,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             filteredProperties.slice(0, 6).map((property, idx) => (
               <div
                 key={property.id}
-                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div>
-                  <div className="relative h-60 w-full overflow-hidden">
+                  <div className="relative h-32 sm:h-48 lg:h-60 w-full overflow-hidden">
                     <img
                       src={property.images[0]}
                       alt={property.title}
@@ -441,8 +441,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
 
-                    <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                      <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-[#0B1A30] shadow-lg shadow-[#F5A623]/30">
+                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
+                      <span className="px-1.5 py-0.5 sm:px-3 sm:py-1 rounded sm:rounded-lg text-[8px] sm:text-[10px] font-bold uppercase tracking-wide bg-[#F5A623] text-[#0B1A30] shadow-lg shadow-[#F5A623]/30">
                         {property.category}
                       </span>
                       {property.status === 'Hot Deal' && (
@@ -453,23 +453,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                       )}
                     </div>
 
-                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white gap-2">
-                      <span className="text-xl font-bold text-[#F5A623] truncate">
+                    <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 flex items-end justify-between text-white gap-1.5 sm:gap-2">
+                      <span className="text-sm sm:text-lg lg:text-xl font-bold text-[#F5A623] truncate">
                         {property.priceFormatted}
                       </span>
-                      <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-medium shrink-0">
+                      <span className="hidden sm:inline-block text-[9px] sm:text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg font-medium shrink-0">
                         {property.size} {property.sizeUnit}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-6 space-y-3">
-                    <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#F5A623] transition-colors leading-snug line-clamp-2 min-h-[3rem]">
+                  <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-3">
+                    <h3 className="font-heading font-bold text-sm sm:text-base lg:text-lg text-white group-hover:text-[#F5A623] transition-colors leading-tight sm:leading-snug line-clamp-2 sm:min-h-[3rem]">
                       {property.title}
                     </h3>
 
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
-                      <MapPin className="w-3.5 h-3.5 text-[#F5A623] shrink-0" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-slate-400">
+                      <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#F5A623] shrink-0" />
                       <span className="truncate">
                         {property.precinct || 'Bahria Town Karachi'}
                       </span>
@@ -498,8 +498,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   </div>
                 </div>
 
-                <div className="p-6 pt-0">
-                  <div className="border-t border-white/[0.06] pt-4 flex items-center justify-between gap-3">
+                <div className="p-3 sm:p-5 pt-0 sm:pt-0">
+                  <div className="border-t border-white/[0.06] pt-2 sm:pt-4 flex items-center justify-between gap-1.5 sm:gap-3">
                     <div className="text-[11px] text-slate-500 truncate min-w-0">
                       {property.listing_type ? (
                         <span className="text-[#F5A623] font-semibold">
@@ -553,7 +553,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {[
               {
                 icon: ShieldCheck,
@@ -615,7 +615,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
           <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-8 p-10 sm:p-12 text-center">
             <div>
-              <div className="text-4xl sm:text-5xl font-extrabold text-[#94A3B8] font-heading tabular-nums">
+              <div className="text-4xl sm:text-5xl font-extrabold text-[#F5A623] font-heading tabular-nums">
                 {properties.length > 0 ? <><AnimatedNumber value={properties.length} />+</> : '0'}
               </div>
               <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
@@ -671,7 +671,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {HOW_IT_WORKS_STEPS.map((step, idx) => (
             <div
               key={idx}
@@ -778,7 +778,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
           {[
             {
               doc: 'Document 01 · Why We Exist',
@@ -868,7 +868,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             {TESTIMONIALS.map((t, idx) => (
               <div
                 key={idx}

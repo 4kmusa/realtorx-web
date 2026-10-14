@@ -327,7 +327,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             <div className="h-[700px] bg-slate-900/60 border border-slate-800 rounded-3xl animate-pulse" />
           </div>
           <div className="lg:col-span-3 min-w-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-slate-900/70 border border-slate-800 rounded-3xl overflow-hidden animate-pulse">
                   <div className="h-60 w-full bg-slate-800/50" />

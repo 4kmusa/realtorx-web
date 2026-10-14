@@ -781,7 +781,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {similarProperties.map((sp, idx) => {
               const isReal = hasRealImage(sp.images[0]);
               const spIsNew =

@@ -209,7 +209,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
 
       {/* Customer Info Card */}
       <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
           <div className="flex items-start gap-3">
             <Mail className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
             <div className="min-w-0">
@@ -255,7 +255,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
       </div>
 
       {/* Stats Cards — unified neutral design */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-4">
         <div className="p-5 rounded-2xl bg-slate-900/40 border border-white/[0.06]">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-medium text-slate-500 tracking-wide">

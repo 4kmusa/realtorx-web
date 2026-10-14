@@ -342,7 +342,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
         <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/50 to-transparent" />
 
         <div className="relative p-6 sm:p-7">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             <InfoItem icon={Mail} label="Email" value={dealer.email || '—'} />
             <InfoItem icon={Phone} label="Phone" value={dealer.phone || '—'} />
             <InfoItem icon={MapPin} label="City" value={dealer.city || '—'} />
@@ -352,7 +352,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
       </div>
 
       {/* ═════ STATS CARDS ═════ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 scroll-reveal">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 scroll-reveal">
         {statCards.map((stat, idx) => {
           const Icon = stat.icon;
           return (
