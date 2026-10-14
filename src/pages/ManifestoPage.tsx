@@ -80,10 +80,10 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
   useScrollReveal([]);
 
   const communityStatements = [
-    { text: 'A platform where professionals connect.', icon: Users, color: '#2490EF' },
+    { text: 'A platform where professionals connect.', icon: Users, color: '#94A3B8' },
     { text: 'Where opportunities are created.', icon: TrendingUp, color: '#F5A623' },
-    { text: 'Where knowledge is shared.', icon: BookOpen, color: '#8B5CF6' },
-    { text: 'Where partnerships are formed.', icon: Handshake, color: '#28A745' },
+    { text: 'Where knowledge is shared.', icon: BookOpen, color: '#94A3B8' },
+    { text: 'Where partnerships are formed.', icon: Handshake, color: '#22C55E' },
     { text: 'Where challenges become solutions.', icon: Compass, color: '#EC4899' },
     { text: 'Where trust is earned through actions.', icon: Heart, color: '#F5A623' },
   ];
@@ -94,7 +94,7 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
       {/* Top Reading Progress Bar */}
       <div className="fixed top-20 left-0 right-0 h-1 bg-slate-900 z-40">
         <div
-          className="h-full bg-gradient-to-r from-[#2490EF] via-[#F5A623] to-[#28A745] transition-all duration-150 shadow-lg shadow-[#F5A623]/30"
+          className="h-full bg-gradient-to-r from-[#94A3B8] via-[#F5A623] to-[#22C55E] transition-all duration-150 shadow-lg shadow-[#F5A623]/30"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
@@ -105,7 +105,7 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
         <div className="text-center space-y-6 max-w-3xl mx-auto scroll-reveal">
           <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{
                   color: '#F5A623'
                 }}>Foundational Charter 01 · 2 min read</span>
               </div>
@@ -118,7 +118,7 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
             )}
           </h1>
 
-          <p className="text-xl sm:text-2xl font-display italic text-[#2490EF] leading-relaxed text-balance">
+          <p className="text-xl sm:text-2xl font-heading italic text-[#94A3B8] leading-relaxed text-balance">
             {language === 'en'
               ? 'Building More Than Real Estate'
               : 'صرف ریئل اسٹیٹ نہیں، ایک باوقار مستقبل کی تعمیر'}
@@ -135,13 +135,13 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
             referrerPolicy="no-referrer"
             className="w-full h-80 sm:h-96 lg:h-[520px] object-cover group-hover:scale-[1.03] transition-transform duration-[1200ms] ease-out-expo"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628] via-[#0A1628]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A30] via-[#0B1A30]/40 to-transparent" />
 
           <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[11px] sm:text-xs">
-            <span className="font-display italic text-slate-200">
+            <span className="font-heading italic text-slate-200">
               Fig 1.0 — The Inaugural Assembly of RealtorX Custodians &amp; Advisors.
             </span>
-            <span className="font-mono text-[#F5A623] font-semibold tracking-wider uppercase">
+            <span className="font-medium text-[#F5A623] font-semibold tracking-wider uppercase">
               Connect · Collaborate · Grow
             </span>
           </div>
@@ -158,10 +158,10 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
               <p className="first-letter:text-6xl sm:first-letter:text-7xl first-letter:font-bold first-letter:text-[#F5A623] first-letter:float-left first-letter:mr-4 first-letter:leading-[0.85] first-letter:mt-1 text-slate-200">
                 Real estate is not just about land, buildings or transactions.
               </p>
-              <p className="text-xl sm:text-2xl font-display text-white leading-snug">
-                It is about <span className="text-[#2490EF]">people</span>. It is about{' '}
+              <p className="text-xl sm:text-2xl font-heading text-white leading-snug">
+                It is about <span className="text-[#94A3B8]">people</span>. It is about{' '}
                 <span className="text-[#F5A623]">dreams</span>. It is about{' '}
-                <span className="text-[#28A745]">trust</span>.
+                <span className="text-[#22C55E]">trust</span>.
               </p>
             </div>
           </div>
@@ -175,13 +175,13 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
 
           {/* Pull Quote */}
           <div className="py-12 border-y border-white/[0.08] text-center space-y-5 scroll-reveal">
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-2">
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <div className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-[#94A3B8] mb-2">
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
               <span>The Problem</span>
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
             </div>
 
-            <p className="text-2xl sm:text-3xl lg:text-4xl font-display italic text-white text-balance leading-snug">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-heading italic text-white text-balance leading-snug">
               "Yet, too often, people are left alone when projects are delayed, investments
               become uncertain and businesses struggle."
             </p>
@@ -196,14 +196,14 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
 
           <p className="text-slate-300 scroll-reveal">
             We believe the future of real estate is not competition alone—{' '}
-            <strong className="text-[#2490EF] font-semibold">it is collaboration</strong>. We are
+            <strong className="text-[#94A3B8] font-semibold">it is collaboration</strong>. We are
             building more than a marketplace. We are building a community.
           </p>
 
           {/* ═════ 6 COMMUNITY STATEMENTS ═════ */}
           <div className="scroll-reveal">
             <div className="text-center max-w-xl mx-auto mb-8">
-              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-3">
+              <div className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-[#F5A623] mb-3">
                 <span className="w-6 h-[1px] bg-[#F5A623]/60" />
                 <span>Six Commitments</span>
                 <span className="w-6 h-[1px] bg-[#F5A623]/60" />
@@ -258,13 +258,13 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
             <strong className="text-white">relationships built</strong>.
           </p>
 
-          <p className="text-2xl sm:text-3xl font-display text-white italic text-center pt-4 scroll-reveal">
+          <p className="text-2xl sm:text-3xl font-heading text-white italic text-center pt-4 scroll-reveal">
             Together, we are creating the future of real estate.
           </p>
 
           {/* ═════ FINAL BANNER ═════ */}
           <div className="relative rounded-[2rem] overflow-hidden border border-[#F5A623]/25 shadow-2xl shadow-[#F5A623]/10 scroll-reveal">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
             <div
               className="absolute inset-0 opacity-60"
               style={{
@@ -275,11 +275,11 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
             <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/60 to-transparent" />
 
             <div className="relative p-12 sm:p-16 text-center space-y-6">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#E59615] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
                 <Sparkle className="w-7 h-7 text-slate-950" />
               </div>
 
-              <div className="text-3xl sm:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] font-heading tracking-[-0.02em] leading-tight">
+              <div className="text-3xl sm:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-[#F5A623] font-heading tracking-[-0.02em] leading-tight">
                 Connect. Collaborate. Grow.
               </div>
 
@@ -304,7 +304,7 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => onNavigate('become-dealer')}
-              className="relative px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
+              className="relative px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative z-10">Join the Movement</span>

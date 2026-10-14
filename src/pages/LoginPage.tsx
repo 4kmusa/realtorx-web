@@ -53,7 +53,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-[#0A1628] overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-[#0B1A30] overflow-hidden">
       {/* Ambient background */}
       <div
         className="absolute inset-0 pointer-events-none opacity-60"
@@ -91,7 +91,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 return (
                   <div key={idx} className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-[#2490EF]" />
+                      <Icon className="w-4 h-4 text-[#94A3B8]" />
                     </div>
                     <span className="text-sm text-slate-300">{item.text}</span>
                   </div>
@@ -101,7 +101,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
             {/* Philosophy quote */}
             <div className="pt-6 border-t border-white/[0.06]">
-              <p className="font-display italic text-slate-400 text-sm leading-relaxed">
+              <p className="font-heading italic text-slate-400 text-sm leading-relaxed">
                 "Real estate is not just about land, buildings or transactions. It is about people.
                 It is about dreams. It is about trust."
               </p>
@@ -116,13 +116,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
             <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/40">
               <div className="absolute inset-0 bg-gradient-to-b from-slate-900/95 to-slate-900/70" />
-              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
+              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
 
               <div className="relative p-8 sm:p-10">
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center gap-3 mb-5">
-                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#2490EF' }}>Member Login</span>
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#94A3B8' }} />
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{ color: '#94A3B8' }}>Member Login</span>
               </div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-white font-heading tracking-[-0.02em] mb-2">
                     Welcome Back
@@ -134,11 +134,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                       Email Address
                     </label>
                     <div className="relative group">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                       <input
                         type="email"
                         required
@@ -146,25 +146,25 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="you@example.com"
                         autoComplete="email"
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-[0.12em]">
+                      <label className="block text-[10px] font-semibold text-slate-400 tracking-wide">
                         Password
                       </label>
                       <button
                         type="button"
-                        className="text-[10px] font-semibold text-[#2490EF] hover:text-[#60A5FA] transition-colors uppercase tracking-[0.1em]"
+                        className="text-[10px] font-semibold text-[#94A3B8] hover:text-[#60A5FA] transition-colors tracking-wide"
                       >
                         Forgot?
                       </button>
                     </div>
                     <div className="relative group">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
@@ -172,7 +172,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Your password"
                         autoComplete="current-password"
-                        className="w-full pl-11 pr-11 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        className="w-full pl-11 pr-11 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                       />
                       <button
                         type="button"
@@ -195,7 +195,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="relative w-full py-3.5 px-4 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-xl shadow-xl shadow-[#F5A623]/25 hover:shadow-[#F5A623]/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98] mt-2"
+                    className="relative w-full py-3.5 px-4 text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 rounded-xl shadow-xl shadow-[#F5A623]/25 hover:shadow-[#F5A623]/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98] mt-2"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     {loading ? (
@@ -216,7 +216,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   New to Realtor X?{' '}
                   <button
                     onClick={() => onNavigate('signup')}
-                    className="text-[#2490EF] hover:text-[#60A5FA] font-semibold transition-colors"
+                    className="text-[#94A3B8] hover:text-[#60A5FA] font-semibold transition-colors"
                   >
                     Create Account
                   </button>

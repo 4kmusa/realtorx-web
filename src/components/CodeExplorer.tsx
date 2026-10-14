@@ -33,7 +33,7 @@ const ICON_MAP: Record<string, IconComponent> = {
   trending: TrendingUp,
 };
 
-const DEFAULT_COLOR = '#2490EF';
+const DEFAULT_COLOR = '#94A3B8';
 
 // Safe icon getter — handles undefined icon name
 function getIcon(iconName: string | undefined): IconComponent {
@@ -77,7 +77,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
               onClick={() => setActiveId(tenet.id)}
               className={`w-full text-left p-4 rounded-xl border transition-all flex items-start gap-3 ${
                 isActive
-                  ? 'bg-[#2490EF]/10 border-[#2490EF]/50 shadow-lg'
+                  ? 'bg-[#94A3B8]/10 border-[#94A3B8]/50 shadow-lg'
                   : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
               }`}
             >
@@ -93,7 +93,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <span className="text-[10px] font-medium text-slate-500">
                     #{tenet.number}
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
 
               <ChevronRight
                 className={`w-4 h-4 shrink-0 mt-2 transition-transform ${
-                  isActive ? 'text-[#2490EF] translate-x-0' : 'text-slate-600'
+                  isActive ? 'text-[#94A3B8] translate-x-0' : 'text-slate-600'
                 }`}
               />
             </button>
@@ -141,7 +141,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-1">
+              <div className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-slate-500 mb-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-current" />
                 <span>Principle #{activeTenet.number}</span>
               </div>
@@ -181,8 +181,8 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
           {/* In Practice */}
           <div className="mb-6 p-4 sm:p-5 rounded-xl bg-slate-950/60 border border-slate-800">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle2 className="w-4 h-4 text-[#28A745]" />
-              <span className="text-xs font-bold text-[#28A745] uppercase tracking-wider font-mono">
+              <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
+              <span className="text-xs font-bold text-[#22C55E] uppercase tracking-wider font-medium">
                 In Practice
               </span>
             </div>
@@ -196,13 +196,13 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
             <div className="space-y-3">
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-4 h-4 text-[#F5A623]" />
-                <span className="text-xs font-bold text-[#F5A623] uppercase tracking-wider font-mono">
+                <span className="text-xs font-bold text-[#F5A623] uppercase tracking-wider font-medium">
                   Real Dilemma
                 </span>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                <div className="text-xs font-mono text-slate-500 uppercase tracking-wider mb-2">
+                <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">
                   Situation
                 </div>
                 <p className="text-sm text-slate-300 leading-relaxed">
@@ -214,7 +214,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
                 <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/30">
                   <div className="flex items-center gap-2 mb-2">
                     <XCircle className="w-4 h-4 text-red-400" />
-                    <span className="text-xs font-bold text-red-400 uppercase tracking-wider font-mono">
+                    <span className="text-xs font-bold text-red-400 uppercase tracking-wider font-medium">
                       Unethical Move
                     </span>
                   </div>
@@ -223,14 +223,14 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ tenets, language }) 
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#28A745]/5 border border-[#28A745]/30">
+                <div className="p-4 rounded-xl bg-[#22C55E]/5 border border-[#22C55E]/30">
                   <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#28A745]" />
-                    <span className="text-xs font-bold text-[#28A745] uppercase tracking-wider font-mono">
+                    <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
+                    <span className="text-xs font-bold text-[#22C55E] uppercase tracking-wider font-medium">
                       RealtorX Way
                     </span>
                   </div>
-                  <p className="text-sm text-[#28A745] leading-relaxed">
+                  <p className="text-sm text-[#22C55E] leading-relaxed">
                     {activeTenet.dilemma.realtorxWay}
                   </p>
                 </div>

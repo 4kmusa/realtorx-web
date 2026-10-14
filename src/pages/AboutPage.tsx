@@ -70,7 +70,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
   const values = [
     {
       icon: ShieldCheck,
-      color: '#2490EF',
+      color: '#94A3B8',
       title: 'Integrity First',
       desc: 'Every transaction is documented, verified, and transparent. No shortcuts, no hidden clauses.',
     },
@@ -88,13 +88,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
     },
     {
       icon: Award,
-      color: '#28A745',
+      color: '#22C55E',
       title: 'Verified Credentials',
       desc: 'Every dealer takes the Founding Oath. Every property passes our documentation audit.',
     },
     {
       icon: TrendingUp,
-      color: '#8B5CF6',
+      color: '#94A3B8',
       title: 'Market Intelligence',
       desc: 'Data-driven guidance. Honest valuations. No speculative hype or hidden pressure.',
     },
@@ -107,10 +107,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
   ];
 
   const milestones = [
-    { value: '2024', label: 'Founded', icon: Compass, color: '#2490EF' },
+    { value: '2024', label: 'Founded', icon: Compass, color: '#94A3B8' },
     { value: '500+', label: 'Allottees Helped', icon: Users, color: '#F5A623' },
-    { value: '100%', label: 'Document Verified', icon: ShieldCheck, color: '#28A745' },
-    { value: '80/20', label: 'Fair Split', icon: Percent, color: '#8B5CF6' },
+    { value: '100%', label: 'Document Verified', icon: ShieldCheck, color: '#22C55E' },
+    { value: '80/20', label: 'Fair Split', icon: Percent, color: '#94A3B8' },
   ];
 
   return (
@@ -123,9 +123,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         </div>
 
         <div className="inline-flex items-center gap-3 mb-5">
-                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
-                  color: '#2490EF'
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#94A3B8' }} />
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{
+                  color: '#94A3B8'
                 }}>Our Story &amp; Purpose</span>
               </div>
 
@@ -143,7 +143,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
       {/* ═════ PHILOSOPHY CALLOUT ═════ */}
       <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/30 scroll-reveal">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#050C16] via-[#0B1A30] to-[#050C16]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
         <div
           className="absolute inset-0 opacity-60"
           style={{
@@ -156,10 +156,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         <div className="relative p-10 sm:p-16 text-center">
           <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>The Realtor X Founding Core Belief</span>
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{ color: '#F5A623' }}>The Realtor X Founding Core Belief</span>
               </div>
 
-          <blockquote className="text-2xl sm:text-3xl lg:text-[2.25rem] font-display italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
+          <blockquote className="text-2xl sm:text-3xl lg:text-[2.25rem] font-heading italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
             "{BRAND_TAGLINES.philosophy}"
           </blockquote>
 
@@ -173,14 +173,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       <div className="scroll-reveal">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-5">
-            <div className="inline-flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-5">
+            <div className="inline-flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-[#F5A623] mb-5">
               <span className="w-6 h-[1px] bg-[#F5A623]/60" />
               <span>Our Origin</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight mb-6">
               The <span className="text-[#F5A623]">'Bahria Ka Dost'</span> Spirit
             </h2>
-            <div className="text-xs text-slate-500 font-mono uppercase tracking-[0.1em] mb-4">
+            <div className="text-xs text-slate-500 font-medium tracking-wide mb-4">
               Rooted in Solidarity, Not Competition
             </div>
           </div>
@@ -207,7 +207,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                   key={tag}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-white/[0.04] border border-white/[0.08] text-slate-300"
                 >
-                  <CheckCircle2 className="w-3 h-3 text-[#28A745]" />
+                  <CheckCircle2 className="w-3 h-3 text-[#22C55E]" />
                   {tag}
                 </span>
               ))}
@@ -221,7 +221,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         {[
           {
             icon: Target,
-            color: '#2490EF',
+            color: '#94A3B8',
             title: 'Our Mission',
             text: 'Connect, collaborate, and grow the real estate fraternity with unconditional ethics.',
           },
@@ -233,7 +233,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           },
           {
             icon: ShieldCheck,
-            color: '#28A745',
+            color: '#22C55E',
             title: 'Our Promise',
             text: 'Protect the allottee first, empower the dealer second, and earn trust through actions.',
           },
@@ -300,7 +300,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 <div className="text-2xl sm:text-3xl font-bold text-white font-heading tracking-[-0.02em]">
                   {m.value}
                 </div>
-                <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-slate-400">
+                <div className="text-[10px] font-medium tracking-wide text-slate-400">
                   {m.label}
                 </div>
               </div>
@@ -312,10 +312,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       {/* ═════ VALUES GRID ═════ */}
       <div>
         <div className="text-center max-w-2xl mx-auto mb-14 scroll-reveal">
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
-            <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+          <div className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
+            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
             <span>What We Stand For</span>
-            <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
             Our Core <span className="gradient-text-blue">Values</span>
@@ -342,7 +342,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                       border: '1px solid rgba(36,144,239,0.25)',
                     }}
                   >
-                    <Icon className="w-5 h-5 text-[#2490EF]" />
+                    <Icon className="w-5 h-5 text-[#94A3B8]" />
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-heading font-bold text-base text-white mb-1.5">
@@ -359,7 +359,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
       {/* ═════ BOTTOM CTA ═════ */}
       <div className="relative rounded-[2rem] overflow-hidden border border-[#F5A623]/20 shadow-2xl shadow-[#F5A623]/10 scroll-reveal">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
         <div
           className="absolute inset-0 opacity-60"
           style={{
@@ -370,7 +370,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/60 to-transparent" />
 
         <div className="relative p-10 sm:p-14 text-center space-y-6">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#E59615] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
             <Sparkle className="w-7 h-7 text-slate-950" />
           </div>
 
@@ -385,7 +385,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <button
               onClick={() => onNavigate('manifesto')}
-              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
+              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative z-10">Read The Manifesto</span>
@@ -396,7 +396,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               onClick={() => onNavigate('contact')}
               className="px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2"
             >
-              <Users className="w-4 h-4 text-[#2490EF]" />
+              <Users className="w-4 h-4 text-[#94A3B8]" />
               <span>Contact Our Team</span>
             </button>
           </div>

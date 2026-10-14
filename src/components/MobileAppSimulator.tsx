@@ -20,7 +20,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
   return (
     <div className="min-h-screen bg-stone-950 py-8 px-4 flex flex-col items-center justify-center">
       {/* Device Mode Notice Bar */}
-      <div className="mb-4 flex items-center justify-between w-full max-w-sm px-2 text-xs font-mono text-stone-400">
+      <div className="mb-4 flex items-center justify-between w-full max-w-sm px-2 text-xs font-medium text-stone-400">
         <span className="flex items-center gap-1.5 text-amber-400">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
           RealtorX Mobile App (iOS / Android Simulator)
@@ -43,7 +43,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
         </div>
 
         {/* Mobile Status Bar */}
-        <div className="pt-2 px-6 pb-1 flex items-center justify-between text-[11px] font-mono text-stone-300 z-40 bg-stone-950">
+        <div className="pt-2 px-6 pb-1 flex items-center justify-between text-[11px] font-medium text-stone-300 z-40 bg-stone-950">
           <span>9:41</span>
           <div className="flex items-center gap-1.5">
             <Signal className="w-3 h-3 text-stone-300" />
@@ -61,7 +61,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
         <div className="absolute bottom-3 left-3 right-3 bg-stone-950/95 backdrop-blur-md border-t border-stone-800/80 py-2 px-3 rounded-b-[40px] z-40 flex items-center justify-around">
           <button
             onClick={() => onSelectView('manifesto')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-mono transition-colors ${
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
               currentView === 'manifesto' ? 'text-amber-400 font-semibold' : 'text-stone-400'
             }`}
           >
@@ -71,7 +71,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
 
           <button
             onClick={() => onSelectView('philosophy')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-mono transition-colors ${
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
               currentView === 'philosophy' ? 'text-amber-400 font-semibold' : 'text-stone-400'
             }`}
           >
@@ -81,7 +81,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
 
           <button
             onClick={() => onSelectView('oath')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-mono transition-colors ${
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
               currentView === 'oath' ? 'text-amber-400 font-semibold' : 'text-stone-400'
             }`}
           >
@@ -91,7 +91,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
 
           <button
             onClick={() => onSelectView('code')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-mono transition-colors ${
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
               currentView === 'code' ? 'text-amber-400 font-semibold' : 'text-stone-400'
             }`}
           >
@@ -101,7 +101,7 @@ export const MobileAppSimulator: React.FC<MobileAppSimulatorProps> = ({
 
           <button
             onClick={() => onSelectView('members')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-mono transition-colors ${
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
               currentView === 'members' ? 'text-amber-400 font-semibold' : 'text-stone-400'
             }`}
           >

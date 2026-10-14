@@ -149,8 +149,8 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
   if (success) {
     return (
       <div className="py-20 max-w-2xl mx-auto px-4 text-center">
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#28A745]/15 border-2 border-[#28A745]/40 flex items-center justify-center">
-          <CheckCircle2 className="w-12 h-12 text-[#28A745]" />
+        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#22C55E]/15 border-2 border-[#22C55E]/40 flex items-center justify-center">
+          <CheckCircle2 className="w-12 h-12 text-[#22C55E]" />
         </div>
         <h1 className="text-3xl font-bold text-white font-heading mb-3">
           Welcome, Customer!
@@ -159,7 +159,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
           Your customer account has been created. You can now book properties, track payments,
           and manage documents.
         </p>
-        <div className="inline-flex items-center gap-2 text-sm text-[#2490EF]">
+        <div className="inline-flex items-center gap-2 text-sm text-[#94A3B8]">
           <Loader2 className="w-4 h-4 animate-spin" />
           Loading Customer Portal...
         </div>
@@ -171,7 +171,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
     <div className="py-12 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] bg-[#2490EF]/10 border border-[#2490EF]/30 px-3.5 py-1.5 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#94A3B8] bg-[#94A3B8]/10 border border-[#94A3B8]/30 px-3.5 py-1.5 rounded-full mb-4">
           <span className="w-1.5 h-1.5 rounded-full bg-current" />
           <span>Customer Registration</span>
         </div>
@@ -209,7 +209,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                 placeholder="Enter your full name"
-                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]"
               />
             </div>
           </div>
@@ -226,7 +226,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                 value={formData.cnic_number}
                 onChange={(e) => setFormData({ ...formData, cnic_number: e.target.value })}
                 placeholder="XXXXX-XXXXXXX-X"
-                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]"
               />
             </div>
           </div>
@@ -245,7 +245,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="03XX XXXXXXX"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]"
                 />
               </div>
               <p className="text-[10px] text-slate-500 mt-1">
@@ -264,7 +264,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                   value={formData.whatsapp}
                   onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                   placeholder="03XX XXXXXXX"
-                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                  className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]"
                 />
               </div>
             </div>
@@ -298,7 +298,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 placeholder="Karachi"
-                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]"
+                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]"
               />
             </div>
           </div>
@@ -315,7 +315,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 placeholder="Enter your complete address"
-                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] resize-none"
+                className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] resize-none"
               />
             </div>
           </div>
@@ -332,7 +332,7 @@ export const BecomeCustomerPage: React.FC<BecomeCustomerPageProps> = ({ onNaviga
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-4 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-lg shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3.5 px-4 text-sm font-bold text-white bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 rounded-lg shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

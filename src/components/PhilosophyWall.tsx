@@ -36,14 +36,14 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
             <RealtorXLogo size="lg" showSubtitle={false} />
           </div>
 
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/40 border border-sky-800/40 px-3 py-1 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-sky-400 bg-sky-950/40 border border-sky-800/40 px-3 py-1 rounded-full mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             <span>The Founding Culture &amp; Inscription</span>
             <span aria-hidden="true">·</span>
             <span>RealtorX Flagship Hub</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-tight text-balance">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold text-white tracking-tight leading-tight text-balance">
             {language === 'en' ? 'Building More Than Real Estate' : 'صرف ریئل اسٹیٹ نہیں، ایک باوقار مستقبل'}
           </h1>
 
@@ -66,23 +66,23 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
               className="w-full h-full object-cover brightness-[0.7] contrast-[1.15]"
             />
             {/* Measured Scrim for contrast readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#060b19] via-[#060b19]/65 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A30] via-[#0B1A30]/65 to-transparent" />
 
             {/* Brass-lettered floating inscription over photo */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 lg:p-14">
               <div className="flex items-center gap-2 mb-3">
                 <Quote className="w-8 h-8 text-amber-400" />
-                <span className="text-xs font-mono uppercase tracking-widest text-amber-300 font-semibold">
+                <span className="text-xs font-medium uppercase tracking-widest text-amber-300 font-semibold">
                   Permanent Hub Inscription
                 </span>
               </div>
 
-              <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-serif font-medium text-amber-100 tracking-wide leading-snug max-w-4xl text-balance drop-shadow-lg">
+              <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-heading font-medium text-amber-100 tracking-wide leading-snug max-w-4xl text-balance drop-shadow-lg">
                 "{language === 'en' ? PHILOSOPHY_QUOTE.quote : PHILOSOPHY_QUOTE.quoteUrdu}"
               </blockquote>
 
               <div className="mt-6 flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-300">
-                <span className="font-semibold text-amber-400 font-mono tracking-wider">
+                <span className="font-semibold text-amber-400 font-medium tracking-wider">
                   — {PHILOSOPHY_QUOTE.author}
                 </span>
                 <span className="hidden sm:inline text-slate-600">|</span>
@@ -96,7 +96,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
           {/* Curatorial Story and Genesis */}
           <div className="p-6 sm:p-10 lg:p-12 bg-[#080d21] border-t border-slate-800 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">
-              <div className="text-xs uppercase font-mono tracking-widest text-sky-400 font-semibold">
+              <div className="text-xs uppercase font-medium tracking-widest text-sky-400 font-semibold">
                 {language === 'en' ? 'The Philosophy in Action' : 'اس فلسفے کا پس منظر اور روح'}
               </div>
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
@@ -150,7 +150,7 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
               <div className="w-14 h-14 rounded-full bg-amber-400/10 border border-amber-400/40 flex items-center justify-center text-amber-400 mb-3 shadow-inner">
                 <CheckCircle2 className="w-7 h-7" />
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white">
+              <h3 className="text-lg font-heading font-semibold text-white">
                 {language === 'en' ? 'Become a Founding Custodian' : 'بانی کسٹوڈین بنیں'}
               </h3>
               <p className="text-xs text-slate-400 mt-1 mb-5">
@@ -176,11 +176,11 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
             className="group cursor-pointer p-6 sm:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-sky-500/50 transition-all flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center gap-2 text-xs font-mono text-sky-400 uppercase tracking-wider mb-2">
+              <div className="flex items-center gap-2 text-xs font-medium text-sky-400 uppercase tracking-wider mb-2">
                 <BookOpen className="w-4 h-4" />
                 <span>Foundational Charter 01</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-serif font-bold text-white group-hover:text-sky-300 transition-colors">
+              <h3 className="text-xl sm:text-2xl font-heading font-bold text-white group-hover:text-sky-300 transition-colors">
                 {language === 'en' ? 'The RealtorX Manifesto' : 'ریئلٹر ایکس منشور (Manifesto)'}
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
@@ -200,11 +200,11 @@ export const PhilosophyWall: React.FC<PhilosophyWallProps> = ({
             className="group cursor-pointer p-6 sm:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-amber-500/50 transition-all flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 uppercase tracking-wider mb-2">
+              <div className="flex items-center gap-2 text-xs font-medium text-amber-400 uppercase tracking-wider mb-2">
                 <Scale className="w-4 h-4" />
                 <span>Foundational Charter 03</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-serif font-bold text-white group-hover:text-amber-300 transition-colors">
+              <h3 className="text-xl sm:text-2xl font-heading font-bold text-white group-hover:text-amber-300 transition-colors">
                 {language === 'en' ? 'The RealtorX Code (8 Tenets)' : 'ریئلٹر ایکس ضابطہ اخلاق (The Code)'}
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">

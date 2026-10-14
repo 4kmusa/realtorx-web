@@ -84,7 +84,7 @@ const PRINCIPLES: Principle[] = [
       'Transparency in property documentation, realistic timelines, and disclosure of material facts. No false promises to close a sale.',
     inPractice:
       'Never conceal litigation, pending dues, or non-approved status of land. Tell the client the exact state before they hand over a cheque.',
-    color: '#2490EF',
+    color: '#94A3B8',
   },
   {
     number: '02',
@@ -106,7 +106,7 @@ const PRINCIPLES: Principle[] = [
       'When delays, disputes, or documentation issues arise, we become problem-solvers, not blame-shifters. We own the outcome.',
     inPractice:
       'When Bahria Town transfer is delayed, actively follow up with the office daily. Do not leave the client alone with "system issue" excuses.',
-    color: '#28A745',
+    color: '#22C55E',
   },
   {
     number: '04',
@@ -117,7 +117,7 @@ const PRINCIPLES: Principle[] = [
       'Whether a junior agent, senior developer, or a first-time buyer — every person in the transaction deserves dignity and respect.',
     inPractice:
       'Never undermine another agent in front of a client. Speak respectfully about competitors and colleagues.',
-    color: '#8B5CF6',
+    color: '#94A3B8',
   },
   {
     number: '05',
@@ -161,7 +161,7 @@ const PRINCIPLES: Principle[] = [
       'Real estate in Pakistan has a mixed reputation. We are here to change that — one honest transaction at a time.',
     inPractice:
       'When you retire or leave this industry, the next generation should have a better environment because of your work.',
-    color: '#28A745',
+    color: '#22C55E',
   },
 ];
 
@@ -186,7 +186,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
 
         <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{
                   color: '#F5A623'
                 }}>Foundational Charter 03 · The 8 Principles</span>
               </div>
@@ -206,13 +206,13 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
             onClick={handlePrint}
             className="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] rounded-xl transition-all"
           >
-            <Printer className="w-4 h-4 text-[#2490EF]" />
+            <Printer className="w-4 h-4 text-[#94A3B8]" />
             <span>Print Version</span>
           </button>
 
           <button
             onClick={handleTakeOath}
-            className="relative inline-flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-xl shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all overflow-hidden group active:scale-[0.98]"
+            className="relative inline-flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 rounded-xl shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all overflow-hidden group active:scale-[0.98]"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             <Award className="w-4 h-4 relative z-10" />
@@ -242,7 +242,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
 
               {/* Giant number watermark */}
               <div
-                className="absolute -top-6 -right-4 text-[8rem] sm:text-[10rem] font-black leading-none opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none select-none text-[#2490EF]"
+                className="absolute -top-6 -right-4 text-[8rem] sm:text-[10rem] font-black leading-none opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none select-none text-[#94A3B8]"
               >
                 {principle.number}
               </div>
@@ -258,11 +258,11 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
                     }}
                   >
                     <Icon
-                      className="w-7 h-7 text-[#2490EF]"
+                      className="w-7 h-7 text-[#94A3B8]"
                     />
                   </div>
 
-                  <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.15em] text-slate-500">
+                  <div className="flex items-center gap-2 text-[10px] font-medium tracking-wide text-slate-500">
                     <span className="w-6 h-[1px] bg-slate-600" />
                     <span>Rule #{principle.number}</span>
                   </div>
@@ -270,7 +270,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
 
                 {/* Title */}
                 <h3 className="text-xl sm:text-2xl font-bold text-white font-heading tracking-[-0.02em] leading-tight mb-3">
-                  <span className="text-slate-500 font-mono mr-2 text-lg">
+                  <span className="text-slate-500 font-medium mr-2 text-lg">
                     {principle.number}.
                   </span>
                   {principle.title}
@@ -278,7 +278,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
 
                 {/* Motto */}
                 <p
-                  className="text-sm font-display italic mb-4 leading-relaxed text-[#2490EF]"
+                  className="text-sm font-heading italic mb-4 leading-relaxed text-[#94A3B8]"
                 >
                   "{principle.motto}"
                 </p>
@@ -291,10 +291,10 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
                 {/* In Practice */}
                 <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-5 h-5 rounded-full bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center">
-                      <CheckCircle2 className="w-3 h-3 text-[#28A745]" />
+                    <div className="w-5 h-5 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-[#22C55E]" />
                     </div>
-                    <span className="text-[10px] font-bold text-[#28A745] uppercase tracking-[0.15em] font-mono">
+                    <span className="text-[10px] font-bold text-[#22C55E] tracking-wide font-medium">
                       In Practice
                     </span>
                   </div>
@@ -309,8 +309,8 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
       </div>
 
       {/* ═════ BOTTOM CTA ═════ */}
-      <div className="relative rounded-[2rem] overflow-hidden border border-[#2490EF]/20 shadow-2xl shadow-[#2490EF]/10 scroll-reveal">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+      <div className="relative rounded-[2rem] overflow-hidden border border-[#94A3B8]/20 shadow-2xl shadow-[#94A3B8]/10 scroll-reveal">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
         <div
           className="absolute inset-0 opacity-60"
           style={{
@@ -318,10 +318,10 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
               'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
           }}
         />
-        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
 
         <div className="relative p-10 sm:p-14 text-center space-y-6">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#E59615] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
             <Shield className="w-7 h-7 text-slate-950" />
           </div>
 
@@ -337,7 +337,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <button
               onClick={handleTakeOath}
-              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
+              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <Award className="w-4 h-4 relative z-10" />
@@ -349,7 +349,7 @@ export const CodePage: React.FC<CodePageProps> = ({ onNavigate, language }) => {
               onClick={() => onNavigate('manifesto')}
               className="px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2"
             >
-              <BookOpen className="w-4 h-4 text-[#2490EF]" />
+              <BookOpen className="w-4 h-4 text-[#94A3B8]" />
               <span>Read the Manifesto</span>
             </button>
           </div>

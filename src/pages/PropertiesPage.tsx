@@ -348,8 +348,8 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
     <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* HEADER */}
       <div className="mb-10">
-        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
-          <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
+          <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
           <span>Marketplace</span>
           <span className="text-slate-600">·</span>
           <span>Bahria Town Karachi</span>
@@ -378,7 +378,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all duration-300 ${
                   viewMode === 'grid'
-                    ? 'bg-[#2490EF] text-white shadow-md shadow-[#2490EF]/30'
+                    ? 'bg-[#F5A623] text-[#0B1A30] shadow-md shadow-[#F5A623]/30'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
                 aria-label="Grid view"
@@ -390,7 +390,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-all duration-300 ${
                   viewMode === 'list'
-                    ? 'bg-[#2490EF] text-white shadow-md shadow-[#2490EF]/30'
+                    ? 'bg-[#F5A623] text-[#0B1A30] shadow-md shadow-[#F5A623]/30'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
                 aria-label="List view"
@@ -440,7 +440,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="pl-9 pr-9 py-2.5 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer appearance-none transition-all"
+                className="pl-9 pr-9 py-2.5 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 cursor-pointer appearance-none transition-all"
               >
                 <option value="default">Sort: Default</option>
                 <option value="price-low">Price: Low to High</option>
@@ -471,7 +471,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               <button
                 key={chip.key}
                 onClick={chip.onClear}
-                className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#2490EF]/10 border border-[#2490EF]/30 text-[#2490EF] hover:bg-[#2490EF]/20 hover:border-[#2490EF]/50 transition-all"
+                className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#94A3B8]/10 border border-[#94A3B8]/30 text-[#94A3B8] hover:bg-[#E59615]/20 hover:border-[#F5A623]/50 transition-all"
               >
                 <span>{chip.label}</span>
                 <X className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -479,7 +479,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             ))}
             <button
               onClick={resetFilters}
-              className="text-xs font-semibold text-[#F5A623] hover:text-[#FFB84D] hover:underline ml-1"
+              className="text-xs font-semibold text-[#F5A623] hover:text-[#F5A623] hover:underline ml-1"
             >
               Clear all
             </button>
@@ -495,15 +495,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
 
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                  <SlidersHorizontal className="w-4 h-4 text-[#2490EF]" />
+                <div className="w-8 h-8 rounded-xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                  <SlidersHorizontal className="w-4 h-4 text-[#94A3B8]" />
                 </div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-[0.1em]">Filters</h3>
+                <h3 className="text-sm font-bold text-white tracking-wide">Filters</h3>
               </div>
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="text-[10px] text-[#F5A623] hover:text-[#FFB84D] hover:underline font-bold uppercase tracking-[0.1em]"
+                  className="text-[10px] text-[#F5A623] hover:text-[#F5A623] hover:underline font-bold tracking-wide"
                 >
                   Reset
                 </button>
@@ -511,25 +511,25 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             </div>
 
             <div className="mb-6">
-              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em]">
+              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide">
                 Search
               </label>
               <div className="relative group">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                 <input
                   type="text"
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
                   placeholder="Precinct, villa, shop..."
-                  className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                 />
               </div>
             </div>
 
             {categories.length > 1 && (
               <div className="mb-6">
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
-                  <Tag className="w-3 h-3 text-[#2490EF]" />
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide flex items-center gap-1.5">
+                  <Tag className="w-3 h-3 text-[#94A3B8]" />
                   Category
                 </label>
                 <div className="space-y-1">
@@ -542,13 +542,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                         onClick={() => setSelectedCategory(cat)}
                         className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm transition-all flex items-center justify-between group ${
                           isActive
-                            ? 'bg-[#2490EF]/15 text-[#2490EF] font-semibold ring-1 ring-[#2490EF]/30'
+                            ? 'bg-[#94A3B8]/15 text-[#94A3B8] font-semibold ring-1 ring-[#94A3B8]/30'
                             : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
                         }`}
                       >
                         <span className="truncate">{cat === 'All' ? 'All Categories' : cat}</span>
-                        <span className={`text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-lg shrink-0 ml-2 transition-colors ${
-                          isActive ? 'bg-[#2490EF]/25 text-[#2490EF]' : 'bg-white/[0.04] text-slate-500 group-hover:bg-white/[0.08]'
+                        <span className={`text-[10px] font-medium tabular-nums px-2 py-0.5 rounded-lg shrink-0 ml-2 transition-colors ${
+                          isActive ? 'bg-[#94A3B8]/25 text-[#94A3B8]' : 'bg-white/[0.04] text-slate-500 group-hover:bg-white/[0.08]'
                         }`}>
                           {count}
                         </span>
@@ -561,14 +561,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
 
             {projects.length > 1 && (
               <div className="mb-6">
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
-                  <Building2 className="w-3 h-3 text-[#2490EF]" />
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide flex items-center gap-1.5">
+                  <Building2 className="w-3 h-3 text-[#94A3B8]" />
                   Project
                 </label>
                 <select
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer transition-all"
+                  className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 cursor-pointer transition-all"
                 >
                   {projects.map((proj) => (
                     <option key={proj} value={proj}>
@@ -581,14 +581,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
 
             {precincts.length > 1 && (
               <div className="mb-6">
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide flex items-center gap-1.5">
                   <MapPin className="w-3 h-3 text-[#F5A623]" />
                   Precinct
                 </label>
                 <select
                   value={selectedPrecinct}
                   onChange={(e) => setSelectedPrecinct(e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer transition-all"
+                  className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 cursor-pointer transition-all"
                 >
                   {precincts.map((p) => (
                     <option key={p} value={p}>
@@ -600,8 +600,8 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             )}
 
             <div className="mb-6">
-              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
-                <Ruler className="w-3 h-3 text-[#28A745]" />
+              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide flex items-center gap-1.5">
+                <Ruler className="w-3 h-3 text-[#22C55E]" />
                 Plot / Villa Size
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -616,7 +616,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                     onClick={() => setSelectedSize(opt.value)}
                     className={`px-2 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
                       selectedSize === opt.value
-                        ? 'bg-[#2490EF]/15 text-[#2490EF] ring-1 ring-[#2490EF]/30'
+                        ? 'bg-[#94A3B8]/15 text-[#94A3B8] ring-1 ring-[#94A3B8]/30'
                         : 'bg-slate-950/60 text-slate-400 hover:text-white hover:bg-white/[0.06]'
                     }`}
                   >
@@ -628,7 +628,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
 
             {hasBedrooms && (
               <div className="mb-6">
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide flex items-center gap-1.5">
                   <Bed className="w-3 h-3 text-purple-400" />
                   Bedrooms
                 </label>
@@ -639,7 +639,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
                       onClick={() => setSelectedBedrooms(opt)}
                       className={`py-2.5 rounded-lg text-xs font-medium transition-all duration-300 ${
                         selectedBedrooms === opt
-                          ? 'bg-[#2490EF]/15 text-[#2490EF] ring-1 ring-[#2490EF]/30'
+                          ? 'bg-[#94A3B8]/15 text-[#94A3B8] ring-1 ring-[#94A3B8]/30'
                           : 'bg-slate-950/60 text-slate-400 hover:text-white hover:bg-white/[0.06]'
                       }`}
                     >
@@ -651,14 +651,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
             )}
 
             <div>
-              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 uppercase tracking-[0.12em] flex items-center gap-1.5">
+              <label className="block text-[10px] font-semibold text-slate-400 mb-2.5 tracking-wide flex items-center gap-1.5">
                 <Wallet className="w-3 h-3 text-[#F5A623]" />
                 Price Range
               </label>
               <select
                 value={selectedPriceRange}
                 onChange={(e) => setSelectedPriceRange(e.target.value)}
-                className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 cursor-pointer transition-all"
+                className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 cursor-pointer transition-all"
               >
                 {PRICE_RANGES.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -683,7 +683,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               </p>
               <button
                 onClick={() => onNavigate('contact')}
-                className="px-7 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-all shadow-lg shadow-[#2490EF]/25 active:scale-[0.98]"
+                className="px-7 py-3 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-xl transition-all shadow-lg shadow-[#F5A623]/25 active:scale-[0.98]"
               >
                 Contact Us
               </button>
@@ -700,7 +700,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
                   onClick={resetFilters}
-                  className="px-6 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-all shadow-lg shadow-[#2490EF]/25 active:scale-[0.98]"
+                  className="px-6 py-3 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-xl transition-all shadow-lg shadow-[#F5A623]/25 active:scale-[0.98]"
                 >
                   Clear All Filters
                 </button>
@@ -768,7 +768,7 @@ const PropertyCard: React.FC<{
 
   return (
     <div
-      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
       style={{ animationDelay: `${(index % 6) * 60}ms` }}
     >
       <div>
@@ -784,7 +784,7 @@ const PropertyCard: React.FC<{
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
               <ImageOff className="w-10 h-10 text-slate-600 mb-2" strokeWidth={1.5} />
-              <span className="text-xs text-slate-500 font-mono">No Image</span>
+              <span className="text-xs text-slate-500 font-medium">No Image</span>
             </div>
           )}
 
@@ -812,7 +812,7 @@ const PropertyCard: React.FC<{
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-1.5 flex-wrap">
                 {property.status && (
-                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#28A745] text-white shadow-lg shadow-[#28A745]/30">
+                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#22C55E] text-white shadow-lg shadow-[#22C55E]/30">
                     {property.status}
                   </span>
                 )}
@@ -823,25 +823,25 @@ const PropertyCard: React.FC<{
                   </span>
                 )}
               </div>
-              <div className="text-xl font-bold text-[#F5A623] font-mono leading-none drop-shadow-lg">
+              <div className="text-xl font-bold text-[#F5A623] font-medium leading-none drop-shadow-lg">
                 {property.priceFormatted}
               </div>
             </div>
 
-            <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-mono text-white shrink-0">
+            <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-medium text-white shrink-0">
               {property.size} {property.sizeUnit}
             </span>
           </div>
 
           {property.images.length > 1 && realImg && (
-            <span className="absolute top-4 right-16 text-[10px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white">
+            <span className="absolute top-4 right-16 text-[10px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-medium text-white">
               {property.images.length} photos
             </span>
           )}
         </div>
 
         <div className="p-6 space-y-3">
-          <h3 className="font-heading font-bold text-base sm:text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2 min-h-[2.75rem]">
+          <h3 className="font-heading font-bold text-base sm:text-lg text-white group-hover:text-[#F5A623] transition-colors leading-snug line-clamp-2 min-h-[2.75rem]">
             {property.title}
           </h3>
 
@@ -873,7 +873,7 @@ const PropertyCard: React.FC<{
 
       <div className="px-6 pb-6">
         <div className="border-t border-white/[0.06] pt-4 flex items-center justify-between gap-2">
-          <div className="text-[10px] text-slate-500 font-mono truncate min-w-0 flex items-center gap-1">
+          <div className="text-[10px] text-slate-500 font-medium truncate min-w-0 flex items-center gap-1">
             <Building2 className="w-3 h-3 shrink-0" />
             <span className="truncate">{property.erpCode}</span>
           </div>
@@ -884,7 +884,7 @@ const PropertyCard: React.FC<{
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="w-9 h-9 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white flex items-center justify-center transition-all duration-300 shadow-md shadow-[#25D366]/30 hover:shadow-[#25D366]/50 hover:scale-105"
+              className="w-9 h-9 rounded-xl bg-[#25D366] hover:bg-[#22C55E] text-white flex items-center justify-center transition-all duration-300 shadow-md shadow-[#25D366]/30 hover:shadow-[#25D366]/50 hover:scale-105"
               aria-label="WhatsApp"
               title="Chat on WhatsApp"
             >
@@ -893,7 +893,7 @@ const PropertyCard: React.FC<{
 
             <button
               onClick={handleClick}
-              className="px-4 py-2 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#2490EF] border border-white/[0.08] hover:border-[#2490EF] rounded-xl transition-all duration-300 flex items-center gap-1.5 group/btn"
+              className="px-4 py-2 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#E59615] border border-white/[0.08] hover:border-[#F5A623] rounded-xl transition-all duration-300 flex items-center gap-1.5 group/btn"
             >
               <span>Details</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -927,7 +927,7 @@ const PropertyListItem: React.FC<{
 
   return (
     <div
-      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#2490EF]/10 scroll-reveal"
+      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#94A3B8]/10 scroll-reveal"
       style={{ animationDelay: `${(index % 8) * 50}ms` }}
     >
       <div className="flex flex-col sm:flex-row min-w-0">
@@ -965,7 +965,7 @@ const PropertyListItem: React.FC<{
           </button>
 
           {property.images.length > 1 && realImg && (
-            <span className="absolute bottom-4 right-4 text-[10px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-mono text-white">
+            <span className="absolute bottom-4 right-4 text-[10px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg font-medium text-white">
               {property.images.length} photos
             </span>
           )}
@@ -974,13 +974,13 @@ const PropertyListItem: React.FC<{
         <div className="flex-1 min-w-0 p-6 flex flex-col justify-between">
           <div className="min-w-0">
             <div className="flex items-start gap-3 mb-3 min-w-0">
-              <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug flex-1 min-w-0 line-clamp-2">
+              <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#F5A623] transition-colors leading-snug flex-1 min-w-0 line-clamp-2">
                 {property.title}
               </h3>
 
               <div className="flex flex-col gap-1 items-end shrink-0">
                 {property.status && (
-                  <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-[#28A745] text-white whitespace-nowrap">
+                  <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-[#22C55E] text-white whitespace-nowrap">
                     {property.status}
                   </span>
                 )}
@@ -1002,20 +1002,20 @@ const PropertyListItem: React.FC<{
 
             <div className="grid grid-cols-3 gap-4 text-xs mb-2">
               <div className="min-w-0">
-                <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-mono">Size</div>
+                <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-medium">Size</div>
                 <div className="text-white font-semibold truncate">
                   {property.size} {property.sizeUnit}
                 </div>
               </div>
               <div className="min-w-0">
-                <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-mono">Price</div>
-                <div className="text-[#F5A623] font-bold font-mono truncate">
+                <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-medium">Price</div>
+                <div className="text-[#F5A623] font-bold font-medium truncate">
                   {property.priceFormatted}
                 </div>
               </div>
               {property.ownership && (
                 <div className="min-w-0">
-                  <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-mono">Ownership</div>
+                  <div className="text-slate-500 mb-1 uppercase tracking-wider text-[10px] font-medium">Ownership</div>
                   <div className="text-white font-semibold truncate">{property.ownership}</div>
                 </div>
               )}
@@ -1023,7 +1023,7 @@ const PropertyListItem: React.FC<{
           </div>
 
           <div className="pt-4 mt-2 border-t border-white/[0.06] flex items-center justify-between gap-2 min-w-0">
-            <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1 truncate min-w-0">
+            <div className="text-[10px] text-slate-500 font-medium flex items-center gap-1 truncate min-w-0">
               <Building2 className="w-3 h-3 shrink-0" />
               <span className="truncate">{property.erpCode}</span>
             </div>
@@ -1034,7 +1034,7 @@ const PropertyListItem: React.FC<{
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="w-10 h-10 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white flex items-center justify-center transition-all duration-300 shadow-md shadow-[#25D366]/30 hover:shadow-[#25D366]/50 hover:scale-105"
+                className="w-10 h-10 rounded-xl bg-[#25D366] hover:bg-[#22C55E] text-white flex items-center justify-center transition-all duration-300 shadow-md shadow-[#25D366]/30 hover:shadow-[#25D366]/50 hover:scale-105"
                 aria-label="WhatsApp"
                 title="Chat on WhatsApp"
               >
@@ -1042,7 +1042,7 @@ const PropertyListItem: React.FC<{
               </a>
               <button
                 onClick={handleClick}
-                className="px-4 py-2.5 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#2490EF] border border-white/[0.08] hover:border-[#2490EF] rounded-xl transition-all duration-300 flex items-center gap-1.5 group/btn whitespace-nowrap"
+                className="px-4 py-2.5 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#E59615] border border-white/[0.08] hover:border-[#F5A623] rounded-xl transition-all duration-300 flex items-center gap-1.5 group/btn whitespace-nowrap"
               >
                 <span>View Details</span>
                 <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />

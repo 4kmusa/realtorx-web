@@ -94,13 +94,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] bg-[#2490EF]/10 border border-[#2490EF]/30 px-4 py-1.5 rounded-full">
+        <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#94A3B8] bg-[#94A3B8]/10 border border-[#94A3B8]/30 px-4 py-1.5 rounded-full">
           <span className="w-1.5 h-1.5 rounded-full bg-current" />
           <span>Bahria Town Karachi Hub</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white font-heading leading-tight">
-          Get in Touch With <span className="text-[#2490EF]">Realtor X</span>
+          Get in Touch With <span className="text-[#94A3B8]">Realtor X</span>
         </h1>
 
         <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
@@ -114,7 +114,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             href={whatsappUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5b] transition-all shadow-md shadow-[#25D366]/30"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#25D366] hover:bg-[#22C55E] transition-all shadow-md shadow-[#25D366]/30"
           >
             <WhatsAppIcon className="w-4 h-4" />
             <span>WhatsApp Now</span>
@@ -124,7 +124,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             href={`tel:${PHONE_TEL}`}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all"
           >
-            <Phone className="w-4 h-4 text-[#2490EF]" />
+            <Phone className="w-4 h-4 text-[#94A3B8]" />
             <span>Call {PHONE_DISPLAY}</span>
           </a>
 
@@ -144,14 +144,14 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
         <div className="lg:col-span-5 space-y-5">
           <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-900/70 border border-slate-800 space-y-6 shadow-xl">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-              <div className="w-11 h-11 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                <Building className="w-5 h-5 text-[#2490EF]" />
+              <div className="w-11 h-11 rounded-2xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                <Building className="w-5 h-5 text-[#94A3B8]" />
               </div>
               <div>
                 <h3 className="font-heading font-bold text-lg text-white leading-tight">
                   Bahria Town Head Office
                 </h3>
-                <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider mt-0.5">
+                <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">
                   Karach · Pakistan
                 </p>
               </div>
@@ -163,7 +163,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   <MapPin className="w-4 h-4 text-[#F5A623]" />
                 </div>
                 <div>
-                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-mono">
+                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-medium">
                     Physical Address
                   </strong>
                   <span className="leading-relaxed text-xs">
@@ -174,11 +174,11 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
               </div>
 
               <a href={`tel:${PHONE_TEL}`} className="flex items-start gap-3 group">
-                <div className="w-9 h-9 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-center shrink-0 group-hover:border-[#2490EF]/50 transition-colors">
-                  <Phone className="w-4 h-4 text-[#2490EF]" />
+                <div className="w-9 h-9 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-center shrink-0 group-hover:border-[#F5A623]/50 transition-colors">
+                  <Phone className="w-4 h-4 text-[#94A3B8]" />
                 </div>
                 <div>
-                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-mono">
+                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-medium">
                     Telephone
                   </strong>
                   <span className="leading-relaxed text-xs group-hover:text-white transition-colors">
@@ -189,10 +189,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
               <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex items-start gap-3 group">
                 <div className="w-9 h-9 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-center shrink-0 group-hover:border-[#25D366]/50 transition-colors">
-                  <MessageSquare className="w-4 h-4 text-[#28A745]" />
+                  <MessageSquare className="w-4 h-4 text-[#22C55E]" />
                 </div>
                 <div>
-                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-mono">
+                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-medium">
                     Official WhatsApp
                   </strong>
                   <span className="leading-relaxed text-xs group-hover:text-white transition-colors">
@@ -206,7 +206,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   <Mail className="w-4 h-4 text-slate-400" />
                 </div>
                 <div>
-                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-mono">
+                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-medium">
                     Email Inquiries
                   </strong>
                   <span className="leading-relaxed text-xs group-hover:text-white transition-colors">
@@ -222,7 +222,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   <Clock className="w-4 h-4 text-slate-400" />
                 </div>
                 <div>
-                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-mono">
+                  <strong className="text-white block text-xs uppercase tracking-wider mb-1 font-medium">
                     Business Hours
                   </strong>
                   <span className="leading-relaxed text-xs">
@@ -239,7 +239,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-[#25D366] hover:bg-[#1ebe5b] shadow-lg shadow-[#25D366]/25 transition-all flex items-center justify-center gap-2.5"
+                className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-[#25D366] hover:bg-[#22C55E] shadow-lg shadow-[#25D366]/25 transition-all flex items-center justify-center gap-2.5"
               >
                 <WhatsAppIcon className="w-5 h-5" />
                 <span>Instant WhatsApp Live Chat</span>
@@ -249,8 +249,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
           {/* Map / Landmark Card */}
           <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-900/50 border border-slate-800 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center mx-auto">
-              <MapPin className="w-6 h-6 text-[#2490EF]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center mx-auto">
+              <MapPin className="w-6 h-6 text-[#94A3B8]" />
             </div>
             <h4 className="font-heading font-bold text-white text-sm">
               Main Jinnah Avenue Landmark
@@ -260,7 +260,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             </p>
             <button
               onClick={() => onNavigate('properties')}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2490EF] hover:text-[#1b7ecf] pt-1"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#94A3B8] hover:text-[#F5A623] pt-1"
             >
               <span>Browse Properties</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -273,8 +273,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
           {sent ? (
             <div className="text-center py-12 space-y-5">
-              <div className="w-20 h-20 mx-auto rounded-3xl bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center">
-                <CheckCircle2 className="w-10 h-10 text-[#28A745]" />
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-[#22C55E]" />
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white font-heading mb-2">
@@ -292,7 +292,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5b] transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#25D366] hover:bg-[#22C55E] transition-colors"
                 >
                   <WhatsAppIcon className="w-4 h-4" />
                   Chat on WhatsApp
@@ -316,7 +316,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="pb-4 border-b border-slate-800">
                 <h3 className="text-xl font-bold text-white font-heading flex items-center gap-2">
-                  <span className="w-1 h-5 rounded-full bg-[#2490EF]" />
+                  <span className="w-1 h-5 rounded-full bg-[#F5A623]" />
                   Send Us a Direct Message
                 </h3>
                 <p className="text-xs text-slate-400 mt-2">
@@ -335,7 +335,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Asim Raza"
-                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
+                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] focus:ring-2 focus:ring-[#94A3B8]/20 transition-all"
                   />
                 </div>
 
@@ -349,7 +349,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+92 300 1234567"
-                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
+                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] focus:ring-2 focus:ring-[#94A3B8]/20 transition-all"
                   />
                 </div>
               </div>
@@ -364,7 +364,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="asim@gmail.com"
-                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all"
+                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] focus:ring-2 focus:ring-[#94A3B8]/20 transition-all"
                   />
                 </div>
 
@@ -375,7 +375,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   <select
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all cursor-pointer"
+                    className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8] focus:ring-2 focus:ring-[#94A3B8]/20 transition-all cursor-pointer"
                   >
                     <option>Property Purchase Inquiry</option>
                     <option>Book a Guided Site Visit</option>
@@ -398,7 +398,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Tell us what precinct or property you are looking for..."
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] focus:ring-2 focus:ring-[#2490EF]/20 transition-all resize-none"
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] focus:ring-2 focus:ring-[#94A3B8]/20 transition-all resize-none"
                 />
               </div>
 
@@ -412,7 +412,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 shadow-lg shadow-[#2490EF]/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 shadow-lg shadow-[#F5A623]/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {sending ? (
                   <>

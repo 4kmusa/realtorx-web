@@ -194,172 +194,142 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       {/* ═══════════════════════════════════════════════════
           1. HERO
          ═══════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden pt-12 pb-16 lg:pt-16 lg:pb-20 bg-[#0A1628]">
-        <div
-          className="absolute inset-0 pointer-events-none opacity-70"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(245, 166, 35, 0.08) 0%, transparent 60%)',
-          }}
-        />
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(148,163,184,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.5) 1px, transparent 1px)',
-            backgroundSize: '64px 64px',
-            maskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
-            WebkitMaskImage:
-              'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
-          }}
-        />
+      <section className="relative overflow-hidden min-h-[600px] lg:min-h-[680px] flex items-center">
+        {/* ── Background image ── */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/bahria_town_karachi_1790600916751.jpg"
+            alt="Bahria Town Karachi"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+          {/* Dark overlay for text readability */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(11, 26, 48, 0.85) 0%, rgba(11, 26, 48, 0.75) 40%, rgba(11, 26, 48, 0.92) 100%)',
+            }}
+          />
+          {/* Subtle orange glow at top */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
+            }}
+          />
+        </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-4xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-3 mb-5">
-                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
-                  color: '#2490EF'
-                }}>Bahria Town Karachi's Premier Community Marketplace</span>
-              </div>
+        {/* ── Content ── */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-16 lg:py-20">
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] font-bold tracking-[-0.03em] text-white leading-[1.02] font-heading text-balance">
+          {/* Headline */}
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold tracking-[-0.03em] text-white leading-[1.05] font-heading drop-shadow-2xl">
               Real Estate.{' '}
-              <span className="gradient-text">Reimagined.</span>
+              <span className="text-[#F5A623]">Reimagined.</span>
             </h1>
 
-            <p className="mt-6 text-base sm:text-lg lg:text-xl text-slate-300/90 max-w-2xl mx-auto leading-relaxed">
-              Connect with verified dealers, explore real residential and commercial properties,
-              and invest with complete trust in Bahria Town Karachi.
+            <p className="mt-5 text-base sm:text-lg text-slate-200 max-w-xl mx-auto leading-relaxed">
+              Connect with verified dealers, explore real properties, and invest with complete trust in Bahria Town Karachi.
             </p>
 
-            <div className="mt-4 font-urdu text-xl text-[#F5A623]/90">
+            <div className="mt-4 font-urdu text-lg text-[#F5A623]">
               {BRAND_TAGLINES.urduTagline}
             </div>
           </div>
 
-          {/* Search Filter Box */}
-          <div className="max-w-5xl mx-auto">
-            <div className="relative rounded-3xl bg-gradient-to-b from-slate-900/95 to-slate-900/70 border border-white/[0.08] shadow-2xl shadow-black/40 backdrop-blur-2xl overflow-hidden">
-              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
+          {/* Search pill */}
+          <div className="max-w-3xl mx-auto">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-stretch gap-1.5 p-1.5 rounded-2xl bg-[#0B1A30]/95 backdrop-blur-xl border border-white/[0.12] shadow-2xl shadow-black/50"
+            >
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors"
+              >
+                <option value="All" className="bg-[#0B1A30]">All Categories</option>
+                <option value="Residential Plot" className="bg-[#0B1A30]">Residential Plots</option>
+                <option value="Commercial Plot" className="bg-[#0B1A30]">Commercial Plots</option>
+                <option value="House" className="bg-[#0B1A30]">Houses</option>
+                <option value="Flat" className="bg-[#0B1A30]">Apartments</option>
+                <option value="Shop" className="bg-[#0B1A30]">Commercial Shops</option>
+              </select>
 
-              <div className="p-5 sm:p-6">
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="grid grid-cols-1 sm:grid-cols-4 gap-3.5 items-end"
-                >
-                  <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase font-mono tracking-[0.14em]">
-                      Property Type
-                    </label>
-                    <select
-                      value={selectedType}
-                      onChange={(e) => setSelectedType(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/70 focus:ring-4 focus:ring-[#2490EF]/10 transition-all cursor-pointer"
-                    >
-                      <option value="All">All Categories</option>
-                      <option value="Residential Plot">Residential Plots</option>
-                      <option value="Commercial Plot">Commercial Plots</option>
-                      <option value="House">Houses</option>
-                      <option value="Flat">Apartments</option>
-                      <option value="Shop">Commercial Shops</option>
-                    </select>
-                  </div>
+              <div className="w-px my-2.5 bg-white/[0.12]" />
 
-                  <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase font-mono tracking-[0.14em]">
-                      Project / Precinct
-                    </label>
-                    <select
-                      value={selectedProject}
-                      onChange={(e) => setSelectedProject(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/70 focus:ring-4 focus:ring-[#2490EF]/10 transition-all cursor-pointer"
-                    >
-                      <option value="All">All Bahria Projects</option>
-                      <option value="BTK-1">Bahria Town Karachi (BTK-1)</option>
-                      <option value="BTK-2">Bahria Town Karachi 2 (BTK-2)</option>
-                      <option value="Bahria Heights">Bahria Heights Towers</option>
-                      <option value="Jinnah Avenue">Jinnah Avenue Commercial</option>
-                    </select>
-                  </div>
+              <select
+                value={selectedProject}
+                onChange={(e) => setSelectedProject(e.target.value)}
+                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors"
+              >
+                <option value="All" className="bg-[#0B1A30]">All Projects</option>
+                <option value="BTK-1" className="bg-[#0B1A30]">Bahria Town Karachi</option>
+                <option value="BTK-2" className="bg-[#0B1A30]">Bahria Town Karachi 2</option>
+                <option value="Bahria Heights" className="bg-[#0B1A30]">Bahria Heights</option>
+                <option value="Jinnah Avenue" className="bg-[#0B1A30]">Jinnah Avenue</option>
+              </select>
 
-                  <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase font-mono tracking-[0.14em]">
-                      Budget (PKR)
-                    </label>
-                    <select
-                      value={budgetRange}
-                      onChange={(e) => setBudgetRange(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/70 focus:ring-4 focus:ring-[#2490EF]/10 transition-all cursor-pointer"
-                    >
-                      <option value="All">Any Price</option>
-                      <option value="under-50-lakh">Under 50 Lakh</option>
-                      <option value="50-to-1-crore">50 Lakh – 1 Crore</option>
-                      <option value="1-to-3-crore">1 Crore – 3 Crore</option>
-                      <option value="above-3-crore">3 Crore +</option>
-                    </select>
-                  </div>
+              <div className="w-px my-2.5 bg-white/[0.12]" />
 
-                  <div>
-                    <button
-                      type="submit"
-                      className="relative w-full py-3 px-5 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-xl shadow-lg shadow-[#2490EF]/25 hover:shadow-[#2490EF]/40 transition-all flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98]"
-                    >
-                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                      <Search className="w-4 h-4 relative z-10" />
-                      <span className="relative z-10">Search</span>
-                    </button>
-                  </div>
-                </form>
+              <select
+                value={budgetRange}
+                onChange={(e) => setBudgetRange(e.target.value)}
+                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors"
+              >
+                <option value="All" className="bg-[#0B1A30]">Any Price</option>
+                <option value="under-50-lakh" className="bg-[#0B1A30]">Under 50 Lakh</option>
+                <option value="50-to-1-crore" className="bg-[#0B1A30]">50 Lakh – 1 Crore</option>
+                <option value="1-to-3-crore" className="bg-[#0B1A30]">1 – 3 Crore</option>
+                <option value="above-3-crore" className="bg-[#0B1A30]">3 Crore +</option>
+              </select>
 
-                <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#28A745]" />
-                    <span className="font-medium">
-                      100% Verified Bahria Town plot maps & NDC status
-                    </span>
-                  </span>
-                  <div className="flex items-center gap-4">
-                    {hasActiveFilters && (
-                      <button
-                        onClick={resetFilters}
-                        type="button"
-                        className="text-slate-300 hover:text-white underline decoration-dotted underline-offset-4"
-                      >
-                        Reset Filters
-                      </button>
-                    )}
-                    <button
-                      onClick={() => onNavigate('become-dealer')}
-                      className="text-[#F5A623] hover:text-[#FFB84D] font-semibold inline-flex items-center gap-1 group"
-                    >
-                      <span>Become a Dealer — 80% Split</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <button
+                type="submit"
+                className="shrink-0 px-5 py-3 rounded-xl bg-[#F5A623] hover:bg-[#E59615] text-[#0B1A30] font-semibold text-sm transition-colors flex items-center gap-2"
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden sm:inline">Search</span>
+              </button>
+            </form>
+
+            {/* Meta row */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
+                <span>100% Verified plots & NDC status</span>
+              </span>
+              <span className="w-px h-3 bg-slate-500" />
+              <button
+                onClick={() => onNavigate('become-dealer')}
+                type="button"
+                className="text-[#F5A623] hover:text-[#E59615] font-medium inline-flex items-center gap-1 group transition-colors"
+              >
+                <span>Earn 80% commission</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </button>
             </div>
           </div>
 
-          {/* Hero CTAs */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {/* CTAs */}
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => onNavigate('properties')}
-              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2 group active:scale-[0.98]"
+              className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-white/10 hover:bg-white/[0.16] border border-white/[0.15] hover:border-white/[0.25] backdrop-blur-md transition-all flex items-center gap-2"
             >
-              <Compass className="w-4 h-4 text-[#2490EF] group-hover:rotate-45 transition-transform duration-500" />
+              <Compass className="w-4 h-4" />
               <span>Explore Properties</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
 
             <button
               onClick={() => onNavigate('become-dealer')}
-              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
+              className="px-6 py-3 rounded-xl text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] transition-colors shadow-lg shadow-[#F5A623]/30 flex items-center gap-2"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <Award className="w-4 h-4 relative z-10" />
-              <span className="relative z-10">Become a Dealer</span>
+              <Award className="w-4 h-4" />
+              <span>Become a Dealer</span>
             </button>
           </div>
         </div>
@@ -370,7 +340,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
         <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/30">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#050C16] via-[#0B1A30] to-[#050C16]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
           <div
             className="absolute inset-0 pointer-events-none opacity-60"
             style={{
@@ -383,10 +353,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           <div className="relative p-8 sm:p-12 lg:p-14 text-center">
             <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>The Heart of Realtor X</span>
+                <span className="text-xs font-semibold tracking-wide text-[#F5A623]">The Heart of Realtor X</span>
               </div>
 
-            <blockquote className="text-xl sm:text-2xl lg:text-3xl font-display italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
+            <blockquote className="text-xl sm:text-2xl lg:text-3xl font-heading italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
               "{BRAND_TAGLINES.philosophy}"
             </blockquote>
 
@@ -394,16 +364,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               {BRAND_TAGLINES.philosophyUrdu}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-slate-400 font-mono tracking-wider">
-              <span className="text-[#2490EF] font-semibold">CONNECT.</span>
+            <div className="mt-8 pt-6 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-slate-500">
+              <span className="text-[#94A3B8] font-semibold">CONNECT.</span>
               <span className="text-slate-600">·</span>
-              <span className="text-[#2490EF] font-semibold">COLLABORATE.</span>
+              <span className="text-[#94A3B8] font-semibold">COLLABORATE.</span>
               <span className="text-slate-600">·</span>
               <span className="text-[#F5A623] font-semibold">GROW.</span>
               <span className="text-slate-600 hidden sm:inline">|</span>
               <button
                 onClick={() => onNavigate('manifesto')}
-                className="text-[#F5A623] hover:text-[#FFB84D] flex items-center gap-1.5 font-semibold group"
+                className="text-[#F5A623] hover:text-[#F5A623] flex items-center gap-1.5 font-semibold group"
               >
                 <span>Read The Manifesto</span>
                 <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -419,8 +389,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       <section ref={featuredRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div className="max-w-xl">
-            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-3">
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-3">
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
               <span>Prime Inventory</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
@@ -435,7 +405,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
           <button
             onClick={() => onNavigate('properties')}
-            className="text-xs sm:text-sm font-semibold text-[#2490EF] hover:text-white flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl border border-[#2490EF]/30 hover:border-[#2490EF] hover:bg-[#2490EF]/10 transition-all group whitespace-nowrap"
+            className="text-xs sm:text-sm font-semibold text-[#94A3B8] hover:text-white flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl border border-[#94A3B8]/30 hover:border-[#F5A623] hover:bg-[#E59615]/10 transition-all group whitespace-nowrap"
           >
             <span>View All</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -468,7 +438,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               </p>
               <button
                 onClick={() => onNavigate('contact')}
-                className="px-6 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-all shadow-lg shadow-[#2490EF]/25"
+                className="px-6 py-3 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-xl transition-all shadow-lg shadow-[#F5A623]/25"
               >
                 Contact Us for Details
               </button>
@@ -484,7 +454,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               </p>
               <button
                 onClick={resetFilters}
-                className="px-6 py-3 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-xl transition-all shadow-lg shadow-[#2490EF]/25"
+                className="px-6 py-3 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-xl transition-all shadow-lg shadow-[#F5A623]/25"
               >
                 Reset Filters
               </button>
@@ -493,7 +463,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             filteredProperties.slice(0, 6).map((property, idx) => (
               <div
                 key={property.id}
-                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#2490EF]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#2490EF]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div>
@@ -508,11 +478,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
 
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                      <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#2490EF] text-white shadow-lg shadow-[#2490EF]/30">
+                      <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-[#0B1A30] shadow-lg shadow-[#F5A623]/30">
                         {property.category}
                       </span>
                       {property.status === 'Hot Deal' && (
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#FFA500] text-slate-950 shadow-lg">
+                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-lg">
                           <Zap className="w-2.5 h-2.5" />
                           Hot Deal
                         </span>
@@ -520,17 +490,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                     </div>
 
                     <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white gap-2">
-                      <span className="text-xl font-bold text-[#F5A623] font-mono drop-shadow-lg truncate">
+                      <span className="text-xl font-bold text-[#F5A623] truncate">
                         {property.priceFormatted}
                       </span>
-                      <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-mono shrink-0">
+                      <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-medium shrink-0">
                         {property.size} {property.sizeUnit}
                       </span>
                     </div>
                   </div>
 
                   <div className="p-6 space-y-3">
-                    <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#2490EF] transition-colors leading-snug line-clamp-2 min-h-[3rem]">
+                    <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#F5A623] transition-colors leading-snug line-clamp-2 min-h-[3rem]">
                       {property.title}
                     </h3>
 
@@ -558,7 +528,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                       </div>
                     ) : property.ownership ? (
                       <div className="flex items-center gap-2 text-xs text-slate-400">
-                        <span className="font-mono text-[11px]">{property.ownership}</span>
+                        <span className="text-[11px] font-medium">{property.ownership}</span>
                       </div>
                     ) : null}
                   </div>
@@ -566,7 +536,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
                 <div className="p-6 pt-0">
                   <div className="border-t border-white/[0.06] pt-4 flex items-center justify-between gap-3">
-                    <div className="text-[11px] text-slate-500 font-mono truncate min-w-0">
+                    <div className="text-[11px] text-slate-500 truncate min-w-0">
                       {property.listing_type ? (
                         <span className="text-[#F5A623] font-semibold">
                           {property.listing_type}
@@ -578,7 +548,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
                     <button
                       onClick={() => onNavigate('property-detail', property.erpCode)}
-                      className="px-4 py-2 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#2490EF] border border-white/[0.08] hover:border-[#2490EF] rounded-xl transition-all flex items-center gap-1.5 shrink-0 group/btn"
+                      className="px-4 py-2 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#E59615] border border-white/[0.08] hover:border-[#F5A623] rounded-xl transition-all flex items-center gap-1.5 shrink-0 group/btn"
                     >
                       <span>Details</span>
                       <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -594,7 +564,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       {/* ═══════════════════════════════════════════════════
           4. WHY REALTOR X
          ═══════════════════════════════════════════════════ */}
-      <section className="relative bg-[#07101E] py-16 sm:py-20 border-y border-white/[0.06] overflow-hidden">
+      <section className="relative bg-[#0B1A30] py-16 sm:py-20 border-y border-white/[0.06] overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none opacity-40"
           style={{
@@ -605,10 +575,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 scroll-reveal">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
               <span>The Realtor X Difference</span>
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
               Why Homeowners &amp; Dealers Choose Us
@@ -649,8 +619,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   className="group p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500 hover:-translate-y-1 shadow-lg hover:shadow-2xl scroll-reveal"
                   style={{ animationDelay: `${idx * 80}ms` }}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-[#2490EF]/[0.12] border border-[#2490EF]/25 flex items-center justify-center mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                    <Icon className="w-6 h-6 text-[#2490EF]" />
+                  <div className="w-14 h-14 rounded-2xl bg-[#94A3B8]/[0.12] border border-[#94A3B8]/25 flex items-center justify-center mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                    <Icon className="w-6 h-6 text-[#94A3B8]" />
                   </div>
                   <h3 className="font-heading font-bold text-lg text-white mb-2.5">
                     {item.title}
@@ -681,10 +651,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
           <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-8 p-10 sm:p-12 text-center">
             <div ref={propertiesCounter.ref}>
-              <div className="text-4xl sm:text-5xl font-extrabold text-[#2490EF] font-heading tabular-nums">
+              <div className="text-4xl sm:text-5xl font-extrabold text-[#94A3B8] font-heading tabular-nums">
                 {properties.length > 0 ? `${propertiesCounter.count}+` : '0'}
               </div>
-              <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mt-3">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Verified Listings
               </div>
             </div>
@@ -693,16 +663,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               <div className="text-4xl sm:text-5xl font-extrabold text-[#F5A623] font-heading tabular-nums">
                 {dealers.length > 0 ? `${dealersCounter.count}+` : '—'}
               </div>
-              <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mt-3">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Registered Dealers
               </div>
             </div>
 
             <div>
-              <div className="text-4xl sm:text-5xl font-extrabold text-[#28A745] font-heading tabular-nums">
+              <div className="text-4xl sm:text-5xl font-extrabold text-[#22C55E] font-heading tabular-nums">
                 80/20
               </div>
-              <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mt-3">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Commission Split
               </div>
             </div>
@@ -711,7 +681,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               <div className="text-4xl sm:text-5xl font-extrabold text-white font-heading tabular-nums">
                 100%
               </div>
-              <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400 mt-3">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
                 Verified Documents
               </div>
             </div>
@@ -724,10 +694,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
-            <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+          <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
+            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
             <span>Simple, Transparent, Secured</span>
-            <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
             How Realtor X Works
@@ -741,10 +711,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           {HOW_IT_WORKS_STEPS.map((step, idx) => (
             <div
               key={idx}
-              className="group relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/40 transition-all duration-500 hover:-translate-y-1 scroll-reveal"
+              className="group relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/40 transition-all duration-500 hover:-translate-y-1 scroll-reveal"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2490EF] to-[#1b7ecf] flex items-center justify-center text-white font-black font-heading text-xl mb-5 shadow-lg shadow-[#2490EF]/25 group-hover:scale-110 transition-transform duration-500">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#94A3B8] to-[#94A3B8] flex items-center justify-center text-white font-black font-heading text-xl mb-5 shadow-lg shadow-[#F5A623]/25 group-hover:scale-110 transition-transform duration-500">
                 {step.step}
               </div>
               <h3 className="font-heading font-bold text-lg text-white mb-1.5">
@@ -768,11 +738,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             <div className="lg:col-span-7 p-10 sm:p-12 lg:p-14 space-y-6">
               <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>The Flagship Master Development</span>
+                <span className="text-xs font-semibold tracking-wide text-[#F5A623]">The Flagship Master Development</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-                Bahria Town Karachi: <span className="text-[#2490EF]">A City Within A City</span>
+                Bahria Town Karachi: <span className="text-[#94A3B8]">A City Within A City</span>
               </h2>
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
@@ -785,8 +755,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 {['Grand Jamia Mosque', 'Danzoo Safari & Carnival', 'Saudi German Hospital', '400-ft Jinnah Avenue'].map(
                   (item) => (
                     <div key={item} className="flex items-center gap-2.5 text-sm text-slate-300">
-                      <div className="w-5 h-5 rounded-full bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center shrink-0">
-                        <CheckCircle2 className="w-3 h-3 text-[#28A745]" />
+                      <div className="w-5 h-5 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-3 h-3 text-[#22C55E]" />
                       </div>
                       <span>{item}</span>
                     </div>
@@ -797,7 +767,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               <div className="pt-5 flex flex-wrap gap-3">
                 <button
                   onClick={() => onNavigate('projects')}
-                  className="relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] transition-all shadow-lg shadow-[#2490EF]/25 flex items-center gap-2 group overflow-hidden active:scale-[0.98]"
+                  className="relative px-6 py-3 rounded-xl text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] transition-all shadow-lg shadow-[#F5A623]/25 flex items-center gap-2 group overflow-hidden active:scale-[0.98]"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   <span className="relative z-10">Explore Bahria Precincts</span>
@@ -831,7 +801,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-4">
+          <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#F5A623] mb-4">
             <span className="w-6 h-[1px] bg-[#F5A623]/60" />
             <span>Our Guiding Pillars</span>
             <span className="w-6 h-[1px] bg-[#F5A623]/60" />
@@ -879,20 +849,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               <div
                 key={idx}
                 onClick={() => onNavigate(card.route)}
-                className="group cursor-pointer p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/40 transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+                className="group cursor-pointer p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/40 transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div>
                   <div className="flex items-center gap-2.5 mb-4">
-                    <div className="w-9 h-9 rounded-xl bg-[#2490EF]/[0.12] border border-[#2490EF]/25 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                      <CardIcon className="w-4 h-4 text-[#2490EF]" />
+                    <div className="w-9 h-9 rounded-xl bg-[#94A3B8]/[0.12] border border-[#94A3B8]/25 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                      <CardIcon className="w-4 h-4 text-[#94A3B8]" />
                     </div>
-                    <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-slate-500 font-semibold">
+                    <div className="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-semibold">
                       {card.doc}
                     </div>
                   </div>
 
-                  <h3 className="font-heading font-bold text-xl text-white group-hover:text-[#2490EF] transition-colors leading-tight mb-3">
+                  <h3 className="font-heading font-bold text-xl text-white group-hover:text-[#F5A623] transition-colors leading-tight mb-3">
                     {card.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
@@ -900,7 +870,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   </p>
                 </div>
 
-                <div className="mt-7 flex items-center gap-1.5 text-xs font-semibold text-[#2490EF]">
+                <div className="mt-7 flex items-center gap-1.5 text-xs font-semibold text-[#94A3B8]">
                   <span>{card.cta}</span>
                   <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -913,7 +883,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       {/* ═══════════════════════════════════════════════════
           9. TESTIMONIALS
          ═══════════════════════════════════════════════════ */}
-      <section className="relative bg-[#07101E] py-16 sm:py-20 border-y border-white/[0.06] overflow-hidden">
+      <section className="relative bg-[#0B1A30] py-16 sm:py-20 border-y border-white/[0.06] overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none opacity-40"
           style={{
@@ -924,10 +894,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
               <span>Real Stories</span>
-              <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
               Voices From Our Community
@@ -956,7 +926,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                   <div className="font-heading font-semibold text-white text-sm">
                     {t.author}
                   </div>
-                  <div className="text-[11px] text-[#2490EF] font-mono mt-0.5">
+                  <div className="text-[11px] text-slate-500 mt-0.5">
                     {t.role} · {t.location}
                   </div>
                 </div>
@@ -972,7 +942,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
       {dealers.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-4">
+            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#F5A623] mb-4">
               <span className="w-6 h-[1px] bg-[#F5A623]/60" />
               <span>Meet The Fraternity</span>
               <span className="w-6 h-[1px] bg-[#F5A623]/60" />
@@ -993,7 +963,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               return (
                 <div
                   key={dealer.id}
-                  className="group relative p-6 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#2490EF]/50 transition-all duration-500 hover:-translate-y-1 flex flex-col items-center text-center overflow-hidden scroll-reveal"
+                  className="group relative p-6 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 transition-all duration-500 hover:-translate-y-1 flex flex-col items-center text-center overflow-hidden scroll-reveal"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
                   <div
@@ -1004,8 +974,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                     }}
                   />
 
-                  <div className="relative w-20 h-20 rounded-full p-[2px] bg-gradient-to-br from-[#2490EF]/50 via-[#F5A623]/40 to-[#2490EF]/50 mb-4 group-hover:from-[#2490EF] group-hover:to-[#2490EF] transition-all duration-500">
-                    <div className="w-full h-full rounded-full overflow-hidden bg-[#0A1628] flex items-center justify-center">
+                  <div className="relative w-20 h-20 rounded-full p-[2px] bg-gradient-to-br from-[#94A3B8]/50 via-[#F5A623]/40 to-[#94A3B8]/50 mb-4 group-hover:from-[#94A3B8] group-hover:to-[#94A3B8] transition-all duration-500">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-[#0B1A30] flex items-center justify-center">
                       {dealer.imageUrl ? (
                         <img
                           src={dealer.imageUrl}
@@ -1015,7 +985,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-2xl font-bold text-[#2490EF] font-heading">
+                        <span className="text-2xl font-bold text-[#94A3B8] font-heading">
                           {dealer.name.charAt(0).toUpperCase()}
                         </span>
                       )}
@@ -1026,11 +996,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                     <h3 className="font-heading font-bold text-sm text-white truncate">
                       {dealer.name}
                     </h3>
-                    <BadgeCheck className="w-3.5 h-3.5 text-[#2490EF] shrink-0" />
+                    <BadgeCheck className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
                   </div>
 
                   {showDesignation && (
-                    <div className="relative text-[10px] text-[#F5A623] font-mono uppercase tracking-[0.12em] truncate w-full">
+                    <div className="relative text-[10px] text-[#F5A623] uppercase tracking-[0.12em] truncate w-full">
                       {dealer.designation}
                     </div>
                   )}
@@ -1058,8 +1028,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           11. DUAL CTA
          ═══════════════════════════════════════════════════ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6 scroll-reveal">
-        <div className="relative rounded-[2rem] overflow-hidden border border-[#2490EF]/20 shadow-2xl shadow-[#2490EF]/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+        <div className="relative rounded-[2rem] overflow-hidden border border-[#94A3B8]/20 shadow-2xl shadow-[#94A3B8]/10">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
           <div
             className="absolute inset-0 opacity-60"
             style={{
@@ -1067,10 +1037,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
             }}
           />
-          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
 
           <div className="relative p-10 sm:p-14 text-center space-y-6">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F5A623] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
               <TrendingUp className="w-6 h-6 text-slate-950" />
             </div>
 
@@ -1086,7 +1056,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
             <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
               <button
                 onClick={() => onNavigate('become-dealer')}
-                className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
+                className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#F5A623] to-[#F5A623] hover:bg-[#E59615] transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 <Award className="w-4 h-4 relative z-10" />
@@ -1098,7 +1068,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
                 onClick={() => onNavigate('properties')}
                 className="px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2"
               >
-                <Compass className="w-4 h-4 text-[#2490EF]" />
+                <Compass className="w-4 h-4 text-[#94A3B8]" />
                 <span>Browse Properties</span>
               </button>
             </div>

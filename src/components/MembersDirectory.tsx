@@ -46,14 +46,14 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
             <RealtorXLogo size="md" showSubtitle={false} />
           </div>
 
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/40 border border-sky-800/40 px-3 py-1 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-sky-400 bg-sky-950/40 border border-sky-800/40 px-3 py-1 rounded-full mb-4">
             <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
             <span>Verified Custodians Registry</span>
             <span aria-hidden="true">·</span>
             <span>Real Estate Fellowship</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-heading font-bold text-white tracking-tight">
             {language === 'en' ? 'The RealtorX Custodians' : 'ریئلٹر ایکس کسٹوڈینز ڈائریکٹری'}
           </h2>
 
@@ -72,12 +72,12 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
             referrerPolicy="no-referrer"
             className="w-full h-56 sm:h-72 object-cover brightness-[0.75]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#060b19]/95 via-[#060b19]/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1A30]/95 via-[#0B1A30]/70 to-transparent" />
           <div className="absolute inset-0 p-6 sm:p-10 flex flex-col justify-center max-w-xl">
-            <span className="text-xs font-mono text-amber-400 uppercase tracking-widest mb-1.5 font-semibold">
+            <span className="text-xs font-medium text-amber-400 uppercase tracking-widest mb-1.5 font-semibold">
               Ecosystem Headquarters
             </span>
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white">
+            <h3 className="text-2xl sm:text-3xl font-heading font-bold text-white">
               The RealtorX Flagship Hub
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
@@ -144,15 +144,15 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-amber-400 font-bold">
+                      <span className="text-xs font-medium text-amber-400 font-bold">
                         {member.memberNumber}
                       </span>
                       <span className="text-slate-600">·</span>
-                      <span className="text-[11px] font-mono text-sky-400">
+                      <span className="text-[11px] font-medium text-sky-400">
                         {member.tier}
                       </span>
                     </div>
-                    <h3 className="text-xl font-serif font-bold text-white mt-1">
+                    <h3 className="text-xl font-heading font-bold text-white mt-1">
                       {member.fullName}
                     </h3>
                   </div>
@@ -174,7 +174,7 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
                     {member.licenseNo && (
                       <>
                         <span className="text-slate-600">·</span>
-                        <span className="font-mono">{member.licenseNo}</span>
+                        <span className="font-medium">{member.licenseNo}</span>
                       </>
                     )}
                   </div>
@@ -190,7 +190,7 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
 
               {/* Bottom Actions & Verifications */}
               <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-[11px] text-amber-400 font-mono">
+                <div className="flex items-center gap-1.5 text-[11px] text-amber-400 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
                   <span>Oath Ratified</span>
                 </div>
@@ -217,7 +217,7 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
 
         {/* CTA to join */}
         <div className="mt-16 text-center">
-          <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-3">
+          <p className="text-xs font-medium uppercase tracking-widest text-slate-500 mb-3">
             Ready to stand with the custodians?
           </p>
           <button

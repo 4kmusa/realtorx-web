@@ -88,7 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           className={`transition-all duration-500 ${
             scrolled
-              ? 'bg-[#080F1C]/85 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/20'
+              ? 'bg-[#0B1A30]/85 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/20'
               : 'bg-transparent border-b border-transparent'
           }`}
         >
@@ -120,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <span className="relative z-10">{item.label}</span>
                     {isActive(item.id) && (
-                      <span className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#2490EF] to-transparent" />
+                      <span className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#F5A623] to-transparent" />
                     )}
                   </button>
                 ))}
@@ -130,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => handleNav('become-dealer')}
                   className={`ml-3 relative transition-all duration-300 py-2 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-[13px] overflow-hidden group ${
                     currentPage === 'become-dealer'
-                      ? 'bg-gradient-to-r from-[#F5A623] to-[#FFA500] text-slate-950 shadow-lg shadow-[#F5A623]/30'
+                      ? 'bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/20'
                       : 'text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/30 hover:bg-[#F5A623]/15 hover:border-[#F5A623]/50 hover:shadow-lg hover:shadow-[#F5A623]/10'
                   }`}
                 >
@@ -151,7 +151,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <span className="relative z-10">{item.label}</span>
                     {isActive(item.id) && (
-                      <span className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#2490EF] to-transparent" />
+                      <span className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#F5A623] to-transparent" />
                     )}
                   </button>
                 ))}
@@ -166,7 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   title="Toggle language"
                 >
                   <Globe className="w-3.5 h-3.5 text-[#F5A623] group-hover:rotate-12 transition-transform duration-500" />
-                  <span className="font-mono text-[11px] font-semibold tracking-wider">
+                  <span className="text-xs font-medium">
                     {language === 'en' ? 'EN' : 'اردو'}
                   </span>
                 </button>
@@ -175,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <>
                     <button
                       onClick={() => handleNav('login')}
-                      className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#2490EF] border border-[#2490EF]/30 hover:border-[#2490EF]/60 hover:bg-[#2490EF]/10 rounded-xl transition-all duration-300 whitespace-nowrap"
+                      className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#94A3B8] border border-[#94A3B8]/30 hover:border-[#F5A623]/60 hover:bg-[#E59615]/10 rounded-xl transition-all duration-300 whitespace-nowrap"
                     >
                       <LogIn className="w-3.5 h-3.5" />
                       <span>Login</span>
@@ -183,7 +183,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                     <button
                       onClick={() => handleNav('signup')}
-                      className="relative px-4 py-2 text-xs font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 rounded-xl shadow-lg shadow-[#F5A623]/25 hover:shadow-[#F5A623]/40 transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap overflow-hidden group active:scale-[0.97]"
+                      className="relative px-4 py-2 text-xs font-bold text-slate-950 bg-[#F5A623] hover:bg-[#E59615] rounded-xl shadow-lg shadow-[#F5A623]/20 hover:shadow-[#F5A623]/20 transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap overflow-hidden group active:scale-[0.97]"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                       <UserPlus className="w-4 h-4 relative z-10" />
@@ -198,11 +198,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-300 ${
                         userDropdownOpen
-                          ? 'bg-[#2490EF]/10 border-[#2490EF]/40'
+                          ? 'bg-[#94A3B8]/10 border-[#94A3B8]/40'
                           : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.06] hover:border-white/[0.12]'
                       }`}
                     >
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#2490EF]/30 to-[#2490EF]/10 border border-[#2490EF]/40 flex items-center justify-center text-[#2490EF] text-xs font-bold">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#94A3B8]/30 to-[#94A3B8]/10 border border-[#94A3B8]/40 flex items-center justify-center text-[#94A3B8] text-xs font-bold">
                         {user.full_name?.charAt(0).toUpperCase() || 'U'}
                       </div>
                       <span className="hidden sm:inline text-xs font-medium text-white truncate max-w-[100px]">
@@ -216,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </button>
 
                     {userDropdownOpen && (
-                      <div className="absolute top-full right-0 mt-3 w-64 bg-[#080F1C]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 p-2 z-50 space-y-1 animate-scale-in">
+                      <div className="absolute top-full right-0 mt-3 w-64 bg-[#0B1A30]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 p-2 z-50 space-y-1 animate-scale-in">
                         <div className="px-3 py-3 border-b border-white/[0.06]">
                           <div className="text-sm font-semibold text-white truncate">
                             {user.full_name}
@@ -230,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           onClick={() => handleNav('profile')}
                           className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
                         >
-                          <User className="w-4 h-4 text-[#2490EF]" />
+                          <User className="w-4 h-4 text-[#94A3B8]" />
                           <span>My Profile</span>
                         </button>
 
@@ -239,7 +239,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             onClick={() => handleNav('portal')}
                             className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
                           >
-                            <User className="w-4 h-4 text-[#2490EF]" />
+                            <User className="w-4 h-4 text-[#94A3B8]" />
                             <span>Customer Dashboard</span>
                           </button>
                         )}
@@ -291,7 +291,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Menu Panel */}
       <div
-        className={`lg:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-[#080F1C] border-l border-white/[0.06] shadow-2xl z-50 transform transition-transform duration-500 ease-out-expo ${
+        className={`lg:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-[#0B1A30] border-l border-white/[0.06] shadow-2xl z-50 transform transition-transform duration-500 ease-out-expo ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -312,7 +312,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => handleNav(item.id)}
               className={`w-full text-left py-3 px-4 rounded-xl text-base font-medium transition-all duration-300 ${
                 isActive(item.id)
-                  ? 'bg-[#2490EF]/10 text-[#2490EF]'
+                  ? 'bg-[#94A3B8]/10 text-[#94A3B8]'
                   : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
               }`}
             >
@@ -322,7 +322,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={() => handleNav('become-dealer')}
-            className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20 mt-3"
+            className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-[#F5A623] flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20 mt-3"
           >
             <Briefcase className="w-4 h-4" />
             <span>Become a Dealer</span>
@@ -334,7 +334,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => handleNav(item.id)}
               className={`w-full text-left py-3 px-4 rounded-xl text-base font-medium transition-all duration-300 ${
                 isActive(item.id)
-                  ? 'bg-[#2490EF]/10 text-[#2490EF]'
+                  ? 'bg-[#94A3B8]/10 text-[#94A3B8]'
                   : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
               }`}
             >
@@ -355,14 +355,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <>
                 <button
                   onClick={() => handleNav('login')}
-                  className="w-full py-3 px-4 text-sm font-semibold text-[#2490EF] border border-[#2490EF]/30 rounded-xl text-center flex items-center justify-center gap-2 hover:bg-[#2490EF]/10 transition-colors"
+                  className="w-full py-3 px-4 text-sm font-semibold text-[#94A3B8] border border-[#94A3B8]/30 rounded-xl text-center flex items-center justify-center gap-2 hover:bg-[#E59615]/10 transition-colors"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>Login</span>
                 </button>
                 <button
                   onClick={() => handleNav('signup')}
-                  className="w-full py-3 px-4 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20"
+                  className="w-full py-3 px-4 text-sm font-bold text-slate-950 bg-[#F5A623] rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Sign Up</span>
@@ -373,7 +373,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {isAuthenticated && user && (
               <>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2490EF]/30 to-[#2490EF]/10 border border-[#2490EF]/40 flex items-center justify-center text-[#2490EF] text-sm font-bold">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#94A3B8]/30 to-[#94A3B8]/10 border border-[#94A3B8]/40 flex items-center justify-center text-[#94A3B8] text-sm font-bold">
                     {user.full_name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -387,7 +387,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => handleNav('profile')}
                   className="w-full py-3 px-4 text-sm font-semibold text-white bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-left flex items-center gap-2 transition-colors"
                 >
-                  <User className="w-4 h-4 text-[#2490EF]" />
+                  <User className="w-4 h-4 text-[#94A3B8]" />
                   <span>My Profile</span>
                 </button>
                 <button

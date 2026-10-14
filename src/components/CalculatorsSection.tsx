@@ -57,7 +57,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
         {/* Section Heading */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] mb-1.5">
+            <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-1.5">
               <Calculator className="w-4 h-4 text-[#F5A623]" />
               <span>Smart Real Estate Tools</span>
             </div>
@@ -75,7 +75,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               onClick={() => setActiveTab('emi')}
               className={`px-3.5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 activeTab === 'emi'
-                  ? 'bg-[#2490EF] text-white shadow-md'
+                  ? 'bg-[#F5A623] text-[#0B1A30] shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -99,7 +99,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               onClick={() => setActiveTab('visit')}
               className={`px-3.5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 activeTab === 'visit'
-                  ? 'bg-[#28A745] text-white shadow-md'
+                  ? 'bg-[#22C55E] text-white shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -115,10 +115,10 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
             <div className="lg:col-span-7 space-y-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-slate-300">
+                  <label className="text-xs font-medium uppercase tracking-wider text-slate-300">
                     Total Property Value (PKR)
                   </label>
-                  <span className="text-sm font-bold text-[#F5A623] font-mono">
+                  <span className="text-sm font-bold text-[#F5A623] font-medium">
                     {formatPkr(propertyPrice)}
                   </span>
                 </div>
@@ -129,9 +129,9 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   step={500000}
                   value={propertyPrice}
                   onChange={(e) => setPropertyPrice(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#2490EF]"
+                  className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#94A3B8]"
                 />
-                <div className="flex justify-between text-[11px] text-slate-500 font-mono mt-1">
+                <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-1">
                   <span>PKR 30 Lakh</span>
                   <span>PKR 2.5 Crore</span>
                   <span>PKR 8.0 Crore</span>
@@ -140,13 +140,13 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-mono uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-medium uppercase text-slate-400 mb-1.5">
                     Down Payment (%)
                   </label>
                   <select
                     value={downPaymentPercent}
                     onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                   >
                     <option value={15}>15% (Booking Token)</option>
                     <option value={20}>20% (Standard)</option>
@@ -157,13 +157,13 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-medium uppercase text-slate-400 mb-1.5">
                     Tenure (Years)
                   </label>
                   <select
                     value={tenureYears}
                     onChange={(e) => setTenureYears(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                   >
                     <option value={1}>1 Year (4 Quarters)</option>
                     <option value={2}>2 Years (8 Quarters)</option>
@@ -173,13 +173,13 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-medium uppercase text-slate-400 mb-1.5">
                     Frequency
                   </label>
                   <select
                     value={paymentFrequency}
                     onChange={(e) => setPaymentFrequency(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                   >
                     <option value="quarterly">Quarterly (Every 3 Months)</option>
                     <option value="monthly">Monthly (30 Days)</option>
@@ -196,37 +196,37 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
             </div>
 
             {/* Results Card */}
-            <div className="lg:col-span-5 bg-gradient-to-br from-slate-950 via-[#0C1B33] to-slate-950 border border-[#2490EF]/30 rounded-2xl p-6 text-center space-y-4 shadow-xl">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-[#2490EF] font-semibold">
+            <div className="lg:col-span-5 bg-gradient-to-br from-slate-950 via-[#0C1B33] to-slate-950 border border-[#94A3B8]/30 rounded-2xl p-6 text-center space-y-4 shadow-xl">
+              <span className="text-[11px] font-medium uppercase tracking-widest text-[#94A3B8] font-semibold">
                 Estimated Breakdown
               </span>
 
               <div>
-                <div className="text-xs text-slate-400 uppercase font-mono">
+                <div className="text-xs text-slate-400 uppercase font-medium">
                   {paymentFrequency === 'quarterly' ? 'Quarterly Installment' : 'Monthly Installment'}
                 </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-[#F5A623] font-mono mt-1">
+                <div className="text-3xl sm:text-4xl font-extrabold text-[#F5A623] font-medium mt-1">
                   {formatPkr(installmentAmount)}
                 </div>
-                <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                <div className="text-[11px] text-slate-400 font-medium mt-0.5">
                   Across {totalInstallmentsCount} scheduled payments
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-800 text-left">
                 <div className="p-2.5 bg-slate-900/60 rounded-lg">
-                  <div className="text-[10px] uppercase font-mono text-slate-400">Down Payment ({downPaymentPercent}%)</div>
-                  <div className="text-xs sm:text-sm font-bold text-white font-mono">{formatPkr(downPaymentAmount)}</div>
+                  <div className="text-[10px] uppercase font-medium text-slate-400">Down Payment ({downPaymentPercent}%)</div>
+                  <div className="text-xs sm:text-sm font-bold text-white font-medium">{formatPkr(downPaymentAmount)}</div>
                 </div>
                 <div className="p-2.5 bg-slate-900/60 rounded-lg">
-                  <div className="text-[10px] uppercase font-mono text-slate-400">Remaining Balance</div>
-                  <div className="text-xs sm:text-sm font-bold text-white font-mono">{formatPkr(remainingBalance)}</div>
+                  <div className="text-[10px] uppercase font-medium text-slate-400">Remaining Balance</div>
+                  <div className="text-xs sm:text-sm font-bold text-white font-medium">{formatPkr(remainingBalance)}</div>
                 </div>
               </div>
 
               <button
                 onClick={() => onNavigate('properties')}
-                className="w-full py-2.5 px-4 bg-[#2490EF] hover:bg-[#1b7ecf] text-white text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 bg-[#F5A623] hover:bg-[#F5A623] text-[#0B1A30] text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               >
                 <span>Find Properties In This Budget</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -241,10 +241,10 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
             <div className="lg:col-span-7 space-y-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-slate-300">
+                  <label className="text-xs font-medium uppercase tracking-wider text-slate-300">
                     Deal / Property Sale Value (PKR)
                   </label>
-                  <span className="text-sm font-bold text-[#F5A623] font-mono">
+                  <span className="text-sm font-bold text-[#F5A623] font-medium">
                     {formatPkr(dealValue)}
                   </span>
                 </div>
@@ -257,7 +257,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   onChange={(e) => setDealValue(Number(e.target.value))}
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#F5A623]"
                 />
-                <div className="flex justify-between text-[11px] text-slate-500 font-mono mt-1">
+                <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-1">
                   <span>PKR 50 Lakh</span>
                   <span>PKR 5.0 Crore</span>
                   <span>PKR 10 Crore</span>
@@ -265,7 +265,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
+                <label className="block text-xs font-medium uppercase text-slate-400 mb-2">
                   Total Brokerage Commission Rate
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -274,7 +274,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                       key={rate}
                       type="button"
                       onClick={() => setCommissionRate(rate)}
-                      className={`py-2 px-3 rounded-lg text-xs font-mono font-semibold border transition-all ${
+                      className={`py-2 px-3 rounded-lg text-xs font-medium font-semibold border transition-all ${
                         commissionRate === rate
                           ? 'bg-[#F5A623]/20 border-[#F5A623] text-[#F5A623]'
                           : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
@@ -288,7 +288,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
 
               <div className="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2 text-xs text-slate-300">
                 <div className="font-semibold text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#2490EF]" />
+                  <span className="w-2 h-2 rounded-full bg-[#F5A623]" />
                   Why 80/20 Split is Industry-Leading:
                 </div>
                 <p className="text-slate-400 leading-relaxed">
@@ -299,15 +299,15 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
 
             {/* Commission Breakdown Card */}
             <div className="lg:col-span-5 bg-gradient-to-br from-slate-950 via-[#09182D] to-slate-950 border border-[#F5A623]/40 rounded-2xl p-6 text-center space-y-4 shadow-xl">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-[#F5A623] font-semibold">
+              <span className="text-[11px] font-medium uppercase tracking-widest text-[#F5A623] font-semibold">
                 Transparent Commission Split
               </span>
 
               <div>
-                <div className="text-xs text-slate-400 uppercase font-mono">
+                <div className="text-xs text-slate-400 uppercase font-medium">
                   Total Deal Commission ({commissionRate}%)
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-white font-mono mt-1">
+                <div className="text-2xl sm:text-3xl font-bold text-white font-medium mt-1">
                   {formatPkr(totalCommission)}
                 </div>
               </div>
@@ -315,11 +315,11 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-left">
                 {/* Dealer 80% */}
                 <div className="p-3 bg-emerald-950/40 border border-emerald-800/40 rounded-xl">
-                  <div className="flex items-center justify-between text-[11px] text-emerald-400 font-mono font-semibold">
+                  <div className="flex items-center justify-between text-[11px] text-emerald-400 font-medium font-semibold">
                     <span>Dealer / You</span>
                     <span>80%</span>
                   </div>
-                  <div className="text-base sm:text-lg font-extrabold text-emerald-300 font-mono mt-1">
+                  <div className="text-base sm:text-lg font-extrabold text-emerald-300 font-medium mt-1">
                     {formatPkr(dealerShare)}
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">
@@ -328,12 +328,12 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                 </div>
 
                 {/* RealtorX 20% */}
-                <div className="p-3 bg-[#2490EF]/10 border border-[#2490EF]/30 rounded-xl">
-                  <div className="flex items-center justify-between text-[11px] text-sky-400 font-mono font-semibold">
+                <div className="p-3 bg-[#94A3B8]/10 border border-[#94A3B8]/30 rounded-xl">
+                  <div className="flex items-center justify-between text-[11px] text-sky-400 font-medium font-semibold">
                     <span>Realtor X</span>
                     <span>20%</span>
                   </div>
-                  <div className="text-base sm:text-lg font-bold text-sky-300 font-mono mt-1">
+                  <div className="text-base sm:text-lg font-bold text-sky-300 font-medium mt-1">
                     {formatPkr(realtorXShare)}
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">
@@ -344,7 +344,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
 
               <button
                 onClick={() => onNavigate('become-dealer')}
-                className="w-full py-2.5 px-4 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2"
               >
                 <span>Register as a 80% Partner Dealer</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -396,7 +396,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   </p>
                   <button
                     onClick={() => setVisitBooked(false)}
-                    className="text-xs text-[#2490EF] hover:underline font-mono"
+                    className="text-xs text-[#94A3B8] hover:underline font-medium"
                   >
                     Schedule Another Visit
                   </button>
@@ -404,7 +404,7 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
               ) : (
                 <form onSubmit={handleBookVisit} className="space-y-3">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-400 mb-1">
+                    <label className="block text-[11px] font-medium uppercase text-slate-400 mb-1">
                       Full Name
                     </label>
                     <input
@@ -413,12 +413,12 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                       placeholder="e.g. Asad Raza"
                       value={visitName}
                       onChange={(e) => setVisitName(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-400 mb-1">
+                    <label className="block text-[11px] font-medium uppercase text-slate-400 mb-1">
                       Phone / WhatsApp Number
                     </label>
                     <input
@@ -427,18 +427,18 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                       placeholder="+92 300 1234567"
                       value={visitPhone}
                       onChange={(e) => setVisitPhone(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-400 mb-1">
+                    <label className="block text-[11px] font-medium uppercase text-slate-400 mb-1">
                       Interested Precinct / Project
                     </label>
                     <select
                       value={visitPrecinct}
                       onChange={(e) => setVisitPrecinct(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                     >
                       <option value="Precinct 1 (Main Gate)">Precinct 1 (Near Main Gate)</option>
                       <option value="Precinct 10A (Villas)">Precinct 10A (Ready Villas)</option>
@@ -450,14 +450,14 @@ export const CalculatorsSection: React.FC<CalculatorsSectionProps> = ({ onNaviga
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-400 mb-1">
+                    <label className="block text-[11px] font-medium uppercase text-slate-400 mb-1">
                       Preferred Date
                     </label>
                     <input
                       type="date"
                       value={visitDate}
                       onChange={(e) => setVisitDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#2490EF]"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#94A3B8]"
                     />
                   </div>
 

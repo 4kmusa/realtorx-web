@@ -72,18 +72,18 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#0A1628] border border-slate-700/80 rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-[#0B1A30] border border-slate-700/80 rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-              <Share2 className="w-4 h-4 text-[#2490EF]" />
+            <div className="w-8 h-8 rounded-lg bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+              <Share2 className="w-4 h-4 text-[#94A3B8]" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
                 <span>Social Media &amp; SEO Metadata</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">
                   Open Graph &amp; Twitter Ready
                 </span>
               </h3>
@@ -101,7 +101,7 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
         </div>
 
         {/* Brand Philosophy Banner */}
-        <div className="bg-gradient-to-r from-amber-500/10 via-[#2490EF]/10 to-transparent border-b border-slate-800/80 px-6 py-3 flex items-start gap-2.5">
+        <div className="bg-gradient-to-r from-amber-500/10 via-[#94A3B8]/10 to-transparent border-b border-slate-800/80 px-6 py-3 flex items-start gap-2.5">
           <Quote className="w-4 h-4 text-[#F5A623] shrink-0 mt-0.5" />
           <div className="text-xs">
             <span className="font-semibold text-amber-300">RealtorX Brand Identity Quote: </span>
@@ -112,12 +112,12 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
         </div>
 
         {/* Tab Switcher */}
-        <div className="px-6 pt-3 flex gap-2 border-b border-slate-800 bg-[#0A1628]">
+        <div className="px-6 pt-3 flex gap-2 border-b border-slate-800 bg-[#0B1A30]">
           <button
             onClick={() => setActiveTab('preview')}
             className={`pb-2 text-xs font-semibold flex items-center gap-1.5 border-b-2 transition-all ${
               activeTab === 'preview'
-                ? 'border-[#2490EF] text-[#2490EF]'
+                ? 'border-[#94A3B8] text-[#94A3B8]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -128,7 +128,7 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
             onClick={() => setActiveTab('tags')}
             className={`pb-2 text-xs font-semibold flex items-center gap-1.5 border-b-2 transition-all ${
               activeTab === 'tags'
-                ? 'border-[#2490EF] text-[#2490EF]'
+                ? 'border-[#94A3B8] text-[#94A3B8]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -144,27 +144,27 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
               
               {/* WhatsApp / Facebook / Open Graph Card Preview */}
               <div>
-                <div className="text-xs font-mono uppercase text-slate-400 mb-2 flex items-center justify-between">
+                <div className="text-xs font-medium uppercase text-slate-400 mb-2 flex items-center justify-between">
                   <span className="flex items-center gap-1 text-slate-300">
                     <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                     Open Graph Card (WhatsApp / Facebook / LinkedIn)
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono">property=&quot;og:*&quot;</span>
+                  <span className="text-[10px] text-slate-500 font-medium">property=&quot;og:*&quot;</span>
                 </div>
                 
-                <div className="border border-slate-700/80 bg-slate-900 rounded-xl overflow-hidden shadow-lg group hover:border-[#2490EF]/50 transition-colors">
+                <div className="border border-slate-700/80 bg-slate-900 rounded-xl overflow-hidden shadow-lg group hover:border-[#F5A623]/50 transition-colors">
                   <div className="h-44 sm:h-52 w-full bg-slate-950 overflow-hidden relative">
                     <img
                       src={imageUrl}
                       alt={metadata.ogTitle}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-mono bg-slate-950/80 text-white backdrop-blur-sm">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-950/80 text-white backdrop-blur-sm">
                       realtorx.pk
                     </div>
                   </div>
                   <div className="p-4 bg-slate-900 border-t border-slate-800">
-                    <div className="text-[11px] font-mono uppercase tracking-wide text-slate-400 mb-1">
+                    <div className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-1">
                       REALTORX.PK · REAL ESTATE REIMAGINED
                     </div>
                     <h4 className="text-sm font-bold text-white leading-snug line-clamp-2 mb-1.5 font-heading">
@@ -179,12 +179,12 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
 
               {/* Twitter / X Large Summary Card Preview */}
               <div>
-                <div className="text-xs font-mono uppercase text-slate-400 mb-2 flex items-center justify-between">
+                <div className="text-xs font-medium uppercase text-slate-400 mb-2 flex items-center justify-between">
                   <span className="flex items-center gap-1 text-slate-300">
-                    <span className="w-2 h-2 rounded-full bg-[#2490EF]"></span>
+                    <span className="w-2 h-2 rounded-full bg-[#F5A623]"></span>
                     Twitter / X Card (Large Summary Image)
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono">name=&quot;twitter:*&quot;</span>
+                  <span className="text-[10px] text-slate-500 font-medium">name=&quot;twitter:*&quot;</span>
                 </div>
 
                 <div className="border border-slate-700/80 bg-slate-900 rounded-2xl overflow-hidden shadow-lg p-3">
@@ -197,7 +197,7 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
                       />
                     </div>
                     <div className="p-3 bg-slate-900/90 border-t border-slate-800">
-                      <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
+                      <div className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
                         <span>🔗</span>
                         <span>realtorx.pk</span>
                       </div>
@@ -217,10 +217,10 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
             /* Tags view */
             <div className="space-y-4">
               <div className="text-xs text-slate-400">
-                The following live metadata tags have been injected into the application&apos;s HTML <code className="text-[#2490EF]">&lt;head&gt;</code> for page: <strong className="text-white font-mono">{currentPage}</strong>
+                The following live metadata tags have been injected into the application&apos;s HTML <code className="text-[#94A3B8]">&lt;head&gt;</code> for page: <strong className="text-white font-medium">{currentPage}</strong>
               </div>
 
-              <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 font-mono text-xs text-slate-300 space-y-2.5 overflow-x-auto">
+              <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 text-xs text-slate-300 space-y-2.5 overflow-x-auto">
                 <div className="text-slate-500 italic">// Primary &amp; Brand Description (RealtorX Philosophy)</div>
                 <div>&lt;<span className="text-rose-400">title</span>&gt;{metadata.title}&lt;/<span className="text-rose-400">title</span>&gt;</div>
                 <div>&lt;<span className="text-rose-400">meta</span> <span className="text-amber-300">name</span>=<span className="text-emerald-400">&quot;description&quot;</span> <span className="text-amber-300">content</span>=<span className="text-emerald-300">&quot;{metadata.description}&quot;</span> /&gt;</div>
@@ -295,7 +295,7 @@ export const SocialShareModal: React.FC<SocialShareModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopyLink}
-              className="px-4 py-2 rounded-lg bg-[#2490EF] hover:bg-[#1B74C0] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#2490EF]/20 transition-all"
+              className="px-4 py-2 rounded-lg bg-[#F5A623] hover:bg-[#1B74C0] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#94A3B8]/20 transition-all"
             >
               {copied ? (
                 <>

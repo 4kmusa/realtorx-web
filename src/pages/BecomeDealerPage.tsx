@@ -305,7 +305,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   if (checkingStatus) {
     return (
       <div className="py-24 max-w-4xl mx-auto px-4 text-center">
-        <Loader2 className="w-10 h-10 text-[#2490EF] animate-spin mx-auto mb-4" />
+        <Loader2 className="w-10 h-10 text-[#94A3B8] animate-spin mx-auto mb-4" />
         <p className="text-slate-400 text-sm">Checking your application status...</p>
       </div>
     );
@@ -330,7 +330,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <Clock className="w-10 h-10 text-[#F5A623]" />
               </div>
               <div>
-                <div className="text-xs font-mono uppercase tracking-widest text-[#F5A623] mb-2">
+                <div className="text-xs font-medium uppercase tracking-widest text-[#F5A623] mb-2">
                   Under Review
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading mb-3">
@@ -344,12 +344,12 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-left space-y-2">
-                <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 mb-2">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-2">
                   Application Details
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-slate-400">Application ID:</div>
-                  <div className="text-white text-right font-mono truncate">{application.id}</div>
+                  <div className="text-white text-right font-medium truncate">{application.id}</div>
                   <div className="text-slate-400">Status:</div>
                   <div className="text-[#F5A623] text-right font-semibold">{application.status}</div>
                   <div className="text-slate-400">Submitted:</div>
@@ -385,25 +385,25 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
           {/* Approved */}
           {isApproved && (
             <div className="text-center space-y-5">
-              <div className="w-20 h-20 mx-auto rounded-3xl bg-[#28A745]/15 border border-[#28A745]/40 flex items-center justify-center">
-                <CheckCircle2 className="w-10 h-10 text-[#28A745]" />
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-[#22C55E]" />
               </div>
               <div>
-                <div className="text-xs font-mono uppercase tracking-widest text-[#28A745] mb-2">
+                <div className="text-xs font-medium uppercase tracking-widest text-[#22C55E] mb-2">
                   Approved
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading mb-3">
                   Congratulations! 🎉
                 </h2>
                 <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-                  Your dealer application has been <strong className="text-[#28A745]">approved</strong>.
+                  Your dealer application has been <strong className="text-[#22C55E]">approved</strong>.
                   Take the Founding Oath to activate your dealer account and start listing.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#28A745]/5 border border-[#28A745]/30 text-left">
+              <div className="p-4 rounded-xl bg-[#22C55E]/5 border border-[#22C55E]/30 text-left">
                 <div className="flex items-start gap-2.5">
-                  <ShieldCheck className="w-4 h-4 text-[#28A745] shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-4 h-4 text-[#22C55E] shrink-0 mt-0.5" />
                   <div className="text-xs text-slate-300 leading-relaxed">
                     <strong className="text-white">Next Step:</strong> Take the Realtor X Founding
                     Member Oath to activate your account.
@@ -417,7 +417,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                   sessionStorage.setItem('realtorx_dealer_id', application.id);
                   onNavigate('oath');
                 }}
-                className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-lg shadow-[#F5A623]/25 flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 transition-all shadow-lg shadow-[#F5A623]/25 flex items-center justify-center gap-2"
               >
                 <BookOpen className="w-4 h-4" />
                 Take the Founding Oath
@@ -433,7 +433,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <XCircle className="w-10 h-10 text-red-400" />
               </div>
               <div>
-                <div className="text-xs font-mono uppercase tracking-widest text-red-400 mb-2">
+                <div className="text-xs font-medium uppercase tracking-widest text-red-400 mb-2">
                   Not Approved
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-white font-heading mb-3">
@@ -446,7 +446,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
               {application.reviewNotes && (
                 <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/30 text-left">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-red-400 mb-1.5">
+                  <div className="text-[11px] font-medium uppercase tracking-wider text-red-400 mb-1.5">
                     Reviewer Notes
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
@@ -460,7 +460,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                   href="https://wa.me/923049383785?text=Hello%20Realtor%20X,%20my%20dealer%20application%20was%20not%20approved.%20I'd%20like%20to%20discuss."
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5b] transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-[#25D366] hover:bg-[#22C55E] transition-colors flex items-center justify-center gap-2"
                 >
                   <Phone className="w-4 h-4" />
                   Discuss on WhatsApp
@@ -479,9 +479,9 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   if (mode === 'info') {
     const benefits = [
       { icon: Percent, title: '80% Commission Split', desc: 'Industry-leading payout. You keep 80% of every closed deal — we only retain 20% for portal, legal, and infrastructure.', color: '#F5A623' },
-      { icon: Users, title: 'Verified Buyer Leads', desc: 'Real, qualified leads from our digital marketing. No fake contacts, no wasted time on cold calls.', color: '#2490EF' },
-      { icon: Award, title: 'Pro Training & Oath', desc: 'Free onboarding, sales training, and the Realtor X Founding Oath that builds community trust.', color: '#28A745' },
-      { icon: TrendingUp, title: 'Co-Brokering Network', desc: 'Collaborate with hundreds of verified dealers. Share listings, split deals, grow together.', color: '#8B5CF6' },
+      { icon: Users, title: 'Verified Buyer Leads', desc: 'Real, qualified leads from our digital marketing. No fake contacts, no wasted time on cold calls.', color: '#94A3B8' },
+      { icon: Award, title: 'Pro Training & Oath', desc: 'Free onboarding, sales training, and the Realtor X Founding Oath that builds community trust.', color: '#22C55E' },
+      { icon: TrendingUp, title: 'Co-Brokering Network', desc: 'Collaborate with hundreds of verified dealers. Share listings, split deals, grow together.', color: '#94A3B8' },
     ];
 
     const requirements = [
@@ -512,7 +512,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
     return (
       <div className="py-12 space-y-16 sm:space-y-20">
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-4 py-1.5 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-4 py-1.5 rounded-full mb-6">
             <Briefcase className="w-3.5 h-3.5" />
             <span>Realtor X Dealer Program</span>
           </div>
@@ -531,7 +531,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 if (!isAuthenticated) onNavigate('login');
                 else { setMode('form'); setCurrentStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }
               }}
-              className="px-8 py-4 rounded-2xl text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-xl shadow-[#F5A623]/30 flex items-center gap-2"
+              className="px-8 py-4 rounded-2xl text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 transition-all shadow-xl shadow-[#F5A623]/30 flex items-center gap-2"
             >
               <Briefcase className="w-5 h-5" />
               <span>Apply Now</span>
@@ -545,16 +545,16 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
             </button>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-500 font-mono">
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />Free to join</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />Admin reviewed</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#28A745]" />24-48h approval</span>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-500 font-medium">
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />Free to join</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />Admin reviewed</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />24-48h approval</span>
           </div>
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#2490EF]">The Realtor X Advantage</span>
+            <span className="text-xs font-medium uppercase tracking-widest text-[#94A3B8]">The Realtor X Advantage</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">Why Dealers Choose Us</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -576,7 +576,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-900/50 border border-slate-800 p-8 sm:p-12">
             <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#28A745]">Eligibility</span>
+              <span className="text-xs font-medium uppercase tracking-widest text-[#22C55E]">Eligibility</span>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">What You Need to Apply</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -584,8 +584,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 const Icon = r.icon;
                 return (
                   <div key={i} className="p-5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5 text-[#2490EF]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center shrink-0">
+                      <Icon className="w-5 h-5 text-[#94A3B8]" />
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-white mb-1">{r.title}</h3>
@@ -600,7 +600,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
         <section id="dealer-process" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#2490EF]">Simple & Transparent</span>
+            <span className="text-xs font-medium uppercase tracking-widest text-[#94A3B8]">Simple & Transparent</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">How It Works</h2>
             <p className="text-sm text-slate-400 mt-3">
               From application to activation — with admin review at every step.
@@ -610,10 +610,10 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
             {processSteps.map((s) => {
               const Icon = s.icon;
               return (
-                <div key={s.num} className="relative p-6 rounded-3xl bg-slate-900/70 border border-slate-800 hover:border-[#2490EF]/50 transition-all">
-                  <div className="absolute -top-3 -left-3 w-9 h-9 rounded-full bg-gradient-to-br from-[#2490EF] to-[#1b7ecf] flex items-center justify-center text-white text-xs font-bold shadow-lg">{s.num}</div>
-                  <div className="w-12 h-12 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center mb-4 mt-2">
-                    <Icon className="w-6 h-6 text-[#2490EF]" />
+                <div key={s.num} className="relative p-6 rounded-3xl bg-slate-900/70 border border-slate-800 hover:border-[#F5A623]/50 transition-all">
+                  <div className="absolute -top-3 -left-3 w-9 h-9 rounded-full bg-gradient-to-br from-[#F5A623] to-[#E59615] flex items-center justify-center text-white text-xs font-bold shadow-lg">{s.num}</div>
+                  <div className="w-12 h-12 rounded-2xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center mb-4 mt-2">
+                    <Icon className="w-6 h-6 text-[#94A3B8]" />
                   </div>
                   <h3 className="font-heading font-bold text-sm text-white mb-2">{s.title}</h3>
                   <p className="text-xs text-slate-400 leading-relaxed">{s.desc}</p>
@@ -626,7 +626,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-br from-amber-950/30 via-slate-900 to-slate-900/50 border border-amber-500/30 p-8 sm:p-12">
             <div className="text-center max-w-3xl mx-auto mb-10">
-              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-4 py-1.5 rounded-full mb-5">
+              <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-4 py-1.5 rounded-full mb-5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>The Solemn Pledge</span>
               </div>
@@ -637,11 +637,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </p>
             </div>
             <div className="mb-8">
-              <h3 className="text-xs font-mono uppercase tracking-[0.15em] text-[#F5A623] mb-4 text-center">The Nine Solemn Promises</h3>
+              <h3 className="text-xs font-medium tracking-wide text-[#F5A623] mb-4 text-center">The Nine Solemn Promises</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {(OATH_CONTENT?.promises || []).slice(0, 9).map((p: any, i: number) => (
                   <div key={i} className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start gap-3">
-                    <span className="text-[11px] font-mono text-[#F5A623] font-bold shrink-0 mt-0.5">{String(i + 1).padStart(2, '0')}.</span>
+                    <span className="text-[11px] font-medium text-[#F5A623] font-bold shrink-0 mt-0.5">{String(i + 1).padStart(2, '0')}.</span>
                     <span className="text-xs text-slate-300 leading-relaxed">{p.en || p.ur || p}</span>
                   </div>
                 ))}
@@ -662,7 +662,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#2490EF]">Questions</span>
+            <span className="text-xs font-medium uppercase tracking-widest text-[#94A3B8]">Questions</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-heading">Frequently Asked</h2>
           </div>
           <div className="space-y-3">
@@ -670,7 +670,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               <details key={i} className="group p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
                 <summary className="flex items-start justify-between gap-4 cursor-pointer list-none">
                   <div className="flex items-start gap-3">
-                    <HelpCircle className="w-4 h-4 text-[#2490EF] shrink-0 mt-0.5" />
+                    <HelpCircle className="w-4 h-4 text-[#94A3B8] shrink-0 mt-0.5" />
                     <span className="text-sm font-semibold text-white">{faq.q}</span>
                   </div>
                   <ChevronDownIcon />
@@ -682,7 +682,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         </section>
 
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-          <div className="rounded-3xl bg-gradient-to-r from-[#0E2849] via-[#0B1A30] to-[#0E2849] border border-[#F5A623]/30 p-8 sm:p-14 text-center shadow-2xl">
+          <div className="rounded-3xl bg-gradient-to-r from-[#0B1A30] via-[#0B1A30] to-[#0B1A30] border border-[#F5A623]/30 p-8 sm:p-14 text-center shadow-2xl">
             <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#F5A623]/15 border border-[#F5A623]/40 flex items-center justify-center">
               <Briefcase className="w-8 h-8 text-[#F5A623]" />
             </div>
@@ -695,7 +695,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 if (!isAuthenticated) onNavigate('login');
                 else { setMode('form'); setCurrentStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }
               }}
-              className="px-8 py-4 rounded-2xl text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-xl shadow-[#F5A623]/30 inline-flex items-center gap-2"
+              className="px-8 py-4 rounded-2xl text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 transition-all shadow-xl shadow-[#F5A623]/30 inline-flex items-center gap-2"
             >
               <Briefcase className="w-5 h-5" />
               <span>Apply Now — Become a Dealer</span>
@@ -732,7 +732,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
       </button>
 
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1.5 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-3.5 py-1.5 rounded-full mb-4">
           <Briefcase className="w-3.5 h-3.5" />
           <span>Dealer Application</span>
         </div>
@@ -752,16 +752,16 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               <React.Fragment key={step.num}>
                 <div className="flex flex-col items-center flex-1">
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all ${
-                    isCompleted ? 'bg-[#28A745] text-white' : isActive ? 'bg-[#2490EF] text-white ring-4 ring-[#2490EF]/20' : 'bg-slate-800 text-slate-500'
+                    isCompleted ? 'bg-[#22C55E] text-white' : isActive ? 'bg-[#F5A623] text-[#0B1A30] ring-4 ring-[#94A3B8]/20' : 'bg-slate-800 text-slate-500'
                   }`}>
                     {isCompleted ? <Check className="w-5 h-5 sm:w-6 sm:h-6" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
                   </div>
-                  <span className={`text-[9px] sm:text-xs mt-2 font-mono uppercase tracking-wider text-center ${
-                    isActive ? 'text-[#2490EF] font-bold' : isCompleted ? 'text-[#28A745]' : 'text-slate-500'
+                  <span className={`text-[9px] sm:text-xs mt-2 font-medium uppercase tracking-wider text-center ${
+                    isActive ? 'text-[#94A3B8] font-bold' : isCompleted ? 'text-[#22C55E]' : 'text-slate-500'
                   }`}>{step.title}</span>
                 </div>
                 {idx < steps.length - 1 && (
-                  <div className={`h-0.5 flex-1 mx-1 transition-colors ${currentStep > step.num ? 'bg-[#28A745]' : 'bg-slate-800'}`} />
+                  <div className={`h-0.5 flex-1 mx-1 transition-colors ${currentStep > step.num ? 'bg-[#22C55E]' : 'bg-slate-800'}`} />
                 )}
               </React.Fragment>
             );
@@ -774,8 +774,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         {currentStep === 1 && (
           <div className="space-y-5">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                <User className="w-5 h-5 text-[#2490EF]" />
+              <div className="w-10 h-10 rounded-lg bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                <User className="w-5 h-5 text-[#94A3B8]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">Step 1 — Personal Information</h2>
@@ -789,7 +789,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="text" required value={formData.full_name} onChange={(e) => updateField('full_name', e.target.value)} placeholder="Enter your full name"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
@@ -798,7 +798,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="text" required value={formData.cnic_number} onChange={(e) => updateField('cnic_number', e.target.value)} placeholder="42101-1234567-1"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
@@ -807,14 +807,14 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="date" required value={formData.date_of_birth} onChange={(e) => updateField('date_of_birth', e.target.value)}
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Gender *</label>
                 <select value={formData.gender} onChange={(e) => updateField('gender', e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]">
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]">
                   <option>Male</option>
                   <option>Female</option>
                   <option>Other</option>
@@ -826,7 +826,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="date" value={formData.cnic_expiry_date} onChange={(e) => updateField('cnic_expiry_date', e.target.value)}
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
@@ -837,10 +837,10 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 </p>
 
                 {!formData.profile_image_file ? (
-                  <label className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-700 hover:border-[#2490EF]/50 bg-slate-950/50 transition-all cursor-pointer group">
+                  <label className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-700 hover:border-[#F5A623]/50 bg-slate-950/50 transition-all cursor-pointer group">
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                    <div className="w-14 h-14 rounded-full bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                      <Camera className="w-6 h-6 text-[#2490EF]" />
+                    <div className="w-14 h-14 rounded-full bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Camera className="w-6 h-6 text-[#94A3B8]" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-white">Upload Profile Photo</p>
@@ -848,12 +848,12 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                     </div>
                   </label>
                 ) : (
-                  <div className="flex items-center gap-4 p-4 rounded-xl bg-[#28A745]/5 border border-[#28A745]/30">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-[#22C55E]/5 border border-[#22C55E]/30">
                     <img src={URL.createObjectURL(formData.profile_image_file)} alt="Profile preview"
-                      className="w-14 h-14 rounded-full object-cover border-2 border-[#28A745]/40 shrink-0" />
+                      className="w-14 h-14 rounded-full object-cover border-2 border-[#22C55E]/40 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white truncate">{formData.profile_image_file.name}</p>
-                      <p className="text-xs text-[#28A745] mt-1 flex items-center gap-1.5">
+                      <p className="text-xs text-[#22C55E] mt-1 flex items-center gap-1.5">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         Ready to upload
                       </p>
@@ -873,8 +873,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         {currentStep === 2 && (
           <div className="space-y-5">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                <Phone className="w-5 h-5 text-[#2490EF]" />
+              <div className="w-10 h-10 rounded-lg bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                <Phone className="w-5 h-5 text-[#94A3B8]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">Step 2 — Contact Details</h2>
@@ -887,7 +887,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="tel" required value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} placeholder="03XX XXXXXXX"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
@@ -905,14 +905,14 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="text" required value={formData.city} onChange={(e) => updateField('city', e.target.value)} placeholder="Karachi"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Service Radius (km)</label>
                 <input type="number" value={formData.service_radius_km} onChange={(e) => updateField('service_radius_km', e.target.value)} placeholder="25"
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
               </div>
 
               <div className="sm:col-span-2">
@@ -920,7 +920,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <FileText className="absolute left-3 top-3.5 w-4 h-4 text-slate-500" />
                   <textarea rows={3} value={formData.office_address} onChange={(e) => updateField('office_address', e.target.value)} placeholder="Enter your office address"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] resize-none" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] resize-none" />
                 </div>
               </div>
             </div>
@@ -931,8 +931,8 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         {currentStep === 3 && (
           <div className="space-y-5">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                <Banknote className="w-5 h-5 text-[#2490EF]" />
+              <div className="w-10 h-10 rounded-lg bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                <Banknote className="w-5 h-5 text-[#94A3B8]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white font-heading">Step 3 — Bank & Business</h2>
@@ -945,26 +945,26 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="text" required value={formData.bank_name} onChange={(e) => updateField('bank_name', e.target.value)} placeholder="Meezan Bank / HBL / UBL"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Account Number *</label>
                 <input type="text" required value={formData.account_number} onChange={(e) => updateField('account_number', e.target.value)} placeholder="Enter your account number"
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
               </div>
 
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">IBAN</label>
                 <input type="text" value={formData.iban} onChange={(e) => updateField('iban', e.target.value)} placeholder="PK36MEZN0001234567890123"
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF] font-mono" />
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] font-medium" />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Company Type</label>
                 <select value={formData.company_type} onChange={(e) => updateField('company_type', e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]">
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]">
                   <option>Individual</option>
                   <option>Company</option>
                   <option>Partnership</option>
@@ -974,7 +974,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">GST Registered</label>
                 <select value={formData.gst_registered} onChange={(e) => updateField('gst_registered', e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#2490EF]">
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]">
                   <option>No</option>
                   <option>Yes</option>
                 </select>
@@ -985,7 +985,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="text" value={formData.reference_name_1} onChange={(e) => updateField('reference_name_1', e.target.value)} placeholder="Who referred you to Realtor X?"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
                 </div>
               </div>
             </div>
@@ -1020,11 +1020,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
             </div>
 
             {!formData.video_kyc_file ? (
-              <label className="block p-10 rounded-2xl border-2 border-dashed border-slate-700 hover:border-[#2490EF]/50 bg-slate-950/50 transition-all cursor-pointer group">
+              <label className="block p-10 rounded-2xl border-2 border-dashed border-slate-700 hover:border-[#F5A623]/50 bg-slate-950/50 transition-all cursor-pointer group">
                 <input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={handleVideoUpload} className="hidden" />
                 <div className="text-center space-y-3">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Upload className="w-8 h-8 text-[#2490EF]" />
+                  <div className="w-16 h-16 mx-auto rounded-full bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Upload className="w-8 h-8 text-[#94A3B8]" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white mb-1">Click to Upload Video</p>
@@ -1033,10 +1033,10 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 </div>
               </label>
             ) : (
-              <div className="p-5 rounded-2xl bg-[#28A745]/5 border border-[#28A745]/30">
+              <div className="p-5 rounded-2xl bg-[#22C55E]/5 border border-[#22C55E]/30">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#28A745]/15 border border-[#28A745]/30 flex items-center justify-center shrink-0">
-                    <Play className="w-6 h-6 text-[#28A745]" />
+                  <div className="w-12 h-12 rounded-lg bg-[#22C55E]/15 border border-[#22C55E]/30 flex items-center justify-center shrink-0">
+                    <Play className="w-6 h-6 text-[#22C55E]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
@@ -1075,7 +1075,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="text-slate-400">Full Name:</div>
                 <div className="text-white text-right">{formData.full_name}</div>
                 <div className="text-slate-400">CNIC:</div>
-                <div className="text-white text-right font-mono">{formData.cnic_number}</div>
+                <div className="text-white text-right font-medium">{formData.cnic_number}</div>
                 <div className="text-slate-400">Phone:</div>
                 <div className="text-white text-right">{formData.phone}</div>
                 <div className="text-slate-400">City:</div>
@@ -1083,20 +1083,20 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="text-slate-400">Bank:</div>
                 <div className="text-white text-right">{formData.bank_name}</div>
                 <div className="text-slate-400">Profile Image:</div>
-                <div className={formData.profile_image_file ? 'text-[#28A745] text-right font-semibold' : 'text-slate-500 text-right'}>
+                <div className={formData.profile_image_file ? 'text-[#22C55E] text-right font-semibold' : 'text-slate-500 text-right'}>
                   {formData.profile_image_file ? '✅ Uploaded' : '— Not uploaded'}
                 </div>
                 <div className="text-slate-400">Video KYC:</div>
-                <div className="text-[#28A745] text-right font-semibold">✅ {formData.video_kyc_file?.name || 'Uploaded'}</div>
+                <div className="text-[#22C55E] text-right font-semibold">✅ {formData.video_kyc_file?.name || 'Uploaded'}</div>
               </div>
             </div>
 
             <button type="button" onClick={() => updateField('terms_and_conditions', !formData.terms_and_conditions)}
               className={`w-full p-4 rounded-xl border transition-all flex items-start gap-3 text-left ${
-                formData.terms_and_conditions ? 'bg-[#28A745]/10 border-[#28A745]/40' : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+                formData.terms_and_conditions ? 'bg-[#22C55E]/10 border-[#22C55E]/40' : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
               }`}>
               <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 ${
-                formData.terms_and_conditions ? 'bg-[#28A745] border-[#28A745]' : 'border-slate-600'
+                formData.terms_and_conditions ? 'bg-[#22C55E] border-[#22C55E]' : 'border-slate-600'
               }`}>
                 {formData.terms_and_conditions && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
               </div>
@@ -1142,13 +1142,13 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
           {currentStep < 5 ? (
             <button type="button" onClick={nextStep}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#2490EF] to-[#1b7ecf] hover:brightness-110 rounded-lg shadow-md transition-all">
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 rounded-lg shadow-md transition-all">
               Continue
               <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
             <button type="button" onClick={handleFinalSubmit} disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 rounded-lg shadow-md transition-all disabled:opacity-60">
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 rounded-lg shadow-md transition-all disabled:opacity-60">
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />

@@ -93,7 +93,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
         </p>
         <button
           onClick={() => onNavigate('login')}
-          className="relative px-7 py-3.5 bg-[#2490EF] hover:bg-[#1b7ecf] text-white font-bold rounded-2xl transition-all shadow-xl shadow-[#2490EF]/25 active:scale-[0.98] overflow-hidden group inline-flex items-center gap-2"
+          className="relative px-7 py-3.5 bg-[#F5A623] hover:bg-[#F5A623] text-[#0B1A30] font-bold rounded-2xl transition-all shadow-xl shadow-[#F5A623]/25 active:scale-[0.98] overflow-hidden group inline-flex items-center gap-2"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           <span className="relative z-10">Go to Login</span>
@@ -111,9 +111,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
   // Determine user type
   const getUserType = () => {
     if (user.is_dealer)
-      return { label: 'Dealer Partner', color: '#F5A623', icon: Building2, ring: 'from-[#F5A623]/50 via-[#FFB84D]/30 to-[#F5A623]/50' };
+      return { label: 'Dealer Partner', color: '#F5A623', icon: Building2, ring: 'from-[#F5A623]/50 via-[#F5A623]/30 to-[#F5A623]/50' };
     if (user.is_customer)
-      return { label: 'Customer', color: '#2490EF', icon: UserCheck, ring: 'from-[#2490EF]/50 via-[#60A5FA]/30 to-[#2490EF]/50' };
+      return { label: 'Customer', color: '#94A3B8', icon: UserCheck, ring: 'from-[#94A3B8]/50 via-[#60A5FA]/30 to-[#94A3B8]/50' };
     return { label: 'Website User', color: '#94A3B8', icon: User, ring: 'from-slate-500/50 via-slate-400/30 to-slate-500/50' };
   };
 
@@ -126,7 +126,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
           label: 'Customer Dashboard',
           desc: 'Track bookings, payments, and documents',
           icon: UserCheck,
-          color: '#2490EF',
+          color: '#94A3B8',
           action: () => onNavigate('portal'),
         }
       : null,
@@ -144,7 +144,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
           label: 'Become a Customer',
           desc: 'Register to book properties and track payments',
           icon: UserCheck,
-          color: '#2490EF',
+          color: '#94A3B8',
           action: () => onNavigate('become-customer'),
         }
       : null,
@@ -175,11 +175,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
         </div>
 
         <div className="inline-flex items-center gap-3 mb-6">
-          <span className="w-6 h-[1px] bg-[#2490EF]" />
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#2490EF] font-semibold">
+          <span className="w-6 h-[1px] bg-[#F5A623]" />
+          <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#94A3B8] font-semibold">
             Your Account
           </span>
-          <span className="w-6 h-[1px] bg-[#2490EF]" />
+          <span className="w-6 h-[1px] bg-[#F5A623]" />
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-bold text-white font-heading tracking-[-0.03em] leading-tight text-balance">
@@ -208,7 +208,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
                   backgroundImage: `linear-gradient(135deg, ${userType.color}, ${userType.color}60, ${userType.color})`,
                 }}
               >
-                <div className="w-full h-full rounded-full overflow-hidden bg-[#0A1628] flex items-center justify-center">
+                <div className="w-full h-full rounded-full overflow-hidden bg-[#0B1A30] flex items-center justify-center">
                   <span
                     className="text-4xl font-bold font-heading"
                     style={{ color: userType.color }}
@@ -218,7 +218,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
                 </div>
               </div>
               {/* Online indicator */}
-              <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-[#28A745] border-4 border-[#0A1628] flex items-center justify-center">
+              <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-[#22C55E] border-4 border-[#0B1A30] flex items-center justify-center">
                 <ShieldCheck className="w-3 h-3 text-white" />
               </div>
             </div>
@@ -232,7 +232,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-4">
                 <UserTypeIcon className="w-3.5 h-3.5" style={{ color: userType.color }} />
                 <span
-                  className="text-xs font-mono uppercase tracking-wider font-semibold"
+                  className="text-xs font-medium uppercase tracking-wider font-semibold"
                   style={{ color: userType.color }}
                 >
                   {userType.label}
@@ -259,15 +259,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
       {/* ═════ ACCOUNT DETAILS ═════ */}
       <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 scroll-reveal">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 to-slate-900/40" />
-        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/50 to-transparent" />
 
         <div className="relative p-8">
           <div className="flex items-center gap-3 mb-7 pb-5 border-b border-white/[0.06]">
-            <div className="w-10 h-10 rounded-xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-              <User className="w-5 h-5 text-[#2490EF]" />
+            <div className="w-10 h-10 rounded-xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+              <User className="w-5 h-5 text-[#94A3B8]" />
             </div>
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-0.5">
+              <div className="text-[10px] font-medium tracking-wide text-[#94A3B8] mb-0.5">
                 Account Information
               </div>
               <h3 className="text-lg font-bold text-white font-heading tracking-[-0.01em]">
@@ -282,7 +282,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             <InfoField icon={User} label="Full Name" value={user.full_name} />
 
             <div>
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-slate-500 font-mono mb-2">
+              <div className="flex items-center gap-1.5 text-[10px] tracking-wide text-slate-500 font-medium mb-2">
                 <Shield className="w-3 h-3" />
                 <span>Roles</span>
               </div>
@@ -290,7 +290,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
                 {user.roles.map((role) => (
                   <span
                     key={role}
-                    className="text-[11px] font-mono uppercase tracking-wider bg-white/[0.04] text-slate-300 px-2.5 py-1 rounded-lg border border-white/[0.08]"
+                    className="text-[11px] font-medium uppercase tracking-wider bg-white/[0.04] text-slate-300 px-2.5 py-1 rounded-lg border border-white/[0.08]"
                   >
                     {role}
                   </span>
@@ -306,7 +306,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
         <div className="scroll-reveal">
           <div className="flex items-center gap-3 mb-6">
             <span className="w-6 h-[1px] bg-[#F5A623]" />
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#F5A623] font-semibold">
+            <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#F5A623] font-semibold">
               Quick Actions
             </span>
           </div>
@@ -402,7 +402,7 @@ const InfoField: React.FC<{
   value: string;
 }> = ({ icon: Icon, label, value }) => (
   <div>
-    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-slate-500 font-mono mb-2">
+    <div className="flex items-center gap-1.5 text-[10px] tracking-wide text-slate-500 font-medium mb-2">
       <Icon className="w-3 h-3" />
       <span>{label}</span>
     </div>

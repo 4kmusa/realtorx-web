@@ -110,14 +110,14 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
             <RealtorXLogo size="md" showSubtitle={false} />
           </div>
 
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber-400 bg-amber-950/40 border border-amber-800/40 px-3 py-1 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-amber-400 bg-amber-950/40 border border-amber-800/40 px-3 py-1 rounded-full mb-4">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Foundational Charter 02</span>
             <span aria-hidden="true">·</span>
             <span>The Solemn Promise</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-heading font-bold text-white tracking-tight">
             {language === 'en' ? OATH_CONTENT.title : OATH_CONTENT.titleUrdu}
           </h2>
 
@@ -135,10 +135,10 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
               <Award className="w-8 h-8" />
             </div>
 
-            <span className="text-xs font-mono text-amber-400 uppercase tracking-widest font-semibold">
+            <span className="text-xs font-medium text-amber-400 uppercase tracking-widest font-semibold">
               Oath Ratified &amp; Custodian Commissioned
             </span>
-            <h3 className="text-2xl sm:text-4xl font-serif font-bold text-white mt-2">
+            <h3 className="text-2xl sm:text-4xl font-heading font-bold text-white mt-2">
               Welcome, Custodian {submissionComplete.fullName}
             </h3>
 
@@ -148,7 +148,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 : `آپ نے ریئلٹر ایکس کے مقدس حلف کی باقاعدہ توثیق کر دی ہے۔ آپ کے کوائف کا اندراج ہو چکا ہے اور رجسٹری میں محفوظ کر دیا گیا ہے۔`}
             </p>
 
-            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs font-mono">
+            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs font-medium">
               <span className="text-amber-400 font-bold">ID: {submissionComplete.memberNumber}</span>
               <span className="text-slate-600">·</span>
               <span className="text-slate-300">{submissionComplete.firmName}</span>
@@ -188,7 +188,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
 
             {/* Solemn Preamble Banner */}
             <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-sky-950/40 via-slate-900 to-amber-950/40 border border-slate-800 text-center shadow-lg">
-              <p className="font-serif text-xl sm:text-2xl text-amber-200 italic leading-relaxed">
+              <p className="font-heading text-xl sm:text-2xl text-amber-200 italic leading-relaxed">
                 "{language === 'en' ? OATH_CONTENT.preamble : OATH_CONTENT.preambleUrdu}"
               </p>
             </div>
@@ -197,7 +197,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
               <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-800">
                 <div>
-                  <h3 className="font-serif text-xl font-medium text-white">
+                  <h3 className="font-heading text-xl font-medium text-white">
                     {language === 'en' ? 'The Nine Solemn Promises' : 'حلف نامے کے نو بنیادی وعدے'}
                   </h3>
                   <p className="text-xs text-slate-400 mt-1">
@@ -209,7 +209,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 <button
                   type="button"
                   onClick={checkAll}
-                  className="text-xs font-mono text-amber-400 hover:text-amber-300 underline py-1"
+                  className="text-xs font-medium text-amber-400 hover:text-amber-300 underline py-1"
                 >
                   {language === 'en' ? 'Affirm All 9' : 'تمام 9 کی توثیق'}
                 </button>
@@ -235,8 +235,8 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-amber-400 font-bold">0{index + 1}.</span>
-                          <span className={`text-sm sm:text-base font-serif font-medium ${isChecked ? 'text-white' : 'text-slate-300'}`}>
+                          <span className="text-xs font-medium text-amber-400 font-bold">0{index + 1}.</span>
+                          <span className={`text-sm sm:text-base font-heading font-medium ${isChecked ? 'text-white' : 'text-slate-300'}`}>
                             {language === 'en' ? promise.en : promise.ur}
                           </span>
                         </div>
@@ -249,7 +249,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
 
             {/* Custodian Conclusion Quote */}
             <div className="p-6 rounded-xl bg-slate-900/40 border border-slate-800 text-center">
-              <p className="font-serif text-lg sm:text-xl text-slate-200 italic">
+              <p className="font-heading text-lg sm:text-xl text-slate-200 italic">
                 "{language === 'en' ? OATH_CONTENT.conclusion : OATH_CONTENT.conclusionUrdu}"
               </p>
             </div>
@@ -257,7 +257,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
             {/* Member Details Form */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="border-b border-slate-800 pb-4">
-                <h3 className="font-serif text-xl font-medium text-white">
+                <h3 className="font-heading text-xl font-medium text-white">
                   {language === 'en' ? 'Custodian Identity & Registration' : 'کسٹوڈین کوائف اور رجسٹریشن'}
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -269,7 +269,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-sky-400" />
                     <span>{language === 'en' ? 'Full Legal Name *' : 'مکمل قانونی نام *'}</span>
                   </label>
@@ -284,7 +284,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5 text-sky-400" />
                     <span>{language === 'en' ? 'Agency / Brokerage / Firm *' : 'ایجنسی / فرم کا نام *'}</span>
                   </label>
@@ -299,7 +299,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-sky-400" />
                     <span>{language === 'en' ? 'City / Region *' : 'شہر / ریجن *'}</span>
                   </label>
@@ -314,7 +314,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-sky-400" />
                     <span>{language === 'en' ? 'Official Email *' : 'آفیشل ای میل *'}</span>
                   </label>
@@ -329,7 +329,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5">
+                  <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5">
                     {language === 'en' ? 'Phone / WhatsApp' : 'فون / واٹس ایپ'}
                   </label>
                   <input
@@ -342,7 +342,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5">
+                  <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5">
                     {language === 'en' ? 'Realtor License / Broker ID' : 'ریئلٹر لائسنس / بروکر رجسٹریشن'}
                   </label>
                   <input
@@ -356,7 +356,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5">
+                <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5">
                   {language === 'en' ? 'Membership Tier' : 'ممبرشپ کیٹیگری'}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -384,7 +384,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
 
               {/* Digital Signature Affirmation */}
               <div>
-                <label className="block text-xs uppercase font-mono tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                <label className="block text-xs uppercase font-medium tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
                   <PenTool className="w-3.5 h-3.5 text-amber-400" />
                   <span>{language === 'en' ? 'Digital Signature / Legal Sign-off *' : 'ڈیجیٹل دستخط / باضابطہ تصدیق *'}</span>
                 </label>
@@ -394,7 +394,7 @@ export const OathCeremony: React.FC<OathCeremonyProps> = ({
                   value={signatureText}
                   onChange={(e) => setSignatureText(e.target.value)}
                   placeholder="Type your full legal name as your digital oath signature"
-                  className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg font-serif italic text-lg text-amber-300 focus:outline-none focus:border-amber-500"
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg font-heading italic text-lg text-amber-300 focus:outline-none focus:border-amber-500"
                 />
                 <p className="text-[11px] text-slate-400 mt-1.5">
                   {language === 'en'

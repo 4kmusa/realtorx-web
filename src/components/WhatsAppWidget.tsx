@@ -103,7 +103,7 @@ export const WhatsAppWidget: React.FC = () => {
                 href={url}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-sm font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/25"
+                className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#22C55E] text-sm font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/25"
               >
                 <WhatsAppIcon className="w-5 h-5" />
                 <span>Start Chat on WhatsApp</span>
@@ -137,7 +137,7 @@ export const WhatsAppWidget: React.FC = () => {
           setOpen(!open);
           setShowBubble(false);
         }}
-        className={`fixed bottom-6 right-4 sm:right-6 z-[58] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#1ebe5b] text-white shadow-2xl shadow-[#25D366]/40 flex items-center justify-center transition-all hover:scale-105 ${
+        className={`fixed bottom-6 right-4 sm:right-6 z-[58] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#22C55E] text-white shadow-2xl shadow-[#25D366]/40 flex items-center justify-center transition-all hover:scale-105 ${
           pulse ? 'animate-bounce' : ''
         }`}
         aria-label="Open WhatsApp chat"

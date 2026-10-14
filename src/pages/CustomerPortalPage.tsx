@@ -127,7 +127,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
   if (loading) {
     return (
       <div className="py-20 max-w-7xl mx-auto px-4 text-center">
-        <Loader2 className="w-10 h-10 text-[#2490EF] animate-spin mx-auto mb-4" />
+        <Loader2 className="w-10 h-10 text-[#94A3B8] animate-spin mx-auto mb-4" />
         <p className="text-slate-400">Loading your dashboard...</p>
       </div>
     );
@@ -148,7 +148,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
         </p>
         <button
           onClick={() => onNavigate('become-customer')}
-          className="px-6 py-3 bg-[#2490EF] text-white rounded-lg font-semibold"
+          className="px-6 py-3 bg-[#F5A623] text-[#0B1A30] rounded-lg font-semibold"
         >
           Become a Customer
         </button>
@@ -186,7 +186,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#2490EF] bg-[#2490EF]/10 border border-[#2490EF]/30 px-3 py-1 rounded-full mb-3">
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-[#94A3B8] bg-[#94A3B8]/10 border border-[#94A3B8]/30 px-3 py-1 rounded-full mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-current" />
             <span>Customer Dashboard</span>
           </div>
@@ -194,7 +194,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
             Welcome, {customer.full_name?.split(' ')[0] || 'Customer'}
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Customer ID: <span className="font-mono text-slate-300">{customer.name}</span>
+            Customer ID: <span className="font-medium text-slate-300">{customer.name}</span>
           </p>
         </div>
 
@@ -236,7 +236,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
               <div className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">
                 CNIC
               </div>
-              <div className="text-sm text-white font-mono">
+              <div className="text-sm text-white font-medium">
                 {customer.cnic_number || '—'}
               </div>
             </div>
@@ -254,45 +254,45 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards — unified neutral design */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-[#2490EF]/15 to-[#2490EF]/5 border border-[#2490EF]/30">
-          <div className="flex items-center justify-between mb-2">
-            <TrendingUp className="w-5 h-5 text-[#2490EF]" />
-            <span className="text-[10px] font-mono text-[#2490EF] uppercase tracking-wider">
+        <div className="p-5 rounded-2xl bg-slate-900/40 border border-white/[0.06]">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-medium text-slate-500 tracking-wide">
               Total Value
             </span>
+            <TrendingUp className="w-4 h-4 text-[#F5A623]" />
           </div>
-          <div className="text-2xl font-bold text-white font-heading">
+          <div className="text-2xl font-semibold text-[#F5A623] font-heading tabular-nums tracking-[-0.02em] mb-1">
             <AnimatedNumber value={totalBooked ?? 0} format={formatPKR} duration={1400} />
           </div>
-          <div className="text-xs text-slate-400 mt-1">Booked Properties</div>
+          <div className="text-[11px] text-slate-500">Booked Properties</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-[#28A745]/15 to-[#28A745]/5 border border-[#28A745]/30">
-          <div className="flex items-center justify-between mb-2">
-            <CheckCircle2 className="w-5 h-5 text-[#28A745]" />
-            <span className="text-[10px] font-mono text-[#28A745] uppercase tracking-wider">
+        <div className="p-5 rounded-2xl bg-slate-900/40 border border-white/[0.06]">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-medium text-slate-500 tracking-wide">
               Received
             </span>
+            <CheckCircle2 className="w-4 h-4 text-[#475569]" />
           </div>
-          <div className="text-2xl font-bold text-white font-heading">
+          <div className="text-2xl font-semibold text-[#F5F5F7] font-heading tabular-nums tracking-[-0.02em] mb-1">
             <AnimatedNumber value={totalPaid ?? 0} format={formatPKR} duration={1400} />
           </div>
-          <div className="text-xs text-slate-400 mt-1">Payments Received</div>
+          <div className="text-[11px] text-slate-500">Payments Received</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-[#F5A623]/15 to-[#F5A623]/5 border border-[#F5A623]/30">
-          <div className="flex items-center justify-between mb-2">
-            <Clock className="w-5 h-5 text-[#F5A623]" />
-            <span className="text-[10px] font-mono text-[#F5A623] uppercase tracking-wider">
+        <div className="p-5 rounded-2xl bg-slate-900/40 border border-white/[0.06]">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-medium text-slate-500 tracking-wide">
               Balance
             </span>
+            <Clock className="w-4 h-4 text-[#475569]" />
           </div>
-          <div className="text-2xl font-bold text-white font-heading">
+          <div className="text-2xl font-semibold text-[#F5F5F7] font-heading tabular-nums tracking-[-0.02em] mb-1">
             <AnimatedNumber value={totalPending ?? 0} format={formatPKR} duration={1400} />
           </div>
-          <div className="text-xs text-slate-400 mt-1">Pending Payment</div>
+          <div className="text-[11px] text-slate-500">Pending Payment</div>
         </div>
       </div>
 
@@ -308,7 +308,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   isActive
-                    ? 'border-[#2490EF] text-[#2490EF]'
+                    ? 'border-[#94A3B8] text-[#94A3B8]'
                     : 'border-transparent text-slate-400 hover:text-white'
                 }`}
               >
@@ -316,9 +316,9 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                 <span>{tab.label}</span>
                 {tab.count > 0 && (
                   <span
-                    className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                    className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
                       isActive
-                        ? 'bg-[#2490EF]/20 text-[#2490EF]'
+                        ? 'bg-[#94A3B8]/20 text-[#94A3B8]'
                         : 'bg-slate-800 text-slate-400'
                     }`}
                   >
@@ -340,7 +340,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
             {bookings.length > 0 && (
               <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800">
                 <div className="flex items-center gap-2 mb-4">
-                  <Building2 className="w-5 h-5 text-[#2490EF]" />
+                  <Building2 className="w-5 h-5 text-[#94A3B8]" />
                   <h3 className="text-lg font-bold text-white font-heading">
                     Latest Booking
                   </h3>
@@ -351,7 +351,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Booking ID</span>
-                    <span className="text-white font-mono">
+                    <span className="text-white font-medium">
                       {bookings[0].name}
                     </span>
                   </div>
@@ -363,7 +363,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Status</span>
-                    <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#28A745]/15 text-[#28A745]">
+                    <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#22C55E]/15 text-[#22C55E]">
                       {bookings[0].status}
                     </span>
                   </div>
@@ -440,18 +440,18 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
               bookings.map((b) => (
                 <div
                   key={b.name}
-                  className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-[#2490EF]/50 transition-all"
+                  className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-[#F5A623]/50 transition-all"
                 >
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-mono bg-[#2490EF]/15 text-[#2490EF] px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-medium bg-[#94A3B8]/15 text-[#94A3B8] px-2 py-0.5 rounded">
                           {b.name}
                         </span>
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                             b.status === 'Confirmed'
-                              ? 'bg-[#28A745]/15 text-[#28A745]'
+                              ? 'bg-[#22C55E]/15 text-[#22C55E]'
                               : 'bg-slate-700 text-slate-300'
                           }`}
                         >
@@ -475,7 +475,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                       <div className="text-xs text-slate-500 mb-1">
                         Booking Amount
                       </div>
-                      <div className="text-sm font-bold text-[#28A745]">
+                      <div className="text-sm font-bold text-[#22C55E]">
                         {formatPKR(b.booking_amount)}
                       </div>
                     </div>
@@ -506,10 +506,10 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                   <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-mono bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-medium bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded">
                           {d.name}
                         </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#2490EF]/15 text-[#2490EF]">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#94A3B8]/15 text-[#94A3B8]">
                           {d.status}
                         </span>
                       </div>
@@ -551,7 +551,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                       <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
                         Company Comm.
                       </div>
-                      <div className="text-sm font-semibold text-[#28A745]">
+                      <div className="text-sm font-semibold text-[#22C55E]">
                         {formatPKR(d.company_commission)}
                       </div>
                     </div>
@@ -609,7 +609,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                             <div
                               className={`text-[10px] font-bold px-2 py-0.5 rounded inline-block mt-1 ${
                                 inst.status === 'Paid'
-                                  ? 'bg-[#28A745]/15 text-[#28A745]'
+                                  ? 'bg-[#22C55E]/15 text-[#22C55E]'
                                   : inst.status === 'Overdue'
                                   ? 'bg-red-500/15 text-red-400'
                                   : 'bg-[#F5A623]/15 text-[#F5A623]'
@@ -625,8 +625,8 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                           <div
                             className={`h-full ${
                               inst.status === 'Paid'
-                                ? 'bg-[#28A745]'
-                                : 'bg-[#2490EF]'
+                                ? 'bg-[#22C55E]'
+                                : 'bg-[#F5A623]'
                             }`}
                             style={{ width: `${progress}%` }}
                           />
@@ -665,7 +665,7 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                           {formatDate(p.payment_date)} · {p.payment_mode}
                         </div>
                       </div>
-                      <CheckCircle2 className="w-5 h-5 text-[#28A745]" />
+                      <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />
                     </div>
                   ))}
                 </div>
@@ -694,16 +694,16 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-medium bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
                           {v.name}
                         </span>
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                             v.status === 'Completed'
-                              ? 'bg-[#28A745]/15 text-[#28A745]'
+                              ? 'bg-[#22C55E]/15 text-[#22C55E]'
                               : v.status === 'Cancelled'
                               ? 'bg-red-500/15 text-red-400'
-                              : 'bg-[#2490EF]/15 text-[#2490EF]'
+                              : 'bg-[#94A3B8]/15 text-[#94A3B8]'
                           }`}
                         >
                           {v.status}
@@ -758,7 +758,7 @@ const EmptyState: React.FC<{
     {onNavigate && actionLabel && (
       <button
         onClick={onNavigate}
-        className="px-5 py-2.5 text-sm font-semibold text-white bg-[#2490EF] hover:bg-[#1b7ecf] rounded-lg transition-colors"
+        className="px-5 py-2.5 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-lg transition-colors"
       >
         {actionLabel}
       </button>

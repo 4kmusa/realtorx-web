@@ -110,7 +110,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#2490EF';
+    ctx.strokeStyle = '#94A3B8';
   }, []);
 
   const startDrawing = (
@@ -230,8 +230,8 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
   if (submitted) {
     return (
       <div className="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-[2rem] overflow-hidden border border-[#28A745]/30 shadow-2xl shadow-[#28A745]/10 scroll-reveal">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+        <div className="relative rounded-[2rem] overflow-hidden border border-[#22C55E]/30 shadow-2xl shadow-[#22C55E]/10 scroll-reveal">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
           <div
             className="absolute inset-0 opacity-60"
             style={{
@@ -239,15 +239,15 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                 'radial-gradient(ellipse at 30% 30%, rgba(40, 167, 69, 0.20) 0%, transparent 60%), radial-gradient(ellipse at 70% 70%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
             }}
           />
-          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#28A745]/60 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#22C55E]/60 to-transparent" />
 
           <div className="relative p-8 sm:p-12 text-center space-y-7">
-            <div className="w-24 h-24 mx-auto rounded-3xl bg-[#28A745]/15 border-2 border-[#28A745]/40 flex items-center justify-center shadow-xl shadow-[#28A745]/20">
-              <Check className="w-12 h-12 text-[#28A745] stroke-[3]" />
+            <div className="w-24 h-24 mx-auto rounded-3xl bg-[#22C55E]/15 border-2 border-[#22C55E]/40 flex items-center justify-center shadow-xl shadow-[#22C55E]/20">
+              <Check className="w-12 h-12 text-[#22C55E] stroke-[3]" />
             </div>
 
             <div>
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#F5A623] mb-3">
+              <div className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-[#F5A623] mb-3">
                 <Sparkle className="w-3 h-3" />
                 <span>Founding Member Registered</span>
               </div>
@@ -257,7 +257,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
               <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
                 Your oath has been recorded in the RealtorX community registry. Your Founding
                 Member Custodian ID:{' '}
-                <span className="text-[#F5A623] font-mono font-bold">{memberName}</span>
+                <span className="text-[#F5A623] font-medium font-bold">{memberName}</span>
               </p>
             </div>
 
@@ -273,7 +273,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                 <div key={idx} className="flex items-center justify-between text-sm gap-3">
                   <span className="text-slate-400 shrink-0">{row.label}</span>
                   <span
-                    className={`truncate ${row.mono ? 'font-mono' : ''} ${
+                    className={`truncate ${row.mono ? 'font-medium' : ''} ${
                       row.highlight ? 'text-[#F5A623] font-bold' : 'text-white font-semibold'
                     }`}
                   >
@@ -283,7 +283,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
               ))}
               <div className="flex items-center justify-between text-sm pt-3 border-t border-white/[0.06]">
                 <span className="text-slate-400">Status</span>
-                <span className="flex items-center gap-1.5 text-[#28A745] font-bold">
+                <span className="flex items-center gap-1.5 text-[#22C55E] font-bold">
                   <CheckCircle2 className="w-4 h-4" /> Verified
                 </span>
               </div>
@@ -299,7 +299,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
               </button>
               <button
                 onClick={() => onNavigate('home')}
-                className="relative inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-2xl shadow-xl shadow-[#F5A623]/30 transition-all overflow-hidden group active:scale-[0.98]"
+                className="relative inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 rounded-2xl shadow-xl shadow-[#F5A623]/30 transition-all overflow-hidden group active:scale-[0.98]"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 <span className="relative z-10">Back to Home</span>
@@ -326,7 +326,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
 
         <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{
                   color: '#F5A623'
                 }}>Foundational Charter 02 · The Oath</span>
               </div>
@@ -346,15 +346,15 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
         {/* ═════ STEP 1: PERSONAL DETAILS ═════ */}
         <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 scroll-reveal">
           <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 to-slate-900/40" />
-          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/50 to-transparent" />
 
           <div className="relative p-6 sm:p-8">
             <div className="flex items-center gap-3.5 mb-7 pb-5 border-b border-white/[0.06]">
-              <div className="w-12 h-12 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                <User className="w-6 h-6 text-[#2490EF]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                <User className="w-6 h-6 text-[#94A3B8]" />
               </div>
               <div>
-                <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-1">
+                <div className="text-[10px] font-medium tracking-wide text-[#94A3B8] mb-1">
                   Step 01
                 </div>
                 <h2 className="text-xl font-bold text-white font-heading tracking-[-0.01em]">
@@ -368,108 +368,108 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   Full Name *
                 </label>
                 <div className="relative group">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Muhammad Ahmed Khan"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   CNIC / ID Number *
                 </label>
                 <div className="relative group">
-                  <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="text"
                     required
                     value={cnic}
                     onChange={(e) => setCnic(e.target.value)}
                     placeholder="42101-1234567-1"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   Email *
                 </label>
                 <div className="relative group">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   Phone / WhatsApp *
                 </label>
                 <div className="relative group">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="tel"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+92 300 1234567"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   City *
                 </label>
                 <div className="relative group">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="text"
                     required
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Karachi"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   Agency / Firm (Optional)
                 </label>
                 <div className="relative group">
-                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="text"
                     value={agencyName}
                     onChange={(e) => setAgencyName(e.target.value)}
                     placeholder="Your agency name"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   Realtor License / Broker ID (Optional)
                 </label>
                 <input
@@ -477,21 +477,21 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                   value={licenseNo}
                   onChange={(e) => setLicenseNo(e.target.value)}
                   placeholder="License number"
-                  className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                  className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                   Date
                 </label>
                 <div className="relative group">
-                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                   />
                 </div>
               </div>
@@ -511,7 +511,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                   <ShieldCheck className="w-6 h-6 text-[#F5A623]" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#F5A623] mb-1">
+                  <div className="text-[10px] font-medium tracking-wide text-[#F5A623] mb-1">
                     Step 02
                   </div>
                   <h2 className="text-xl font-bold text-white font-heading tracking-[-0.01em]">
@@ -529,7 +529,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                     {checkedCount}
                     <span className="text-slate-500">/{OATH_PROMISES.length}</span>
                   </div>
-                  <div className="text-[9px] font-mono uppercase tracking-wider text-slate-500 mt-1">
+                  <div className="text-[9px] font-medium uppercase tracking-wider text-slate-500 mt-1">
                     Affirmed
                   </div>
                 </div>
@@ -539,7 +539,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
             {/* Progress bar */}
             <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden mb-6">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#28A745] to-[#20c997] transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-[#22C55E] to-[#20c997] transition-all duration-500"
                 style={{ width: `${(checkedCount / OATH_PROMISES.length) * 100}%` }}
               />
             </div>
@@ -554,14 +554,14 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                     onClick={() => togglePromise(idx)}
                     className={`group w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-start gap-3.5 ${
                       isChecked
-                        ? 'bg-[#28A745]/[0.08] border-[#28A745]/40 shadow-lg shadow-[#28A745]/5'
+                        ? 'bg-[#22C55E]/[0.08] border-[#22C55E]/40 shadow-lg shadow-[#22C55E]/5'
                         : 'bg-slate-950/50 border-white/[0.06] hover:border-white/[0.15] hover:bg-white/[0.03]'
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 ${
                         isChecked
-                          ? 'bg-[#28A745] border-[#28A745] scale-105'
+                          ? 'bg-[#22C55E] border-[#22C55E] scale-105'
                           : 'border-slate-600 group-hover:border-slate-500'
                       }`}
                     >
@@ -573,7 +573,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                         isChecked ? 'text-white font-medium' : 'text-slate-300'
                       }`}
                     >
-                      <span className="text-[10px] font-mono text-slate-500 mr-2">
+                      <span className="text-[10px] font-medium text-slate-500 mr-2">
                         {String(idx + 1).padStart(2, '0')}.
                       </span>
                       {promise}
@@ -588,16 +588,16 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
         {/* ═════ STEP 3: SIGNATURE ═════ */}
         <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 scroll-reveal">
           <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 to-slate-900/40" />
-          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/50 to-transparent" />
 
           <div className="relative p-6 sm:p-8">
             <div className="flex items-center justify-between gap-4 mb-7 pb-5 border-b border-white/[0.06]">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                  <PenTool className="w-6 h-6 text-[#2490EF]" />
+                <div className="w-12 h-12 rounded-2xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                  <PenTool className="w-6 h-6 text-[#94A3B8]" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#2490EF] mb-1">
+                  <div className="text-[10px] font-medium tracking-wide text-[#94A3B8] mb-1">
                     Step 03
                   </div>
                   <h2 className="text-xl font-bold text-white font-heading tracking-[-0.01em]">
@@ -634,7 +634,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
                 onTouchEnd={stopDrawing}
                 className={`w-full h-[200px] bg-slate-950/80 border-2 border-dashed rounded-2xl cursor-crosshair touch-none transition-colors ${
                   hasSignature
-                    ? 'border-[#2490EF]/40'
+                    ? 'border-[#94A3B8]/40'
                     : 'border-white/[0.1] hover:border-white/[0.2]'
                 }`}
               />
@@ -652,7 +652,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
               <span className="text-slate-400">
                 By signing, you agree to all 9 promises above
               </span>
-              <span className="flex items-center gap-1.5 text-[#28A745] font-mono">
+              <span className="flex items-center gap-1.5 text-[#22C55E] font-medium">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Digital signature stored securely
               </span>
@@ -673,7 +673,7 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
           <button
             type="submit"
             disabled={!isFormValid || isSubmitting}
-            className="relative inline-flex items-center gap-2.5 px-8 py-4 text-base font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-2xl shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100 overflow-hidden group active:scale-[0.98]"
+            className="relative inline-flex items-center gap-2.5 px-8 py-4 text-base font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 rounded-2xl shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100 overflow-hidden group active:scale-[0.98]"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             {isSubmitting ? (

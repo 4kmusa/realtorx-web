@@ -25,18 +25,18 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
             <RealtorXLogo size="md" showSubtitle={false} />
           </div>
 
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/40 border border-sky-800/40 px-3 py-1 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-sky-400 bg-sky-950/40 border border-sky-800/40 px-3 py-1 rounded-full mb-4">
             <BookOpen className="w-3.5 h-3.5" />
             <span>Foundational Charter 01</span>
             <span aria-hidden="true">·</span>
             <span>Why We Exist</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white text-balance">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold tracking-tight text-white text-balance">
             {language === 'en' ? MANIFESTO_CONTENT.title : MANIFESTO_CONTENT.titleUrdu}
           </h1>
 
-          <p className="mt-4 text-xl sm:text-2xl font-serif italic text-amber-300">
+          <p className="mt-4 text-xl sm:text-2xl font-heading italic text-amber-300">
             {language === 'en' ? MANIFESTO_CONTENT.subtitle : MANIFESTO_CONTENT.subtitleUrdu}
           </p>
           <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto mt-6" />
@@ -50,12 +50,12 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
             referrerPolicy="no-referrer"
             className="w-full h-72 sm:h-96 lg:h-[440px] object-cover brightness-[0.8]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#060b19] via-[#060b19]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A30] via-[#0B1A30]/40 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-slate-300">
-            <span className="font-serif italic">
+            <span className="font-heading italic">
               Fig 1.0 — The Inaugural Assembly of RealtorX Custodians & Advisors.
             </span>
-            <span className="font-mono text-amber-400 mt-1 sm:mt-0 font-semibold">
+            <span className="font-medium text-amber-400 mt-1 sm:mt-0 font-semibold">
               Connect · Collaborate · Grow
             </span>
           </div>
@@ -63,7 +63,7 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
 
         {/* Editorial Prose with Drop Cap */}
         <div className="max-w-prose mx-auto font-sans leading-relaxed text-slate-300 text-base sm:text-lg space-y-6">
-          <p className="first-letter:text-5xl sm:first-letter:text-6xl first-letter:font-serif first-letter:font-bold first-letter:text-amber-400 first-letter:float-left first-letter:mr-3 first-letter:leading-none">
+          <p className="first-letter:text-5xl sm:first-letter:text-6xl first-letter:font-heading first-letter:font-bold first-letter:text-amber-400 first-letter:float-left first-letter:mr-3 first-letter:leading-none">
             {language === 'en' ? (
               <>
                 Real estate is not just about land, buildings or transactions. It is about people. It is about dreams. It is about trust. Every investment represents someone's hard-earned savings. Every project carries the hopes of families, entrepreneurs and communities.
@@ -89,12 +89,12 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
 
           {/* Pull Quote */}
           <div className="py-8 my-8 border-y border-slate-800 text-center">
-            <p className="font-serif text-2xl sm:text-3xl text-amber-300 italic tracking-wide">
+            <p className="font-heading text-2xl sm:text-3xl text-amber-300 italic tracking-wide">
               {language === 'en'
                 ? '“RealtorX was created to change that.”'
                 : '”ریئلٹر ایکس (RealtorX) اسی بے حسی اور تنہائی کو بدلنے کے لیے وجود میں آیا ہے۔“'}
             </p>
-            <p className="text-xs font-mono uppercase tracking-widest text-sky-400 mt-2 font-semibold">
+            <p className="text-xs font-medium uppercase tracking-widest text-sky-400 mt-2 font-semibold">
               The Turning Point
             </p>
           </div>
@@ -115,7 +115,7 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
         {/* The 6 Pillars */}
         <div className="my-16">
           <div className="text-center mb-8">
-            <span className="text-xs uppercase font-mono tracking-widest text-amber-400 font-semibold">
+            <span className="text-xs uppercase font-medium tracking-widest text-amber-400 font-semibold">
               {language === 'en' ? 'The Six Tenets of Our Gathering' : 'کمیونٹی کے چھ پائیدار ستون'}
             </span>
           </div>
@@ -127,13 +127,13 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
                 className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-sky-500/40 transition-colors flex flex-col justify-between"
               >
                 <div>
-                  <span className="text-xs font-mono text-sky-400 font-bold">0{idx + 1}.</span>
-                  <p className="mt-3 font-serif text-lg text-slate-100 font-medium leading-snug">
+                  <span className="text-xs font-medium text-sky-400 font-bold">0{idx + 1}.</span>
+                  <p className="mt-3 font-heading text-lg text-slate-100 font-medium leading-snug">
                     {language === 'en' ? pillar.en : pillar.ur}
                   </p>
                 </div>
                 <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-mono text-[11px]">RealtorX Standard</span>
+                  <span className="text-[11px]">RealtorX Standard</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                 </div>
               </div>
@@ -144,14 +144,14 @@ export const ManifestoSection: React.FC<ManifestoSectionProps> = ({
         {/* Closing Responsibility Callout */}
         <div className="p-8 sm:p-12 rounded-2xl bg-gradient-to-b from-slate-900 to-[#080d21] border border-amber-500/30 text-center relative overflow-hidden shadow-xl">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h3 className="font-serif text-2xl sm:text-3xl text-white font-medium">
+            <h3 className="font-heading text-2xl sm:text-3xl text-white font-medium">
               {language === 'en' ? 'Our Responsibility' : 'ہم میں سے ہر ایک کی ذمہ داری'}
             </h3>
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
               {language === 'en' ? MANIFESTO_CONTENT.closing.en : MANIFESTO_CONTENT.closing.ur}
             </p>
             <div className="pt-2">
-              <span className="font-serif text-2xl sm:text-3xl tracking-wider text-amber-300 font-bold">
+              <span className="font-heading text-2xl sm:text-3xl tracking-wider text-amber-300 font-bold">
                 {language === 'en' ? MANIFESTO_CONTENT.motto : MANIFESTO_CONTENT.mottoUrdu}
               </span>
             </div>

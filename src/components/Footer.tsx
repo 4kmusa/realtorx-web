@@ -111,7 +111,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
 
   return (
     <>
-      <footer className="relative bg-gradient-to-b from-[#050C16] to-[#02060C] border-t border-white/[0.06] text-slate-400 overflow-hidden">
+      <footer className="relative bg-gradient-to-b from-[#0B1A30] to-[#0B1A30] border-t border-white/[0.06] text-slate-400 overflow-hidden">
         {/* Ambient glow */}
         <div
           className="absolute inset-x-0 top-0 h-96 pointer-events-none opacity-40"
@@ -127,7 +127,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
           <div className="pt-14 pb-12 border-b border-white/[0.06] footer-reveal scroll-reveal">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-6">
-                <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.15em] text-[#F5A623] mb-3">
+                <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#F5A623] mb-3">
                   <Send className="w-3.5 h-3.5" />
                   <span>Stay Updated</span>
                 </div>
@@ -142,9 +142,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
 
               <div className="lg:col-span-6">
                 {subscribed ? (
-                  <div className="p-5 rounded-2xl bg-[#28A745]/10 border border-[#28A745]/30 flex items-center gap-3 animate-fade-in">
-                    <div className="w-10 h-10 rounded-full bg-[#28A745]/20 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-5 h-5 text-[#28A745]" />
+                  <div className="p-5 rounded-2xl bg-[#22C55E]/10 border border-[#22C55E]/30 flex items-center gap-3 animate-fade-in">
+                    <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-white">Subscribed!</div>
@@ -163,12 +163,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full pl-11 pr-4 py-3.5 bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:bg-white/[0.05] focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        className="w-full pl-11 pr-4 py-3.5 bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:bg-white/[0.05] focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                       />
                     </div>
                     <button
                       type="submit"
-                      className="relative px-6 py-3.5 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-lg shadow-[#F5A623]/20 hover:shadow-[#F5A623]/40 flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden group active:scale-[0.98]"
+                      className="relative px-6 py-3.5 rounded-xl text-sm font-bold text-slate-950 bg-[#F5A623] hover:bg-[#E59615] transition-all shadow-lg shadow-[#F5A623]/20 hover:shadow-[#F5A623]/40 flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden group active:scale-[0.98]"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                       <span className="relative z-10">Subscribe</span>
@@ -187,11 +187,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             <div className="lg:col-span-3 space-y-5 footer-reveal scroll-reveal scroll-reveal">
               <RealtorXLogo size="xl" showSubtitle={false} />
 
-              <p className="text-xs text-slate-300 italic font-display leading-relaxed max-w-sm">
+              <p className="text-xs text-slate-300 italic font-heading leading-relaxed max-w-sm">
                 "{BRAND_TAGLINES.philosophy}"
               </p>
 
-              <div className="font-mono text-[11px] text-[#2490EF] font-semibold tracking-wider">
+              <div className="text-xs text-slate-400 font-medium">
                 CONNECT · COLLABORATE · GROW
               </div>
 
@@ -223,8 +223,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             {/* Explore Properties */}
             <div className="lg:col-span-2 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
-                <Building2 className="w-3.5 h-3.5 text-[#2490EF]" />
-                <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
+                <Building2 className="w-3.5 h-3.5 text-[#94A3B8]" />
+                <h4 className="text-sm font-semibold text-white">
                   Explore
                 </h4>
               </div>
@@ -240,7 +240,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                       onClick={() => onNavigate(item.route)}
                       className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group"
                     >
-                      <span className="w-0 h-[1px] bg-[#2490EF] group-hover:w-3 transition-all duration-300" />
+                      <span className="w-0 h-[1px] bg-[#F5A623] group-hover:w-3 transition-all duration-300" />
                       <span>{item.label}</span>
                     </button>
                   </li>
@@ -252,7 +252,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             <div className="lg:col-span-2 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
                 <Users className="w-3.5 h-3.5 text-[#F5A623]" />
-                <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
+                <h4 className="text-sm font-semibold text-white">
                   Community
                 </h4>
               </div>
@@ -280,8 +280,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             {/* Legal */}
             <div className="lg:col-span-2 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
-                <Scale className="w-3.5 h-3.5 text-[#28A745]" />
-                <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
+                <Scale className="w-3.5 h-3.5 text-[#22C55E]" />
+                <h4 className="text-sm font-semibold text-white">
                   Legal
                 </h4>
               </div>
@@ -294,7 +294,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                 ].map((label) => (
                   <li key={label}>
                     <button className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group">
-                      <span className="w-0 h-[1px] bg-[#28A745] group-hover:w-3 transition-all duration-300" />
+                      <span className="w-0 h-[1px] bg-[#22C55E] group-hover:w-3 transition-all duration-300" />
                       <span>{label}</span>
                     </button>
                   </li>
@@ -305,8 +305,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             {/* Contact */}
             <div className="lg:col-span-3 footer-reveal scroll-reveal">
               <div className="flex items-center gap-2 mb-5">
-                <Compass className="w-3.5 h-3.5 text-[#2490EF]" />
-                <h4 className="text-[11px] uppercase font-mono tracking-[0.12em] text-white font-semibold">
+                <Compass className="w-3.5 h-3.5 text-[#94A3B8]" />
+                <h4 className="text-sm font-semibold text-white">
                   Contact
                 </h4>
               </div>
@@ -321,7 +321,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   href="tel:+923049383785"
                   className="flex items-center gap-2.5 text-slate-400 hover:text-white transition-colors"
                 >
-                  <Phone className="w-3.5 h-3.5 text-[#2490EF] shrink-0" />
+                  <Phone className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
                   <span>+92 304 9383785</span>
                 </a>
                 <a
@@ -330,7 +330,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   rel="noreferrer"
                   className="flex items-center gap-2.5 text-slate-400 hover:text-white transition-colors"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-[#28A745] shrink-0" />
+                  <MessageSquare className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
                   <span>Chat on WhatsApp</span>
                 </a>
                 <a
@@ -355,7 +355,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              <span className="text-[#2490EF] font-medium">Real Estate. Reimagined.</span>
+              <span className="text-[#94A3B8] font-medium">Real Estate. Reimagined.</span>
               <span className="text-slate-700 hidden sm:inline">·</span>
               <span className="font-urdu text-sm text-slate-400">اعتماد کے ساتھ پراپرٹی کا سفر</span>
               {onOpenSocialModal && (
@@ -363,7 +363,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   <span className="text-slate-700 hidden sm:inline">·</span>
                   <button
                     onClick={onOpenSocialModal}
-                    className="text-slate-400 hover:text-[#2490EF] transition-colors flex items-center gap-1.5"
+                    className="text-slate-400 hover:text-[#F5A623] transition-colors flex items-center gap-1.5"
                   >
                     <Share2 className="w-3 h-3" />
                     <span>Share</span>
@@ -379,7 +379,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
       <button
         onClick={scrollToTop}
         aria-label="Back to top"
-        className={`fixed bottom-24 right-4 sm:right-6 z-40 w-11 h-11 rounded-full bg-[#080F1C]/85 hover:bg-[#2490EF] backdrop-blur-md border border-white/[0.1] hover:border-[#2490EF] flex items-center justify-center text-slate-300 hover:text-white transition-all duration-500 group shadow-2xl shadow-black/40 ${
+        className={`fixed bottom-24 right-4 sm:right-6 z-40 w-11 h-11 rounded-full bg-[#0B1A30]/85 hover:bg-[#E59615] backdrop-blur-md border border-white/[0.1] hover:border-[#F5A623] flex items-center justify-center text-slate-300 hover:text-white transition-all duration-500 group shadow-2xl shadow-black/40 ${
           showTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
       >

@@ -59,8 +59,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
       { label: 'Too weak', color: '#EF4444', width: '0%' },
       { label: 'Weak', color: '#EF4444', width: '25%' },
       { label: 'Fair', color: '#F5A623', width: '50%' },
-      { label: 'Good', color: '#2490EF', width: '75%' },
-      { label: 'Strong', color: '#28A745', width: '100%' },
+      { label: 'Good', color: '#94A3B8', width: '75%' },
+      { label: 'Strong', color: '#22C55E', width: '100%' },
     ];
     return map[passwordStrength] || map[0];
   }, [passwordStrength]);
@@ -99,7 +99,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-[#0A1628] overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-[#0B1A30] overflow-hidden">
       {/* Ambient background */}
       <div
         className="absolute inset-0 pointer-events-none opacity-60"
@@ -137,7 +137,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                 return (
                   <div key={idx} className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-[#2490EF]" />
+                      <Icon className="w-4 h-4 text-[#94A3B8]" />
                     </div>
                     <span className="text-sm text-slate-300">{item.text}</span>
                   </div>
@@ -147,7 +147,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
             {/* Philosophy */}
             <div className="pt-6 border-t border-white/[0.06]">
-              <p className="font-display italic text-slate-400 text-sm leading-relaxed">
+              <p className="font-heading italic text-slate-400 text-sm leading-relaxed">
                 "Connect. Collaborate. Grow."
               </p>
             </div>
@@ -167,7 +167,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center gap-3 mb-5">
                 <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{ color: '#F5A623' }}>Create Account</span>
+                <span className="text-[11px] font-medium font-semibold tracking-wide" style={{ color: '#F5A623' }}>Create Account</span>
               </div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-white font-heading tracking-[-0.02em] mb-2">
                     Join Realtor X
@@ -179,11 +179,11 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                       Full Name *
                     </label>
                     <div className="relative group">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                       <input
                         type="text"
                         required
@@ -191,18 +191,18 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Muhammad Ahmed Khan"
                         autoComplete="name"
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                         Email *
                       </label>
                       <div className="relative group">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                         <input
                           type="email"
                           required
@@ -210,17 +210,17 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="you@example.com"
                           autoComplete="email"
-                          className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                         Phone *
                       </label>
                       <div className="relative group">
-                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                         <input
                           type="tel"
                           required
@@ -228,18 +228,18 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="+92 300 1234567"
                           autoComplete="tel"
-                          className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                       Password *
                     </label>
                     <div className="relative group">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
@@ -247,7 +247,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Min 8 chars with number & symbol"
                         autoComplete="new-password"
-                        className="w-full pl-11 pr-11 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#2490EF]/60 focus:ring-4 focus:ring-[#2490EF]/10 transition-all"
+                        className="w-full pl-11 pr-11 py-3.5 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
                       />
                       <button
                         type="button"
@@ -262,7 +262,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     {password && (
                       <div className="mt-3 space-y-2 animate-fade-in">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
+                          <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">
                             Strength
                           </span>
                           <span
@@ -286,11 +286,11 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-[0.12em]">
+                    <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
                       Confirm Password *
                     </label>
                     <div className="relative group">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#2490EF] transition-colors" />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#94A3B8] transition-colors" />
                       <input
                         type={showConfirm ? 'text' : 'password'}
                         required
@@ -302,8 +302,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                           showMismatch
                             ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/10'
                             : passwordsMatch
-                            ? 'border-[#28A745]/50 focus:border-[#28A745]/60 focus:ring-[#28A745]/10'
-                            : 'border-white/[0.08] hover:border-white/[0.15] focus:border-[#2490EF]/60 focus:ring-[#2490EF]/10'
+                            ? 'border-[#22C55E]/50 focus:border-[#22C55E]/60 focus:ring-[#22C55E]/10'
+                            : 'border-white/[0.08] hover:border-white/[0.15] focus:border-[#94A3B8]/60 focus:ring-[#94A3B8]/10'
                         }`}
                       />
                       <button
@@ -315,7 +315,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                       </button>
                     </div>
                     {passwordsMatch && (
-                      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#28A745] animate-fade-in">
+                      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#22C55E] animate-fade-in">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Passwords match</span>
                       </div>
@@ -337,7 +337,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     <div
                       className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
                         agreeTerms
-                          ? 'bg-[#28A745] border-[#28A745] scale-105'
+                          ? 'bg-[#22C55E] border-[#22C55E] scale-105'
                           : 'border-slate-600 group-hover:border-slate-500'
                       }`}
                     >
@@ -360,7 +360,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <button
                     type="submit"
                     disabled={loading || !agreeTerms}
-                    className="relative w-full py-3.5 px-4 text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 rounded-xl shadow-xl shadow-[#F5A623]/25 hover:shadow-[#F5A623]/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100 flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98] mt-2"
+                    className="relative w-full py-3.5 px-4 text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110 rounded-xl shadow-xl shadow-[#F5A623]/25 hover:shadow-[#F5A623]/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100 flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98] mt-2"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     {loading ? (
@@ -381,7 +381,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   Already have an account?{' '}
                   <button
                     onClick={() => onNavigate('login')}
-                    className="text-[#2490EF] hover:text-[#60A5FA] font-semibold transition-colors"
+                    className="text-[#94A3B8] hover:text-[#60A5FA] font-semibold transition-colors"
                   >
                     Login here
                   </button>

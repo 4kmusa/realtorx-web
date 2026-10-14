@@ -26,8 +26,8 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
       <div className="relative w-full max-w-4xl bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden my-8">
 
         {/* Top Control Bar (Hidden when printing) */}
-        <div className="no-print flex items-center justify-between px-6 py-4 bg-[#060b19] border-b border-slate-800">
-          <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
+        <div className="no-print flex items-center justify-between px-6 py-4 bg-[#0B1A30] border-b border-slate-800">
+          <div className="flex items-center gap-2 text-xs font-medium text-amber-400">
             <Award className="w-4 h-4" />
             <span>OFFICIAL REALTORX CUSTODIAN CREDENTIAL</span>
           </div>
@@ -64,13 +64,13 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
               <div className="flex justify-center mb-1">
                 <RealtorXLogo size="md" showSubtitle={false} />
               </div>
-              <div className="inline-flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] uppercase text-[#8C6D3F] font-semibold">
+              <div className="inline-flex items-center gap-2 text-[10px] font-medium tracking-[0.25em] uppercase text-[#8C6D3F] font-semibold">
                 <span>The Global Real Estate Community Charter</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-serif font-bold tracking-tight text-slate-900 uppercase">
+              <h1 className="text-2xl sm:text-4xl font-heading font-bold tracking-tight text-slate-900 uppercase">
                 Founding Member Custodian
               </h1>
-              <div className="text-xs sm:text-sm font-serif italic text-slate-600">
+              <div className="text-xs sm:text-sm font-heading italic text-slate-600">
                 Commissioned in Dedication to Honor, Integrity &amp; Allottee Protection
               </div>
               <div className="w-28 h-0.5 bg-[#8C6D3F] mx-auto mt-2" />
@@ -83,17 +83,17 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
               </p>
 
               <div className="py-2 border-b border-slate-300">
-                <span className="text-2xl sm:text-4xl font-serif font-bold text-slate-900 tracking-wide text-balance">
+                <span className="text-2xl sm:text-4xl font-heading font-bold text-slate-900 tracking-wide text-balance">
                   {member.fullName}
                 </span>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-700 font-serif leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-700 font-heading leading-relaxed">
                 representing <strong className="font-semibold text-slate-900">{member.firmName}</strong> in <strong className="font-semibold text-slate-900">{member.city}</strong>, has solemnly sworn the RealtorX Oath, pledged adherence to the RealtorX Code, and is inducted into the inaugural register of custodians.
               </p>
 
               {/* Watermark Quote Box */}
-              <div className="p-4 my-4 bg-slate-100/90 rounded border border-slate-200 italic font-serif text-xs sm:text-sm text-slate-800 leading-snug">
+              <div className="p-4 my-4 bg-slate-100/90 rounded border border-slate-200 italic font-heading text-xs sm:text-sm text-slate-800 leading-snug">
                 "{PHILOSOPHY_QUOTE.quote}"
               </div>
             </div>
@@ -103,14 +103,14 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
 
               {/* Left: Custodian Signature */}
               <div className="space-y-1">
-                <div className="h-10 flex items-center justify-center font-serif italic text-lg sm:text-xl text-slate-800">
+                <div className="h-10 flex items-center justify-center font-heading italic text-lg sm:text-xl text-slate-800">
                   {member.signatureData || member.fullName}
                 </div>
                 <div className="border-t border-slate-400 pt-1">
                   <div className="text-[11px] font-sans uppercase tracking-wider font-semibold text-slate-700">
                     Custodian Signature
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono">
+                  <div className="text-[10px] text-slate-500 font-medium">
                     ID: {member.memberNumber}
                   </div>
                 </div>
@@ -120,25 +120,25 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
               <div className="flex flex-col items-center justify-center">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-double border-[#8C6D3F] bg-gradient-to-br from-[#FAF5EC] to-[#E9DCBF] flex flex-col items-center justify-center shadow-md p-1">
                   <ShieldCheck className="w-6 h-6 text-[#8C6D3F] stroke-[1.5]" />
-                  <span className="text-[8px] font-mono uppercase tracking-tighter text-[#8C6D3F] font-bold mt-0.5">
+                  <span className="text-[8px] font-medium uppercase tracking-tighter text-[#8C6D3F] font-bold mt-0.5">
                     VERIFIED
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-500 font-mono mt-1">
+                <span className="text-[10px] text-slate-500 font-medium mt-1">
                   RealtorX Registry
                 </span>
               </div>
 
               {/* Right: Conveners & Date */}
               <div className="space-y-1">
-                <div className="h-10 flex items-center justify-center font-serif text-sm font-semibold text-slate-800">
+                <div className="h-10 flex items-center justify-center font-heading text-sm font-semibold text-slate-800">
                   Ethics &amp; Governance Board
                 </div>
                 <div className="border-t border-slate-400 pt-1">
                   <div className="text-[11px] font-sans uppercase tracking-wider font-semibold text-slate-700">
                     Date of Oath
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono">
+                  <div className="text-[10px] text-slate-500 font-medium">
                     {member.joinedAt}
                   </div>
                 </div>
@@ -147,7 +147,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
             </div>
 
             {/* Bottom Meta & Security Bar */}
-            <div className="mt-6 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[10px] font-mono text-slate-400">
+            <div className="mt-6 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[10px] font-medium text-slate-400">
               <span>Security Hash: RX-{member.id.toUpperCase()}-VERIFIED</span>
               <span className="mt-1 sm:mt-0">Registry Ref: {member.erpnextDocId || 'PENDING-DISPATCH'}</span>
             </div>

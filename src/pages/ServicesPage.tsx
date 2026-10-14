@@ -67,7 +67,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
   const services = [
     {
       icon: Home,
-      color: '#2490EF',
+      color: '#94A3B8',
       title: 'Property Buying & Allotment Advisory',
       desc: 'Comprehensive guidance on purchasing residential plots, built villas, and apartments across Bahria Town Karachi. 100% legal document audit and clear title verification.',
     },
@@ -79,13 +79,13 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
     },
     {
       icon: Building2,
-      color: '#8B5CF6',
+      color: '#94A3B8',
       title: 'Commercial & High-Yield Retail Spaces',
       desc: 'Prime shops, offices, and showrooms on Jinnah Avenue and Liberty Commercial. Strategic tenant sourcing and rental yield optimization.',
     },
     {
       icon: TrendingUp,
-      color: '#28A745',
+      color: '#22C55E',
       title: 'Strategic Investment & Capital Planning',
       desc: 'Data-driven feasibility studies for overseas Pakistanis and corporate entities looking for capital appreciation across BTK-1, BTK-2, and M-9 corridor.',
     },
@@ -97,17 +97,17 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
     },
     {
       icon: ShieldCheck,
-      color: '#2490EF',
+      color: '#94A3B8',
       title: 'Site Visit Concierge & Transfer Escrow',
       desc: 'Dedicated chauffeured inspection tours with seasoned precinct custodians. Secure token escrow handling through official Bahria transfer windows.',
     },
   ];
 
   const stats = [
-    { value: '6', label: 'Core Services', icon: Compass, color: '#2490EF' },
+    { value: '6', label: 'Core Services', icon: Compass, color: '#94A3B8' },
     { value: '48h', label: 'Response Time', icon: Clock, color: '#F5A623' },
-    { value: '80/20', label: 'Commission Split', icon: Percent, color: '#28A745' },
-    { value: '100%', label: 'Verified Documents', icon: ShieldCheck, color: '#8B5CF6' },
+    { value: '80/20', label: 'Commission Split', icon: Percent, color: '#22C55E' },
+    { value: '100%', label: 'Verified Documents', icon: ShieldCheck, color: '#94A3B8' },
   ];
 
   return (
@@ -116,9 +116,9 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
       {/* ═════ HEADER ═════ */}
       <div className="text-center max-w-3xl mx-auto scroll-reveal">
         <div className="inline-flex items-center gap-3 mb-5">
-                <span className="w-6 h-[1px] bg-current" style={{ color: '#2490EF' }} />
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] font-semibold" style={{
-                  color: '#2490EF'
+                <span className="w-6 h-[1px] bg-current" style={{ color: '#94A3B8' }} />
+                <span className="text-[11px] font-semibold tracking-wide" style={{
+                  color: '#94A3B8'
                 }}>Professional Excellence</span>
               </div>
 
@@ -158,7 +158,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                     border: '1px solid rgba(36,144,239,0.25)',
                   }}
                 >
-                  <Icon className="w-7 h-7 text-[#2490EF]" />
+                  <Icon className="w-7 h-7 text-[#94A3B8]" />
                 </div>
 
                 <h3 className="font-heading font-bold text-lg text-white leading-snug min-h-[3.5rem]">
@@ -171,13 +171,13 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
               </div>
 
               <div className="relative pt-6 mt-6 border-t border-white/[0.06] flex items-center justify-between gap-3">
-                <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.1em] text-[#28A745]">
+                <span className="flex items-center gap-1.5 text-[10px] tracking-wide text-[#22C55E]">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Verified</span>
                 </span>
                 <button
                   onClick={() => onNavigate('contact')}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-300 group/btn text-[#2490EF]"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-300 group/btn text-[#94A3B8]"
                 >
                   <span>Inquire Now</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -216,7 +216,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                 <div className="text-2xl sm:text-3xl font-bold text-white font-heading tracking-[-0.02em]">
                   {stat.value}
                 </div>
-                <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-slate-400">
+                <div className="text-[10px] tracking-wide text-slate-400">
                   {stat.label}
                 </div>
               </div>
@@ -228,10 +228,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
       {/* ═════ WHY US ═════ */}
       <div className="scroll-reveal">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[#2490EF] mb-4">
-            <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+          <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
+            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
             <span>Why Realtor X</span>
-            <span className="w-6 h-[1px] bg-[#2490EF]/60" />
+            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
             The Realtor X <span className="gradient-text-blue">Difference</span>
@@ -242,7 +242,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
           {[
             {
               icon: ShieldCheck,
-              color: '#2490EF',
+              color: '#94A3B8',
               title: 'Document Verified',
               desc: 'Every property is audited with Bahria Town transfer records before listing.',
             },
@@ -254,13 +254,13 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
             },
             {
               icon: Award,
-              color: '#28A745',
+              color: '#22C55E',
               title: 'Fair 80/20 Split',
               desc: 'Highest dealer commission in the market. Empowering realtor fraternity.',
             },
             {
               icon: Compass,
-              color: '#8B5CF6',
+              color: '#94A3B8',
               title: 'Full-Service Care',
               desc: 'From site visit to transfer — we handle every step of the journey.',
             },
@@ -279,7 +279,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
                     border: '1px solid rgba(36,144,239,0.25)',
                   }}
                 >
-                  <Icon className="w-5 h-5 text-[#2490EF]" />
+                  <Icon className="w-5 h-5 text-[#94A3B8]" />
                 </div>
                 <h3 className="font-heading font-bold text-base text-white mb-2">
                   {item.title}
@@ -294,8 +294,8 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
       </div>
 
       {/* ═════ BOTTOM CTA ═════ */}
-      <div className="relative rounded-[2rem] overflow-hidden border border-[#2490EF]/20 shadow-2xl shadow-[#2490EF]/10 scroll-reveal">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0E2849] via-[#0B1A30] to-[#0E2849]" />
+      <div className="relative rounded-[2rem] overflow-hidden border border-[#94A3B8]/20 shadow-2xl shadow-[#94A3B8]/10 scroll-reveal">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
         <div
           className="absolute inset-0 opacity-60"
           style={{
@@ -303,10 +303,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
               'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
           }}
         />
-        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/60 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
 
         <div className="relative p-10 sm:p-14 text-center space-y-7">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#FFA500] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#F5A623] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
             <Award className="w-7 h-7 text-slate-950" />
           </div>
 
@@ -322,7 +322,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
             <button
               onClick={() => onNavigate('contact')}
-              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] hover:brightness-110 transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
+              className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-[#F5A623] hover:bg-[#E59615] transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative z-10">Schedule a Consultation</span>
@@ -333,7 +333,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate }) => {
               onClick={() => onNavigate('properties')}
               className="px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2"
             >
-              <Compass className="w-4 h-4 text-[#2490EF]" />
+              <Compass className="w-4 h-4 text-[#94A3B8]" />
               <span>Browse Properties</span>
             </button>
           </div>

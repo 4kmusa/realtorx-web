@@ -84,11 +84,11 @@ const getStatusColor = (status: string) => {
     case 'Paid':
     case 'Completed':
     case 'Active':
-      return { bg: 'rgba(40, 167, 69, 0.15)', border: 'rgba(40, 167, 69, 0.3)', text: '#28A745' };
+      return { bg: 'rgba(40, 167, 69, 0.15)', border: 'rgba(40, 167, 69, 0.3)', text: '#22C55E' };
     case 'Approved':
     case 'Earned':
     case 'In Progress':
-      return { bg: 'rgba(36, 144, 239, 0.15)', border: 'rgba(36, 144, 239, 0.3)', text: '#2490EF' };
+      return { bg: 'rgba(36, 144, 239, 0.15)', border: 'rgba(36, 144, 239, 0.3)', text: '#94A3B8' };
     case 'Overdue':
     case 'Rejected':
       return { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#EF4444' };
@@ -215,7 +215,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
         </p>
         <button
           onClick={() => onNavigate('become-dealer')}
-          className="relative px-7 py-3.5 bg-gradient-to-r from-[#F5A623] via-[#FFB84D] to-[#F5A623] text-slate-950 rounded-2xl font-bold transition-all shadow-xl shadow-[#F5A623]/25 active:scale-[0.98] overflow-hidden group inline-flex items-center gap-2"
+          className="relative px-7 py-3.5 bg-[#F5A623] text-slate-950 rounded-2xl font-bold transition-all shadow-xl shadow-[#F5A623]/25 active:scale-[0.98] overflow-hidden group inline-flex items-center gap-2"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           <Briefcase className="w-4 h-4 relative z-10" />
@@ -256,28 +256,28 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
       rawValue: totalDealsValue,
       sub: `${deals.length} Deals Closed`,
       icon: TrendingUp,
-      color: '#F5A623',
+      color: '#F5A623',  // Hero metric — brand accent
     },
     {
       label: 'Earned',
       rawValue: totalCommissionEarned,
       sub: 'Commission Earned',
       icon: Award,
-      color: '#28A745',
+      color: '#94A3B8',  // Neutral
     },
     {
       label: 'Paid Out',
       rawValue: totalPaidOut,
       sub: 'Total Received',
       icon: CheckCircle2,
-      color: '#2490EF',
+      color: '#94A3B8',  // Neutral
     },
     {
       label: 'Pending',
       rawValue: pendingPayout,
       sub: 'Awaiting Payout',
       icon: Clock,
-      color: '#8B5CF6',
+      color: '#94A3B8',  // Neutral
     },
   ];
 
@@ -290,7 +290,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
           <div className="flex-1 min-w-0">
             <div className="inline-flex items-center gap-3 mb-4">
               <span className="w-6 h-[1px] bg-[#F5A623]" />
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#F5A623] font-semibold">
+              <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#F5A623] font-semibold">
                 Dealer Dashboard
               </span>
             </div>
@@ -302,8 +302,8 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-400">
               <div className="flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-[#2490EF]" />
-                <span className="font-mono text-slate-300">{dealer.name}</span>
+                <BadgeCheck className="w-4 h-4 text-[#94A3B8]" />
+                <span className="font-medium text-slate-300">{dealer.name}</span>
               </div>
               {dealer.city && (
                 <div className="flex items-center gap-2">
@@ -358,45 +358,30 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
           return (
             <div
               key={idx}
-              className="group relative rounded-3xl overflow-hidden border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500 hover:-translate-y-1 shadow-lg hover:shadow-xl"
+              className="group relative rounded-2xl bg-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-900/60 p-5"
               style={{ animationDelay: `${idx * 60}ms` }}
             >
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 to-slate-900/40" />
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{
-                  background: `radial-gradient(ellipse at 0% 0%, ${stat.color}15 0%, transparent 60%)`,
-                }}
-              />
-
-              <div className="relative p-6">
-                <div className="flex items-center justify-between mb-5">
-                  <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-                    style={{
-                      backgroundColor: `${stat.color}18`,
-                      border: `1px solid ${stat.color}35`,
-                    }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: stat.color }} />
-                  </div>
-                  <span
-                    className="text-[10px] font-mono uppercase tracking-[0.12em] font-bold"
-                    style={{ color: stat.color }}
-                  >
-                    {stat.label}
-                  </span>
-                </div>
-
-                <div className="text-2xl font-bold text-white font-heading tabular-nums tracking-[-0.02em]">
-                  <AnimatedNumber
-                    value={stat.rawValue ?? 0}
-                    format={formatPKR}
-                    duration={1400}
-                  />
-                </div>
-                <div className="text-xs text-slate-400 mt-1.5">{stat.sub}</div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-medium text-slate-500 tracking-wide">
+                  {stat.label}
+                </span>
+                <Icon
+                  className="w-4 h-4 transition-colors duration-300"
+                  style={{ color: idx === 0 ? '#F5A623' : '#475569' }}
+                />
               </div>
+
+              <div
+                className="text-2xl font-semibold font-heading tabular-nums tracking-[-0.02em] mb-1"
+                style={{ color: idx === 0 ? '#F5A623' : '#F5F5F7' }}
+              >
+                <AnimatedNumber
+                  value={stat.rawValue ?? 0}
+                  format={formatPKR}
+                  duration={1400}
+                />
+              </div>
+              <div className="text-[11px] text-slate-500">{stat.sub}</div>
             </div>
           );
         })}
@@ -425,7 +410,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                   <span>{tab.label}</span>
                   {tab.count > 0 && (
                     <span
-                      className={`text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded-md ${
+                      className={`text-[10px] font-medium tabular-nums px-1.5 py-0.5 rounded-md ${
                         isActive
                           ? 'bg-[#F5A623]/25 text-[#F5A623]'
                           : 'bg-white/[0.06] text-slate-500'
@@ -471,13 +456,13 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                       </div>
                       <div className="flex items-center justify-between text-sm mb-3">
                         <span className="text-slate-400">Achieved</span>
-                        <span className="text-[#28A745] font-bold tabular-nums">
+                        <span className="text-[#22C55E] font-bold tabular-nums">
                           {formatPKR(currentTarget.achieved_sales_value)}
                         </span>
                       </div>
                       <div className="w-full h-2 bg-white/[0.04] rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#F5A623] to-[#FFA500] rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#F5A623] to-[#E59615] rounded-full transition-all duration-500"
                           style={{
                             width: `${Math.min(
                               ((currentTarget.achieved_sales_value || 0) /
@@ -506,12 +491,12 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
             {leads.length > 0 && (
               <div className="relative rounded-3xl overflow-hidden border border-white/[0.06] scroll-reveal">
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 to-slate-900/40" />
-                <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2490EF]/50 to-transparent" />
+                <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/50 to-transparent" />
 
                 <div className="relative p-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-2xl bg-[#2490EF]/15 border border-[#2490EF]/30 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-[#2490EF]" />
+                    <div className="w-10 h-10 rounded-2xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-[#94A3B8]" />
                     </div>
                     <h3 className="text-lg font-bold text-white font-heading">Latest Lead</h3>
                   </div>
@@ -523,7 +508,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Phone</div>
-                        <div className="text-white font-mono text-xs">{leads[0].phone}</div>
+                        <div className="text-white text-xs">{leads[0].phone}</div>
                       </div>
                       <div>
                         <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Budget</div>
@@ -584,7 +569,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
-                          <span className="text-[10px] font-mono bg-[#2490EF]/15 text-[#2490EF] px-2 py-0.5 rounded-md border border-[#2490EF]/25">
+                          <span className="text-[10px] font-medium bg-[#94A3B8]/15 text-[#94A3B8] px-2 py-0.5 rounded-md border border-[#94A3B8]/25">
                             {lead.name}
                           </span>
                           {lead.priority && (
@@ -649,7 +634,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                             Next Followup
                           </div>
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08]">
-                            <Calendar className="w-3 h-3 text-[#2490EF]" />
+                            <Calendar className="w-3 h-3 text-[#94A3B8]" />
                             <span className="text-xs text-white font-semibold">
                               {formatDate(lead.next_followup_date)}
                             </span>
@@ -686,7 +671,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
                       <div>
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <span className="text-[10px] font-mono bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded-md border border-[#F5A623]/25">
+                          <span className="text-[10px] font-medium bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded-md border border-[#F5A623]/25">
                             {d.name}
                           </span>
                           <span
@@ -714,7 +699,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
 
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/[0.06]">
                       <MetricBox label="Net Value" value={formatPKR(d.net_sale_value)} color="#fff" />
-                      <MetricBox label="Your Commission" value={formatPKR(d.dealer_commission)} color="#28A745" />
+                      <MetricBox label="Your Commission" value={formatPKR(d.dealer_commission)} color="#22C55E" />
                       <MetricBox label="Company Share" value={formatPKR(d.company_commission)} color="#94A3B8" />
                     </div>
                   </div>
@@ -746,7 +731,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="flex items-start justify-between gap-4 flex-wrap mb-5">
                       <div>
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <span className="text-[10px] font-mono bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded-md border border-[#F5A623]/25">
+                          <span className="text-[10px] font-medium bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded-md border border-[#F5A623]/25">
                             {c.name}
                           </span>
                           <span
@@ -762,7 +747,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                         </div>
 
                         <div className="text-xs text-slate-400">
-                          Deal: <span className="font-mono text-white">{c.deal}</span>
+                          Deal: <span className="font-medium text-white">{c.deal}</span>
                         </div>
                       </div>
 
@@ -770,7 +755,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                         <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
                           Your Share (80%)
                         </div>
-                        <div className="text-xl font-bold text-[#28A745] font-heading tabular-nums">
+                        <div className="text-xl font-bold text-[#22C55E] font-heading tabular-nums">
                           {formatPKR(c.dealer_commission)}
                         </div>
                       </div>
@@ -779,7 +764,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/[0.06]">
                       <MetricBox label="Gross" value={formatPKR(c.gross_commission)} color="#fff" />
                       <MetricBox label="Company (20%)" value={formatPKR(c.company_commission)} color="#94A3B8" />
-                      <MetricBox label="Your Share (80%)" value={formatPKR(c.dealer_commission)} color="#28A745" />
+                      <MetricBox label="Your Share (80%)" value={formatPKR(c.dealer_commission)} color="#22C55E" />
                     </div>
                   </div>
                 </div>
@@ -810,7 +795,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="flex items-start justify-between gap-4 flex-wrap mb-5">
                       <div>
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <span className="text-[10px] font-mono bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded-md border border-[#F5A623]/25">
+                          <span className="text-[10px] font-medium bg-[#F5A623]/15 text-[#F5A623] px-2 py-0.5 rounded-md border border-[#F5A623]/25">
                             {p.name}
                           </span>
                           <span
@@ -834,7 +819,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                         <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
                           Net Payable
                         </div>
-                        <div className="text-xl font-bold text-[#28A745] font-heading tabular-nums">
+                        <div className="text-xl font-bold text-[#22C55E] font-heading tabular-nums">
                           {formatPKR(p.net_payable)}
                         </div>
                       </div>
@@ -843,7 +828,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/[0.06]">
                       <MetricBox label="Gross" value={formatPKR(p.gross_payable)} color="#fff" />
                       <MetricBox label="Deductions" value={`-${formatPKR(p.deductions)}`} color="#EF4444" />
-                      <MetricBox label="Net" value={formatPKR(p.net_payable)} color="#28A745" />
+                      <MetricBox label="Net" value={formatPKR(p.net_payable)} color="#22C55E" />
                     </div>
                   </div>
                 </div>
@@ -903,7 +888,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                           label="Deals Count"
                           achieved={`${t.achieved_deals_count} / ${t.target_deals_count}`}
                           progress={dealsProgress}
-                          color="#2490EF"
+                          color="#94A3B8"
                         />
                       </div>
                     </div>
@@ -938,12 +923,12 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                         <div
                           className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5"
                           style={{
-                            backgroundColor: task.status === 'Completed' ? '#28A745' : 'transparent',
+                            backgroundColor: task.status === 'Completed' ? '#22C55E' : 'transparent',
                             borderColor:
                               task.status === 'Completed'
-                                ? '#28A745'
+                                ? '#22C55E'
                                 : task.status === 'In Progress'
-                                ? '#2490EF'
+                                ? '#94A3B8'
                                 : task.status === 'Overdue'
                                 ? '#EF4444'
                                 : '#475569',
@@ -1012,7 +997,7 @@ const InfoItem: React.FC<{
       <Icon className="w-4 h-4 text-slate-400" />
     </div>
     <div className="min-w-0">
-      <div className="text-[10px] text-slate-500 uppercase tracking-[0.12em] font-mono mb-1">
+      <div className="text-[10px] text-slate-500 tracking-wide font-medium mb-1">
         {label}
       </div>
       <div className="text-sm text-white truncate" title={value}>
@@ -1028,7 +1013,7 @@ const MetricBox: React.FC<{ label: string; value: string; color: string }> = ({
   color,
 }) => (
   <div className="min-w-0">
-    <div className="text-[10px] text-slate-500 uppercase tracking-[0.12em] font-mono mb-1">
+    <div className="text-[10px] text-slate-500 tracking-wide font-medium mb-1">
       {label}
     </div>
     <div className="text-sm font-bold truncate tabular-nums" style={{ color }} title={value}>
