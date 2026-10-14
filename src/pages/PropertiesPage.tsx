@@ -130,7 +130,11 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  // Mobile → grid default; Desktop → list default
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window === 'undefined') return 'list';
+    return window.matchMedia('(max-width: 767px)').matches ? 'grid' : 'list';
+  });
   const [gridCols, setGridCols] = useState<GridCols>(3);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -310,9 +314,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
   };
 
   const gridClass =
-    gridCols === 2 ? 'grid-cols-1 sm:grid-cols-2'
-    : gridCols === 4 ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
-    : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
+    gridCols === 2 ? 'grid-cols-2 sm:grid-cols-2'
+    : gridCols === 4 ? 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
+    : 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3';
 
   if (loading) {
     return (
@@ -331,7 +335,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ onNavigate }) =>
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-slate-900/70 border border-slate-800 rounded-3xl overflow-hidden animate-pulse">
                   <div className="h-60 w-full bg-slate-800/50" />
-                  <div className="p-6 space-y-3">
+                  <div className="p-3 sm:p-4 lg:p-5 space-y-1.5 sm:space-y-2.5">
                     <div className="h-4 bg-slate-800/60 rounded w-3/4" />
                     <div className="h-3 bg-slate-800/40 rounded w-1/2" />
                     <div className="h-3 bg-slate-800/40 rounded w-2/3" />
@@ -769,11 +773,11 @@ const PropertyCard: React.FC<{
 
   return (
     <div
-      className="group bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
+      className="group h-full bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
       style={{ animationDelay: `${(index % 6) * 60}ms` }}
     >
       <div>
-        <div className="relative h-60 w-full overflow-hidden bg-slate-950">
+        <div className="relative h-32 sm:h-44 lg:h-60 w-full overflow-hidden bg-slate-950">
           {realImg ? (
             <img
               src={property.images[0]}
@@ -791,15 +795,15 @@ const PropertyCard: React.FC<{
 
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none" />
 
-          <div className="absolute top-4 left-4">
-            <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+            <span className="px-1.5 py-0.5 sm:px-3 sm:py-1 rounded sm:rounded-lg text-[8px] sm:text-[10px] font-bold uppercase tracking-wide bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
               {property.category}
             </span>
           </div>
 
           <button
             onClick={(e) => onToggleFavorite(property.erpCode, e)}
-            className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
+            className={`absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
               isFavorite
                 ? 'bg-red-500/90 border-red-400 text-white shadow-lg shadow-red-500/40 scale-105'
                 : 'bg-slate-950/60 border-white/10 text-slate-300 hover:bg-slate-950/90 hover:text-red-400 hover:scale-110'
@@ -809,27 +813,27 @@ const PropertyCard: React.FC<{
             <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
 
-          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
+          <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 flex items-end justify-between gap-1.5">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-1.5 flex-wrap">
                 {property.status && (
-                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#22C55E] text-white shadow-lg shadow-[#22C55E]/30">
+                  <span className="px-1.5 py-0.5 sm:px-2.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wide bg-[#22C55E] text-white shadow-lg shadow-[#22C55E]/30">
                     {property.status}
                   </span>
                 )}
                 {isNew && (
-                  <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/30">
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wide bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/30">
                     <Zap className="w-2.5 h-2.5" />
                     New
                   </span>
                 )}
               </div>
-              <div className="text-xl font-bold text-[#F5A623] font-medium leading-none drop-shadow-lg">
+              <div className="text-xs sm:text-base lg:text-lg font-bold text-[#F5A623] leading-none drop-shadow-lg whitespace-nowrap">
                 {property.priceFormatted}
               </div>
             </div>
 
-            <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-medium text-white shrink-0">
+            <span className="hidden sm:inline-block text-[10px] sm:text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2 py-1 rounded-md sm:rounded-lg font-medium text-white shrink-0">
               {property.size} {property.sizeUnit}
             </span>
           </div>
@@ -841,12 +845,12 @@ const PropertyCard: React.FC<{
           )}
         </div>
 
-        <div className="p-6 space-y-3">
-          <h3 className="font-heading font-bold text-base sm:text-lg text-white group-hover:text-[#F5A623] transition-colors leading-snug line-clamp-2 min-h-[2.75rem]">
+        <div className="p-3 sm:p-4 lg:p-5 space-y-1.5 sm:space-y-2.5">
+          <h3 className="font-heading font-bold text-xs sm:text-base lg:text-lg text-white group-hover:text-[#F5A623] transition-colors leading-tight sm:leading-snug line-clamp-2 sm:min-h-[2.5rem]">
             {property.title}
           </h3>
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+          <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-slate-400">
             <MapPin className="w-3.5 h-3.5 text-[#F5A623] shrink-0" />
             <span className="truncate">
               {property.precinct || property.project || 'Bahria Town Karachi'}
@@ -854,7 +858,7 @@ const PropertyCard: React.FC<{
           </div>
 
           {(property.bedrooms || property.bathrooms) && (
-            <div className="flex items-center gap-3 text-xs text-slate-300 pt-1">
+            <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-slate-300 pt-0.5 sm:pt-1">
               {property.bedrooms ? (
                 <span className="flex items-center gap-1.5">
                   <Bed className="w-3.5 h-3.5 text-slate-500" />
@@ -955,7 +959,7 @@ const PropertyListItem: React.FC<{
 
           <button
             onClick={(e) => onToggleFavorite(property.erpCode, e)}
-            className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
+            className={`absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
               isFavorite
                 ? 'bg-red-500/90 border-red-400 text-white'
                 : 'bg-slate-950/60 border-white/10 text-slate-300 hover:text-red-400 hover:scale-110'
