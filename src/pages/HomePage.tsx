@@ -162,7 +162,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         {/* ── Background image ── */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/images/bahria_town_karachi_1790600916751.jpg"
+            src="/images/bahria_town_karachi_1790600916751.webp"
             alt="Bahria Town Karachi"
             className="w-full h-full object-cover"
             loading="eager"
@@ -748,7 +748,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
 
             <div className="lg:col-span-5 h-72 sm:h-96 lg:h-full min-h-[400px] relative overflow-hidden">
               <img
-                src="/images/bahria_town_karachi_1790600916751.jpg"
+                src="/images/bahria_town_karachi_1790600916751.webp"
                 alt="Bahria Town Karachi Grand View"
                 referrerPolicy="no-referrer"
                 loading="lazy"

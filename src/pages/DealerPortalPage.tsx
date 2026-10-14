@@ -391,8 +391,8 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
       <div className="relative rounded-3xl overflow-hidden border border-white/[0.06] scroll-reveal">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 to-slate-900/30" />
 
-        <div className="relative p-2 sm:p-3 overflow-x-auto hide-scrollbar">
-          <div className="flex items-center gap-1">
+        <div className="relative p-2 sm:p-3">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-1 sm:overflow-x-auto sm:hide-scrollbar">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
@@ -400,7 +400,7 @@ export const DealerPortalPage: React.FC<DealerPortalPageProps> = ({ onNavigate }
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+                  className={`relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-medium sm:font-semibold transition-all duration-300 whitespace-nowrap ${
                     isActive
                       ? 'bg-[#F5A623]/15 text-[#F5A623] ring-1 ring-[#F5A623]/30'
                       : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'

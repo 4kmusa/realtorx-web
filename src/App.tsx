@@ -10,24 +10,26 @@ import { SocialShareModal } from './components/SocialShareModal';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { ShieldCheck } from 'lucide-react';
 
-// Pages
+// Pages — eager (critical for first paint)
 import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { ProjectsPage } from './pages/ProjectsPage';
-import { AboutPage } from './pages/AboutPage';
-import { ServicesPage } from './pages/ServicesPage';
-import { ContactPage } from './pages/ContactPage';
-import { ManifestoPage } from './pages/ManifestoPage';
-import { BecomeDealerPage } from './pages/BecomeDealerPage';
-import { OathPage } from './pages/OathPage';
-import { CodePage } from './pages/CodePage';
-import { CustomerPortalPage } from './pages/CustomerPortalPage';
-import { DealerPortalPage } from './pages/DealerPortalPage';
-import { SignupPage } from './pages/SignupPage';
-import { LoginPage } from './pages/LoginPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { BecomeCustomerPage } from './pages/BecomeCustomerPage';
+
+// Pages — lazy (loaded on-demand)
+const AboutPage = React.lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
+const ContactPage = React.lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
+const ManifestoPage = React.lazy(() => import('./pages/ManifestoPage').then(m => ({ default: m.ManifestoPage })));
+const BecomeDealerPage = React.lazy(() => import('./pages/BecomeDealerPage').then(m => ({ default: m.BecomeDealerPage })));
+const OathPage = React.lazy(() => import('./pages/OathPage').then(m => ({ default: m.OathPage })));
+const CodePage = React.lazy(() => import('./pages/CodePage').then(m => ({ default: m.CodePage })));
+const CustomerPortalPage = React.lazy(() => import('./pages/CustomerPortalPage').then(m => ({ default: m.CustomerPortalPage })));
+const DealerPortalPage = React.lazy(() => import('./pages/DealerPortalPage').then(m => ({ default: m.DealerPortalPage })));
+const SignupPage = React.lazy(() => import('./pages/SignupPage').then(m => ({ default: m.SignupPage })));
+const LoginPage = React.lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
+const ProfilePage = React.lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
+const BecomeCustomerPage = React.lazy(() => import('./pages/BecomeCustomerPage').then(m => ({ default: m.BecomeCustomerPage })));
 
 // Culture components
 import { MembersDirectory } from './components/MembersDirectory';

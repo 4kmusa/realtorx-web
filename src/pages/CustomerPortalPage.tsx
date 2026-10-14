@@ -297,37 +297,39 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-slate-800">
-        <div className="flex overflow-x-auto">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  isActive
-                    ? 'border-[#94A3B8] text-[#94A3B8]'
-                    : 'border-transparent text-slate-400 hover:text-white'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-                {tab.count > 0 && (
-                  <span
-                    className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
-                      isActive
-                        ? 'bg-[#94A3B8]/20 text-[#94A3B8]'
-                        : 'bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+      <div className="relative rounded-2xl border border-white/[0.06] bg-slate-900/40 overflow-hidden">
+        <div className="p-2 sm:p-2.5">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-1 sm:overflow-x-auto sm:hide-scrollbar">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-medium sm:font-semibold transition-all duration-300 whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#F5A623]/15 text-[#F5A623] ring-1 ring-[#F5A623]/30'
+                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>{tab.label}</span>
+                  {tab.count > 0 && (
+                    <span
+                      className={`text-[10px] font-medium tabular-nums px-1.5 py-0.5 rounded-md ${
+                        isActive
+                          ? 'bg-[#F5A623]/25 text-[#F5A623]'
+                          : 'bg-white/[0.06] text-slate-500'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

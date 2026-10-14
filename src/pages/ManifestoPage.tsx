@@ -130,7 +130,7 @@ export const ManifestoPage: React.FC<ManifestoPageProps> = ({ onNavigate, langua
         {/* ═════ HERO PHOTO ═════ */}
         <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/40 scroll-reveal group">
           <img
-            src="/images/realtorx_founding_ceremony_1790597198456.jpg"
+            src="/images/realtorx_founding_ceremony_1790597198456.webp"
             alt="RealtorX Founding Custodians Assembly"
             referrerPolicy="no-referrer"
             className="w-full h-80 sm:h-96 lg:h-[520px] object-cover group-hover:scale-[1.03] transition-transform duration-[1200ms] ease-out-expo"
