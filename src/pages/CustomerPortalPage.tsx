@@ -29,7 +29,7 @@ interface CustomerPortalPageProps {
   language: Language;
 }
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = '/api/erp';
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
@@ -160,12 +160,10 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
 
   // Stats calculations
   const totalBooked = bookings.reduce((sum, b) => sum + (b.net_price || 0), 0);
-  const totalPaid = installments
-    .filter((i) => i.status === 'Paid')
-    .reduce((sum, i) => sum + (i.paid_amount || 0), 0);
-  const totalPending = installments
-    .filter((i) => i.status !== 'Paid')
-    .reduce((sum, i) => sum + ((i.amount || 0) - (i.paid_amount || 0)), 0);
+  const paymentsTotal = (payments || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+  const bookingTotal = (bookings || []).reduce((sum, b) => sum + (b.booking_amount || 0), 0);
+  const totalPaid = paymentsTotal + bookingTotal;
+  const totalPending = Math.max(0, totalBooked - totalPaid);
 
   // Tabs
   const tabs: { key: TabType; label: string; icon: any; count: number }[] = [
@@ -272,27 +270,27 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
         <div className="p-5 rounded-2xl bg-slate-900/40 border border-white/[0.06]">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-medium text-slate-500 tracking-wide">
-              Received
+              Paid
             </span>
             <CheckCircle2 className="w-4 h-4 text-[#475569]" />
           </div>
           <div className="text-2xl font-semibold text-[#F5F5F7] font-heading tabular-nums tracking-[-0.02em] mb-1">
             <AnimatedNumber value={totalPaid ?? 0} format={formatPKR} duration={1400} />
           </div>
-          <div className="text-[11px] text-slate-500">Payments Received</div>
+          <div className="text-[11px] text-slate-500">Total Paid</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900/40 border border-white/[0.06]">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-medium text-slate-500 tracking-wide">
-              Balance
+              Remaining
             </span>
             <Clock className="w-4 h-4 text-[#475569]" />
           </div>
           <div className="text-2xl font-semibold text-[#F5F5F7] font-heading tabular-nums tracking-[-0.02em] mb-1">
             <AnimatedNumber value={totalPending ?? 0} format={formatPKR} duration={1400} />
           </div>
-          <div className="text-[11px] text-slate-500">Pending Payment</div>
+          <div className="text-[11px] text-slate-500">Remaining Amount</div>
         </div>
       </div>
 

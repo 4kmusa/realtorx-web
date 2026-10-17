@@ -222,6 +222,21 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     schemaType: 'RealEstateAgent',
   }),
 
+
+  admin: () => ({
+    title: 'Admin Dashboard | Realtor X',
+    description: `${REALTORX_PHILOSOPHY_QUOTE} Admin dashboard for managing Realtor X platform operations.`,
+    ogTitle: 'Admin Dashboard | Realtor X',
+    ogDescription: REALTORX_PHILOSOPHY_QUOTE,
+    ogImage: DEFAULT_IMAGE,
+    ogType: 'website',
+    twitterCard: 'summary_large_image',
+    twitterTitle: 'Admin Dashboard | Realtor X',
+    twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
+    twitterImage: DEFAULT_IMAGE,
+    canonicalPath: '/#admin',
+    schemaType: 'WebSite',
+  }),
   community: () => ({
     title: 'Custodians Wall of Honor — Verified Members | Realtor X',
     description: `${REALTORX_PHILOSOPHY_QUOTE} Meet the founding members and certified custodians of Realtor X who have sworn the sacred oath to uphold ethical real estate in Pakistan.`,

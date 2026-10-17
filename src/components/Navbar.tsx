@@ -126,6 +126,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ))}
 
                 {/* Become a Dealer — highlighted CTA */}
+                {(user?.roles?.includes('System Manager') || user?.roles?.includes('Administrator')) && (
+                  <button
+                    onClick={() => handleNav('admin')}
+                    className="text-xs font-medium text-red-400 hover:text-red-300 mr-2"
+                  >
+                    Admin
+                  </button>
+                )}
                 <button
                   onClick={() => handleNav('become-dealer')}
                   className={`ml-3 relative transition-all duration-300 py-2 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-[13px] overflow-hidden group ${

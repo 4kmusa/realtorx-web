@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = '/api/erp';
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
@@ -283,11 +283,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     try {
       await fetch(`${API_BASE}/method/logout`, {
+        method: 'POST',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
     } catch (error) {
       console.warn('Logout API error:', error);
     }
+    document.cookie = 'sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    localStorage.clear();
+    sessionStorage.clear();
     setUser(null);
     saveUserToStorage(null);
   };

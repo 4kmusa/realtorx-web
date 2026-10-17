@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useAuth, AuthProvider } from './context/AuthContext';
 import { PageId, Language, MemberRecord, ERPNextConfig } from './types';
 import { INITIAL_MEMBERS } from './data/cultureData';
 import { DEFAULT_ERPNEXT_CONFIG } from './services/erpnextService';
-import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { SEO } from './components/SEO';
@@ -10,13 +10,14 @@ import { SocialShareModal } from './components/SocialShareModal';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { ShieldCheck } from 'lucide-react';
 
-// Pages — eager (critical for first paint)
+// Eager Pages (Fast Load)
 import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { ProjectsPage } from './pages/ProjectsPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 
-// Pages — lazy (loaded on-demand)
+// Lazy Pages (Loaded on demand)
 const AboutPage = React.lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const ContactPage = React.lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
@@ -31,37 +32,35 @@ const LoginPage = React.lazy(() => import('./pages/LoginPage').then(m => ({ defa
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const BecomeCustomerPage = React.lazy(() => import('./pages/BecomeCustomerPage').then(m => ({ default: m.BecomeCustomerPage })));
 
-// Culture components
+// Components
 import { MembersDirectory } from './components/MembersDirectory';
 import { CertificateModal } from './components/CertificateModal';
 
 const VALID_PAGES: PageId[] = [
-  'home',
-  'properties',
-  'property-detail',
-  'projects',
-  'about',
-  'services',
-  'contact',
-  'manifesto',
-  'oath',
-  'code',
-  'portal',
-  'dealer',
-  'become-dealer',
-  'community',
-  'signup',
-  'login',
-  'profile',
+  'home', 'properties', 'property-detail', 'projects', 'about', 'services', 
+  'contact', 'manifesto', 'oath', 'code', 'portal', 'dealer', 'become-dealer', 
+  'admin', 'community', 'signup', 'login', 'profile',
 ];
 
+const PageLoader: React.FC = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative w-12 h-12">
+        <div className="absolute inset-0 rounded-full border-2 border-[#F5A623]/20" />
+        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#F5A623] animate-spin" />
+      </div>
+      <span className="text-sm text-slate-500 font-medium">Loading…</span>
+    </div>
+  </div>
+);
+
 function AppContent() {
+  const { user } = useAuth();
+  
   const [currentPage, setCurrentPage] = useState<PageId>(() => {
     if (typeof window !== 'undefined' && window.location.hash) {
       const hash = window.location.hash.replace('#', '').split('/')[0] as PageId;
-      if (VALID_PAGES.includes(hash)) {
-        return hash;
-      }
+      if (VALID_PAGES.includes(hash)) return hash;
     }
     return 'home';
   });
@@ -69,9 +68,7 @@ function AppContent() {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>(() => {
     if (typeof window !== 'undefined' && window.location.hash) {
       const parts = window.location.hash.replace('#', '').split('/');
-      if (parts[0] === 'property-detail' && parts[1]) {
-        return parts[1];
-      }
+      if (parts[0] === 'property-detail' && parts[1]) return parts[1];
     }
     return 'PROP-2026-00001';
   });
@@ -79,7 +76,6 @@ function AppContent() {
   const [language, setLanguage] = useState<Language>('en');
   const [socialModalOpen, setSocialModalOpen] = useState(false);
 
-  // Sync hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
@@ -91,9 +87,7 @@ function AppContent() {
       const pageId = parts[0] as PageId;
       if (VALID_PAGES.includes(pageId)) {
         setCurrentPage(pageId);
-        if (pageId === 'property-detail' && parts[1]) {
-          setSelectedPropertyId(parts[1]);
-        }
+        if (pageId === 'property-detail' && parts[1]) setSelectedPropertyId(parts[1]);
       }
     };
 
@@ -101,15 +95,10 @@ function AppContent() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Members state (for community directory)
   const [members, setMembers] = useState<MemberRecord[]>(() => {
     const saved = localStorage.getItem('realtorx_members');
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return INITIAL_MEMBERS;
-      }
+      try { return JSON.parse(saved); } catch (e) { return INITIAL_MEMBERS; }
     }
     return INITIAL_MEMBERS;
   });
@@ -117,11 +106,7 @@ function AppContent() {
   const [erpConfig] = useState<ERPNextConfig>(() => {
     const saved = localStorage.getItem('realtorx_erp_config');
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return DEFAULT_ERPNEXT_CONFIG;
-      }
+      try { return JSON.parse(saved); } catch (e) { return DEFAULT_ERPNEXT_CONFIG; }
     }
     return DEFAULT_ERPNEXT_CONFIG;
   });
@@ -141,10 +126,6 @@ function AppContent() {
     }
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleMemberCreated = (newMember: MemberRecord) => {
-    setMembers((prev) => [newMember, ...prev]);
   };
 
   const renderCurrentPage = () => {
@@ -172,44 +153,38 @@ function AppContent() {
         return <ContactPage onNavigate={handleNavigate} language={language} />;
       case 'manifesto':
         return <ManifestoPage onNavigate={handleNavigate} language={language} />;
+      
+      case 'admin':
+        if (!user || (!user.roles?.includes('System Manager') && !user.roles?.includes('Administrator') && user.email !== 'admin@realtorx.com')) {
+          return <HomePage onNavigate={handleNavigate} language={language} />;
+        }
+        return <AdminDashboardPage onNavigate={handleNavigate} language={language} />;
+
       case 'become-dealer':
         return <BecomeDealerPage onNavigate={handleNavigate} language={language} />;
       case 'oath': {
-        const cameFromDealerFlow =
-          sessionStorage.getItem('realtorx_dealer_flow') === 'true';
-
+        const cameFromDealerFlow = sessionStorage.getItem('realtorx_dealer_flow') === 'true';
         if (!cameFromDealerFlow) {
           return (
             <div className="py-20 max-w-2xl mx-auto px-4 text-center">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#F5A623]/10 border border-[#F5A623]/30 flex items-center justify-center">
                 <ShieldCheck className="w-10 h-10 text-[#F5A623]" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-4">
-                The Oath is for Dealers
-              </h2>
+              <h2 className="text-3xl font-bold text-white mb-4">The Oath is for Dealers</h2>
               <p className="text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
-                The Founding Member Oath is a personal commitment taken by Realtor X
-                dealers. If you want to become a dealer, please start the application
-                process.
+                The Founding Member Oath is a personal commitment taken by Realtor X dealers. If you want to become a dealer, please start the application process.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <button
-                  onClick={() => handleNavigate('become-dealer')}
-                  className="px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-md"
-                >
+                <button onClick={() => handleNavigate('become-dealer')} className="px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-md">
                   Apply to Become a Dealer
                 </button>
-                <button
-                  onClick={() => handleNavigate('manifesto')}
-                  className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 transition-all"
-                >
+                <button onClick={() => handleNavigate('manifesto')} className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 transition-all">
                   Read the Manifesto
                 </button>
               </div>
             </div>
           );
         }
-
         return <OathPage onNavigate={handleNavigate} language={language} />;
       }
       case 'code':
@@ -224,8 +199,8 @@ function AppContent() {
         return <LoginPage onNavigate={handleNavigate} language={language} />;
       case 'profile':
         return <ProfilePage onNavigate={handleNavigate} language={language} />;
-          case 'become-customer':
-        return <BecomeCustomerPage onNavigate={handleNavigate} language={language} />;
+      case 'become-customer':
+        return <LoginPage onNavigate={handleNavigate} language={language} />;
       case 'community':
         return (
           <MembersDirectory
@@ -246,32 +221,19 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-[#0A1628] text-slate-100 flex flex-col font-sans">
       <SEO pageId={currentPage} property={undefined} />
-
       <Navbar
         currentPage={currentPage}
         onNavigate={handleNavigate}
         language={language}
         onToggleLanguage={() => setLanguage((prev) => (prev === 'en' ? 'ur' : 'en'))}
       />
-
-      <main className="flex-1">{renderCurrentPage()}</main>
-
+      <main className="flex-1">
+        <Suspense fallback={<PageLoader />}>{renderCurrentPage()}</Suspense>
+      </main>
       <Footer onNavigate={handleNavigate} language={language} />
-
-      <CertificateModal
-        member={certificateMember}
-        onClose={() => setCertificateMember(null)}
-        language={language}
-      />
-
-      <SocialShareModal
-        isOpen={socialModalOpen}
-        onClose={() => setSocialModalOpen(false)}
-        currentPage={currentPage}
-        property={undefined}
-      />
-       
-       <WhatsAppWidget />
+      <CertificateModal member={certificateMember} onClose={() => setCertificateMember(null)} language={language} />
+      <SocialShareModal isOpen={socialModalOpen} onClose={() => setSocialModalOpen(false)} currentPage={currentPage} property={undefined} />
+      <WhatsAppWidget />
     </div>
   );
 }

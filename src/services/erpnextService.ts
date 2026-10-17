@@ -1,12 +1,12 @@
 import { ERPNextConfig, MemberRecord, SyncLog } from '../types';
 
 export const DEFAULT_ERPNEXT_CONFIG: ERPNextConfig = {
-    baseUrl: import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000',
+    baseUrl: import.meta.env.VITE_ERPNEXT_URL || '/api/erp',
   apiKey: import.meta.env.VITE_ERPNEXT_API_KEY || '',
   apiSecret: import.meta.env.VITE_ERPNEXT_API_SECRET || '',
   doctype: 'RealtorX Member',
   autoSync: true,
-  customWebhookUrl: 'http://172.23.173.190:8000/api/method/realtorx.api.member_oath_webhook',
+  customWebhookUrl: '/api/erp/api/method/realtorx.api.member_oath_webhook',
   fieldMapping: {
     fullName: 'full_name',
     firmName: 'firm_name',

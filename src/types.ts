@@ -16,6 +16,7 @@ export type PageId =
   | 'portal'
   | 'dealer'
   | 'become-dealer'
+  | 'admin'
   | 'become-customer'
   | 'community'
   | 'erpnext'

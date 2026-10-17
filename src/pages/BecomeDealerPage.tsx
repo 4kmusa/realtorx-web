@@ -8,7 +8,7 @@ import {
   User, CreditCard, Calendar, Phone, Mail, MapPin, FileText, Banknote, Briefcase,
   ShieldCheck, Loader2, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft,
   Check, Video, Upload, X, Play, Info, Percent, Users, Award, TrendingUp, BookOpen,
-  FileCheck, HelpCircle, Camera, Clock, XCircle,
+  FileCheck, HelpCircle, Camera, Clock, XCircle, Building2,
 } from 'lucide-react';
 
 interface BecomeDealerPageProps {
@@ -16,7 +16,7 @@ interface BecomeDealerPageProps {
   language: Language;
 }
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = '/api/erp';
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
@@ -52,24 +52,41 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
   const [checkingStatus, setCheckingStatus] = useState(false);
 
   const [formData, setFormData] = useState({
+    // Basic
+    dealer_type: 'Individual',         // Individual | Company
     full_name: '',
     cnic_number: '',
     date_of_birth: '',
     gender: 'Male',
     cnic_expiry_date: '',
+    // Contact
     phone: '',
     email: '',
     city: 'Karachi',
     office_address: '',
     service_radius_km: '25',
+    // Company (conditional)
+    company_name: '',
+    designation: '',
+    ntn: '',
+    company_registration: '',
+    company_address: '',
+    // Partnership
+    partnership_sell_realtorx: true,
+    partnership_list_own: false,
+    partnership_notes: '',
+    // Banking
     bank_name: '',
     account_number: '',
     iban: '',
-    company_type: 'Individual',
-    gst_registered: 'No',
-    reference_name_1: '',
+    commission_plan: 'Standard 80/20',
+    // Files
     profile_image_file: null as File | null,
     video_kyc_file: null as File | null,
+    cnic_front_file: null as File | null,
+    cnic_back_file: null as File | null,
+    company_proof_file: null as File | null,
+    // Agreement
     terms_and_conditions: false,
   });
 
@@ -137,6 +154,11 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
       if (!formData.full_name.trim()) { setError('Full name is required'); return false; }
       if (!formData.cnic_number.trim()) { setError('CNIC number is required'); return false; }
       if (!formData.date_of_birth) { setError('Date of birth is required'); return false; }
+      if (!formData.cnic_expiry_date) { setError('CNIC expiry date is required'); return false; }
+      if (formData.dealer_type === 'Company') {
+        if (!formData.company_name.trim()) { setError('Company name is required'); return false; }
+        if (!formData.designation.trim()) { setError('Designation is required'); return false; }
+      }
     }
     if (step === 2) {
       if (!formData.phone.trim()) { setError('Phone number is required'); return false; }
@@ -220,6 +242,9 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
 
       // 2. Upload video KYC
       let videoFileUrl = '';
+      let cnicFrontUrl = '';
+      let cnicBackUrl = '';
+      let companyProofUrl = '';
       if (formData.video_kyc_file) {
         const videoFormData = new FormData();
         videoFormData.append('file', formData.video_kyc_file);
@@ -236,28 +261,99 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         videoFileUrl = uploadResult.message?.file_url || '';
       }
 
+      // 2.5 Upload CNIC Front
+      if (formData.cnic_front_file) {
+        const cnicFrontForm = new FormData();
+        cnicFrontForm.append('file', formData.cnic_front_file);
+        cnicFrontForm.append('is_private', '1');
+        cnicFrontForm.append('folder', 'Home');
+        const r = await fetch(`${API_BASE}/method/upload_file`, {
+          method: 'POST',
+          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          credentials: 'omit',
+          body: cnicFrontForm,
+        });
+        if (r.ok) {
+          const res = await r.json();
+          cnicFrontUrl = res.message?.file_url || '';
+        }
+      }
+
+      // 2.6 Upload CNIC Back
+      if (formData.cnic_back_file) {
+        const cnicBackForm = new FormData();
+        cnicBackForm.append('file', formData.cnic_back_file);
+        cnicBackForm.append('is_private', '1');
+        cnicBackForm.append('folder', 'Home');
+        const r = await fetch(`${API_BASE}/method/upload_file`, {
+          method: 'POST',
+          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          credentials: 'omit',
+          body: cnicBackForm,
+        });
+        if (r.ok) {
+          const res = await r.json();
+          cnicBackUrl = res.message?.file_url || '';
+        }
+      }
+
+      // 2.7 Upload Company Proof (only if Company)
+      if (formData.dealer_type === 'Company' && formData.company_proof_file) {
+        const proofForm = new FormData();
+        proofForm.append('file', formData.company_proof_file);
+        proofForm.append('is_private', '1');
+        proofForm.append('folder', 'Home');
+        const r = await fetch(`${API_BASE}/method/upload_file`, {
+          method: 'POST',
+          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          credentials: 'omit',
+          body: proofForm,
+        });
+        if (r.ok) {
+          const res = await r.json();
+          companyProofUrl = res.message?.file_url || '';
+        }
+      }
+
       // 3. Create dealer application with PENDING status
       const payload = {
+        // Basic
+        dealer_type: formData.dealer_type,
         full_name: formData.full_name,
         cnic_number: formData.cnic_number,
         date_of_birth: formData.date_of_birth,
         gender: formData.gender,
         cnic_expiry_date: formData.cnic_expiry_date,
+        // Contact
         phone: formatPhoneNumber(formData.phone),
         email: formData.email,
         city: formData.city,
         office_address: formData.office_address,
         service_radius_km: formData.service_radius_km,
+        // Company (only if Company)
+        company_name: formData.dealer_type === 'Company' ? formData.company_name : '',
+        designation: formData.dealer_type === 'Company' ? formData.designation : '',
+        ntn: formData.dealer_type === 'Company' ? formData.ntn : '',
+        company_registration: formData.dealer_type === 'Company' ? formData.company_registration : '',
+        company_address: formData.dealer_type === 'Company' ? formData.company_address : '',
+        // Partnership
+        partnership_sell_realtorx: formData.dealer_type === 'Company' ? (formData.partnership_sell_realtorx ? 1 : 0) : 1,
+        partnership_list_own: formData.dealer_type === 'Company' ? (formData.partnership_list_own ? 1 : 0) : 0,
+        partnership_notes: formData.partnership_notes,
+        // Banking
         bank_name: formData.bank_name,
         account_number: formData.account_number,
         iban: formData.iban,
-        company_type: formData.company_type,
-        gst_registered: formData.gst_registered,
-        reference_name_1: formData.reference_name_1,
+        commission_plan: formData.commission_plan,
+        // Files
         profile_image_url: profileImageUrl,
         video_kyc_url: videoFileUrl,
+        cnic_front_url: cnicFrontUrl,
+        cnic_back_url: cnicBackUrl,
+        company_proof_url: companyProofUrl,
+        // System
         user_email: user?.email,
-        application_status: 'Pending',   // IMPORTANT
+        application_status: 'Pending',
       };
 
       const response = await fetch(`${API_BASE}/method/realtorx.api.become_dealer`, {
@@ -783,6 +879,117 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
               </div>
             </div>
 
+            {/* Dealer Type Selector */}
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+              <label className="block text-xs font-medium text-slate-300 mb-3 uppercase tracking-wider">
+                I am registering as *
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => updateField('dealer_type', 'Individual')}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    formData.dealer_type === 'Individual'
+                      ? 'border-[#F5A623] bg-[#F5A623]/10'
+                      : 'border-slate-700 hover:border-slate-600 bg-slate-950/50'
+                  }`}
+                >
+                  <User className={`w-6 h-6 mb-2 ${formData.dealer_type === 'Individual' ? 'text-[#F5A623]' : 'text-slate-500'}`} />
+                  <div className={`text-sm font-bold ${formData.dealer_type === 'Individual' ? 'text-white' : 'text-slate-300'}`}>
+                    Individual
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1">Freelance dealer / agent</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateField('dealer_type', 'Company')}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    formData.dealer_type === 'Company'
+                      ? 'border-[#F5A623] bg-[#F5A623]/10'
+                      : 'border-slate-700 hover:border-slate-600 bg-slate-950/50'
+                  }`}
+                >
+                  <Building2 className={`w-6 h-6 mb-2 ${formData.dealer_type === 'Company' ? 'text-[#F5A623]' : 'text-slate-500'}`} />
+                  <div className={`text-sm font-bold ${formData.dealer_type === 'Company' ? 'text-white' : 'text-slate-300'}`}>
+                    Company
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1">Registered business / firm</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Company Details (only if Company) */}
+            {formData.dealer_type === 'Company' && (
+              <div className="p-4 rounded-xl bg-slate-900/60 border border-[#F5A623]/30 space-y-5">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
+                  <Building2 className="w-4 h-4 text-[#F5A623]" />
+                  <h3 className="text-sm font-bold text-white">Company Details</h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Company Name *</label>
+                    <input type="text" value={formData.company_name} onChange={(e) => updateField('company_name', e.target.value)} placeholder="e.g. ABC Properties (Pvt) Ltd"
+                      className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Your Designation *</label>
+                    <input type="text" value={formData.designation} onChange={(e) => updateField('designation', e.target.value)} placeholder="e.g. Director / CEO / Sales Head"
+                      className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">NTN / Tax ID</label>
+                    <input type="text" value={formData.ntn} onChange={(e) => updateField('ntn', e.target.value)} placeholder="e.g. 1234567-8"
+                      className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Registration Number</label>
+                    <input type="text" value={formData.company_registration} onChange={(e) => updateField('company_registration', e.target.value)} placeholder="e.g. SECP-123456"
+                      className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Company Address</label>
+                    <input type="text" value={formData.company_address} onChange={(e) => updateField('company_address', e.target.value)} placeholder="Complete office address"
+                      className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
+                  </div>
+                </div>
+
+                {/* Partnership Options */}
+                <div className="pt-4 border-t border-slate-800 space-y-3">
+                  <h3 className="text-sm font-bold text-white">Partnership Options</h3>
+                  <p className="text-[11px] text-slate-400">Choose how your company will work with RealtorX</p>
+
+                  <label className="flex items-start gap-3 p-3 rounded-lg bg-slate-950/50 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                    <input type="checkbox" checked={formData.partnership_sell_realtorx}
+                      onChange={(e) => updateField('partnership_sell_realtorx', e.target.checked)}
+                      className="mt-0.5 w-4 h-4 accent-[#F5A623]" />
+                    <div>
+                      <div className="text-sm font-semibold text-white">Sell RealtorX inventory</div>
+                      <div className="text-[11px] text-slate-400 mt-0.5">We'll assign you our verified listings to sell (80/20 split)</div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 p-3 rounded-lg bg-slate-950/50 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                    <input type="checkbox" checked={formData.partnership_list_own}
+                      onChange={(e) => updateField('partnership_list_own', e.target.checked)}
+                      className="mt-0.5 w-4 h-4 accent-[#F5A623]" />
+                    <div>
+                      <div className="text-sm font-semibold text-white">List our own inventory through RealtorX</div>
+                      <div className="text-[11px] text-slate-400 mt-0.5">RealtorX will sell your properties on our platform</div>
+                    </div>
+                  </label>
+
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider mt-2">Additional Notes</label>
+                    <textarea value={formData.partnership_notes} onChange={(e) => updateField('partnership_notes', e.target.value)}
+                      placeholder="Tell us about your inventory, coverage area, or any special requirements"
+                      rows={3}
+                      className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623] resize-none" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Full Name *</label>
@@ -931,11 +1138,12 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         {currentStep === 3 && (
           <div className="space-y-5">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
-                <Banknote className="w-5 h-5 text-[#94A3B8]" />
+              <div className="w-10 h-10 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
+                <Banknote className="w-5 h-5 text-[#F5A623]" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white font-heading">Step 3 — Bank & Business</h2>
+                <h2 className="text-lg font-bold text-white font-heading">Step 3 — Bank & Commission</h2>
+                <p className="text-xs text-slate-400">Where should we send your commission payouts?</p>
               </div>
             </div>
 
@@ -945,48 +1153,31 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
                 <div className="relative">
                   <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input type="text" required value={formData.bank_name} onChange={(e) => updateField('bank_name', e.target.value)} placeholder="Meezan Bank / HBL / UBL"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
+                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Account Number *</label>
                 <input type="text" required value={formData.account_number} onChange={(e) => updateField('account_number', e.target.value)} placeholder="Enter your account number"
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623]" />
               </div>
 
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">IBAN</label>
                 <input type="text" value={formData.iban} onChange={(e) => updateField('iban', e.target.value)} placeholder="PK36MEZN0001234567890123"
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8] font-medium" />
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5A623] font-medium" />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Company Type</label>
-                <select value={formData.company_type} onChange={(e) => updateField('company_type', e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]">
-                  <option>Individual</option>
-                  <option>Company</option>
-                  <option>Partnership</option>
+              <div className="sm:col-span-2 pt-4 border-t border-slate-800">
+                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Commission Plan *</label>
+                <p className="text-[11px] text-slate-500 mb-3">
+                  Standard RealtorX plan is 80% for you, 20% for RealtorX. Custom plans are available for Company partners.
+                </p>
+                <select value={formData.commission_plan} onChange={(e) => updateField('commission_plan', e.target.value)}
+                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#F5A623]">
+                  <option value="Standard 80/20">Standard 80/20 — Dealer gets 80%</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">GST Registered</label>
-                <select value={formData.gst_registered} onChange={(e) => updateField('gst_registered', e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-[#94A3B8]">
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-slate-300 mb-2 uppercase tracking-wider">Reference Name</label>
-                <div className="relative">
-                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input type="text" value={formData.reference_name_1} onChange={(e) => updateField('reference_name_1', e.target.value)} placeholder="Who referred you to Realtor X?"
-                    className="w-full pl-10 pr-3.5 py-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]" />
-                </div>
               </div>
             </div>
           </div>

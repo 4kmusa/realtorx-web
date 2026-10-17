@@ -1,7 +1,7 @@
 // src/services/propertyService.ts
 // Property Service - Fetches real data from ERPNext
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
 const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
@@ -109,8 +109,17 @@ function getCategoryLabel(cat: string | undefined): string {
 function resolveImageUrl(path: string | undefined | null): string | null {
   if (!path || !path.trim()) return null;
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  // Use relative path — Vite proxy /files/ forwards to ERPNext
-  return path.startsWith('/') ? path : `/${path}`;
+
+  // Encode special chars (spaces) in filename part only
+  let cleanPath = path.startsWith('/') ? path : `/${path}`;
+  try {
+    const parts = cleanPath.split('/');
+    const filename = parts.pop() || '';
+    cleanPath = [...parts, encodeURIComponent(filename)].join('/');
+  } catch {
+    // use raw path if encoding fails
+  }
+  return cleanPath;
 }
 
 function extractPrecinct(title: string | undefined): string {
@@ -138,6 +147,34 @@ function pickField(available: string[], candidates: string[]): string | null {
 function splitLines(val: any): string[] {
   if (!val || typeof val !== 'string') return [];
   return val.split('\n').map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+}
+
+/**
+ * Strip HTML tags & entities from a string.
+ * Handles Frappe's Quill editor output (<div class="ql-editor"><p>...</p></div>)
+ */
+function stripHtml(val: string | undefined | null): string {
+  if (!val) return '';
+  return String(val)
+    // Replace block-level tags with newlines / spaces
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<\/h[1-6]>/gi, '\n')
+    .replace(/<li>/gi, '\n• ')
+    // Remove all remaining tags
+    .replace(/<[^>]+>/g, '')
+    // Decode common HTML entities
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    // Cleanup multiple newlines / spaces
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]+/g, ' ')
+    .trim();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -230,8 +267,8 @@ function transformProperty(p: ERPProperty, projectMap?: Map<string, string>): Pr
     status: p.status || '',
     isFeatured: false,
     images: images,
-    description: p.custom_description?.trim() || '',
-    features: features,
+    description: stripHtml(p.custom_description),
+    features: features.map((f) => stripHtml(f)).filter((f) => f.length > 0),
     dealer: { name: '', firm: '', phone: '', whatsapp: '', isVerified: false },
     commissionSplit: '',
     dateAdded: p.creation ? p.creation.split(' ')[0] : '',
@@ -258,7 +295,7 @@ export async function fetchProperties(): Promise<Property[]> {
       `${API_BASE}/resource/Property` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
       `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
-      `&limit_page_length=100&order_by=creation+desc`;
+      `&limit_page_length=100&order_by=creation+desc&_=${Date.now()}`;
 
     const [response, projectMap] = await Promise.all([
       fetch(url, {
@@ -387,69 +424,51 @@ function findMemberField(
 // ═══════════════════════════════════════════════════════
 export async function fetchDealers(): Promise<Dealer[]> {
   try {
-    const doctype = 'RealtorX Member';
-    const meta = await getMemberFieldMeta();
-    if (meta.fieldnames.length === 0) return [];
+    const doctype = 'Dealer';
+    // Only fetch Active/Approved dealers
+    const filters = [["status", "in", ["Active", "Approved"]]];
+    const fields = [
+      "name", "full_name", "email", "phone", "city",
+      "dealer_type", "company_name", "designation",
+      "status", "profile_image",
+    ];
 
-    const nameField = findMemberField(meta, ['Full Name', 'Name'], ['full_name', 'member_name', 'dealer_name']);
-    const firmField = findMemberField(meta, ['Agency / Firm Name', 'Firm Name', 'Firm'], ['firm_name', 'company']);
-    const roleField = findMemberField(meta, ['Role in Real Estate', 'Role', 'Designation'], ['role', 'designation']);
-    const cityField = findMemberField(meta, ['City / Region', 'City'], ['city']);
-    const phoneField = findMemberField(meta, ['Phone / WhatsApp', 'Phone', 'WhatsApp'], ['phone', 'mobile_no']);
-    const emailField = findMemberField(meta, ['Official Email', 'Email'], ['email', 'email_id']);
-    const bioField = findMemberField(meta, ['Member Statement', 'Bio'], ['bio']);
-    const tierField = findMemberField(meta, ['Membership Tier', 'Tier'], ['membership_tier', 'tier']);
-    const idField = findMemberField(meta, ['Member Custodian ID', 'Member ID'], ['member_id', 'member_number']);
-    const imageField = findMemberField(
-      meta,
-      ['Profile Image', 'Photo', 'Image'],
-      ['custom_profile_image', 'profile_image', 'member_image', 'image', 'photo', 'dealer_image']
-    );
-    const statusField = findMemberField(
-      meta,
-      ['Application Status'],
-      ['custom_application_status', 'application_status']
-    );
-
-    const fields: string[] = ['name'];
-    const addIf = (f: string | null) => { if (f && !fields.includes(f)) fields.push(f); };
-    addIf(nameField); addIf(firmField); addIf(roleField); addIf(cityField);
-    addIf(phoneField); addIf(emailField); addIf(bioField); addIf(tierField);
-    addIf(idField); addIf(imageField); addIf(statusField);
-
-    // Sirf Approved ya Active dealers
-    const filters: any[] = [];
-    if (statusField) {
-      filters.push([statusField, 'in', ['Approved', 'Active']]);
-    }
-
+    // Cache-bust timestamp
+    const ts = Date.now();
     const url =
       `${API_BASE}/resource/${encodeURIComponent(doctype)}` +
       `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
-      (filters.length > 0 ? `&filters=${encodeURIComponent(JSON.stringify(filters))}` : '') +
-      `&limit_page_length=12&order_by=creation+desc`;
+      `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
+      `&limit_page_length=50&order_by=creation+desc` +
+      `&_=${ts}`;
 
     const res = await fetch(url, {
+      method: 'GET',
       headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
       credentials: 'omit',
+      cache: 'no-store',
     });
-    if (!res.ok) return [];
+
+    if (!res.ok) {
+      console.error('fetchDealers failed:', res.status);
+      return [];
+    }
 
     const data = await res.json();
     const rows: any[] = data.data || [];
 
     return rows.map((r) => ({
       id: r.name,
-      memberId: idField ? String(r[idField] || r.name) : r.name,
-      name: nameField ? r[nameField] || r.name : r.name,
-      firm: firmField ? r[firmField] || '' : '',
-      designation: roleField ? r[roleField] || '' : '',
-      city: cityField ? r[cityField] || '' : '',
-      phone: phoneField ? String(r[phoneField] || '') : '',
-      email: emailField ? r[emailField] || '' : '',
-      bio: bioField ? r[bioField] || '' : '',
-      tier: tierField ? r[tierField] || '' : '',
-      imageUrl: imageField ? resolveImageUrl(r[imageField]) : null,
+      memberId: r.name,
+      name: r.full_name || r.name,
+      firm: r.company_name || (r.dealer_type === 'Individual' ? 'Independent Custodian' : ''),
+      designation: r.designation || (r.dealer_type === 'Individual' ? 'Custodian Realtor' : 'Company Partner'),
+      city: r.city || '',
+      phone: r.phone ? String(r.phone) : '',
+      email: r.email || '',
+      bio: r.dealer_type === 'Company' ? (r.company_name || '') : 'Independent Custodian',
+      tier: r.dealer_type === 'Company' ? 'Company Partner' : 'Individual Dealer',
+      imageUrl: r.profile_image ? resolveImageUrl(r.profile_image) : null,
     }));
   } catch (error) {
     console.error('Error fetching dealers:', error);
@@ -479,75 +498,40 @@ export async function fetchDealerApplicationByEmail(
   if (!email) return null;
 
   try {
-    const meta = await getMemberFieldMeta();
-
-    const statusField = findMemberField(
-      meta,
-      ['Application Status'],
-      ['custom_application_status', 'application_status']
+    const res = await fetch(
+      `${API_BASE}/method/realtor_x.api.get_dealer_application?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          Authorization: `token ${API_KEY}:${API_SECRET}`,
+          Accept: 'application/json',
+        },
+        credentials: 'omit',
+      }
     );
-    const notesField = findMemberField(
-      meta,
-      ['Review Notes'],
-      ['custom_review_notes', 'review_notes']
-    );
-    const reviewedField = findMemberField(
-      meta,
-      ['Reviewed On'],
-      ['custom_reviewed_on', 'reviewed_on']
-    );
-    const nameField = findMemberField(meta, ['Full Name', 'Name'], ['full_name']);
-    const firmField = findMemberField(meta, ['Agency / Firm Name', 'Firm Name'], ['firm_name']);
-    const cityField = findMemberField(meta, ['City / Region', 'City'], ['city']);
-    const phoneField = findMemberField(meta, ['Phone / WhatsApp', 'Phone'], ['phone']);
-    const emailField = findMemberField(meta, ['Official Email', 'Email'], ['email']);
 
-    const fields: string[] = ['name', 'creation'];
-    const addIf = (f: string | null) => { if (f && !fields.includes(f)) fields.push(f); };
-    addIf(statusField); addIf(notesField); addIf(reviewedField);
-    addIf(nameField); addIf(firmField); addIf(cityField);
-    addIf(phoneField); addIf(emailField);
+    const result = await res.json();
+    if (!res.ok || result.exception) return null;
+    if (!result.message) return null;
 
-    const filters = [['email', '=', email]];
-
-    const url =
-      `${API_BASE}/resource/RealtorX Member` +
-      `?fields=${encodeURIComponent(JSON.stringify(fields))}` +
-      `&filters=${encodeURIComponent(JSON.stringify(filters))}` +
-      `&limit_page_length=1&order_by=creation+desc`;
-
-    const res = await fetch(url, {
-      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
-      credentials: 'omit',
-    });
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    const rows: any[] = data.data || [];
-    if (rows.length === 0) return null;
-
-    const r = rows[0];
+    const m = result.message;
     return {
-      id: r.name,
-      status: statusField ? r[statusField] || 'Pending' : 'Pending',
-      reviewNotes: notesField ? r[notesField] || '' : '',
-      reviewedOn: reviewedField ? r[reviewedField] || '' : '',
-      submittedOn: r.creation || '',
-      fullName: nameField ? r[nameField] || '' : '',
-      firm: firmField ? r[firmField] || '' : '',
-      city: cityField ? r[cityField] || '' : '',
-      phone: phoneField ? String(r[phoneField] || '') : '',
-      email: emailField ? r[emailField] || '' : '',
+      id: m.id || '',
+      status: m.status || 'Pending',
+      reviewNotes: m.reviewNotes || '',
+      reviewedOn: m.reviewedOn || '',
+      submittedOn: m.submittedOn || '',
+      fullName: m.fullName || '',
+      firm: '',
+      city: m.city || '',
+      phone: m.phone || '',
+      email: m.email || '',
     };
-  } catch (error) {
-    console.error('Error fetching dealer application:', error);
+  } catch (err) {
+    console.error('fetchDealerApplicationByEmail error:', err);
     return null;
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// Projects (RX Project) — label-based field detection
-// ═══════════════════════════════════════════════════════
 export interface Project {
   id: string;
   name: string;

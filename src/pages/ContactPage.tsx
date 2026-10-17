@@ -26,7 +26,7 @@ const WHATSAPP_NUMBER = '923049383785';
 const EMAIL_PRIMARY = 'info@realtorx.co';
 const EMAIL_SALES = 'sales@realtorx.co';
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || 'http://172.23.173.190:8000';
+const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
