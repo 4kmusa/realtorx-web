@@ -19,6 +19,28 @@ export default async function handler(req: any, res: any) {
     delete query.path;
     const queryString = new URLSearchParams(query as any).toString();
 
+    // --- SECURITY: Endpoint and method policy ---
+    const BLOCKED_PATTERNS = [
+      /^\/resource\/User(\?|$)/,
+      /^\/resource\/Company(\?|$)/,
+      /^\/resource\/Role(\?|$)/,
+      /^\/resource\/User Permission(\?|$)/,
+      /^\/method\/frappe\.client\.(set_value|insert|delete|submit|cancel)/,
+      /^\/method\/frappe\.desk\.(search|reportview|form\.save|form\.delete|form\.submit)/,
+      /^\/method\/frappe\.apps\./,
+      /^\/method\/frappe\.utils\./,
+    ];
+    if (req.method === 'DELETE') {
+      return res.status(403).json({ error: 'Method not allowed by proxy policy' });
+    }
+    const probe = '/' + path + (queryString ? '?' + queryString : '');
+    for (const pat of BLOCKED_PATTERNS) {
+      if (pat.test(probe)) {
+        return res.status(403).json({ error: 'Endpoint not allowed by proxy policy' });
+      }
+    }
+    // --- END SECURITY ---
+
     const targetUrl = `${ERPNEXT_URL}/api/${path}${queryString ? '?' + queryString : ''}`;
     const parsed = new URL(targetUrl);
 

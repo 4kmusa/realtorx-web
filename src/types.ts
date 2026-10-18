@@ -178,8 +178,7 @@ export interface MemberRecord {
 
 export interface ERPNextConfig {
   baseUrl: string;
-  apiKey: string;
-  apiSecret: string;
+
   doctype: string;
   autoSync: boolean;
   customWebhookUrl?: string;

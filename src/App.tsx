@@ -10,14 +10,12 @@ import { SocialShareModal } from './components/SocialShareModal';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { ShieldCheck } from 'lucide-react';
 
-// Eager Pages (Fast Load)
 import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { ProjectsPage } from './pages/ProjectsPage';
-import AdminDashboardPage from './pages/AdminDashboardPage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
 
-// Lazy Pages (Loaded on demand)
 const AboutPage = React.lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const ContactPage = React.lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
@@ -32,7 +30,6 @@ const LoginPage = React.lazy(() => import('./pages/LoginPage').then(m => ({ defa
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const BecomeCustomerPage = React.lazy(() => import('./pages/BecomeCustomerPage').then(m => ({ default: m.BecomeCustomerPage })));
 
-// Components
 import { MembersDirectory } from './components/MembersDirectory';
 import { CertificateModal } from './components/CertificateModal';
 
@@ -218,22 +215,33 @@ function AppContent() {
     }
   };
 
+  const isAdminPage = currentPage === 'admin';
+
   return (
     <div className="min-h-screen bg-[#0A1628] text-slate-100 flex flex-col font-sans">
       <SEO pageId={currentPage} property={undefined} />
-      <Navbar
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-        language={language}
-        onToggleLanguage={() => setLanguage((prev) => (prev === 'en' ? 'ur' : 'en'))}
-      />
+      
+      {!isAdminPage && (
+        <Navbar
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          language={language}
+          onToggleLanguage={() => setLanguage((prev) => (prev === 'en' ? 'ur' : 'en'))}
+        />
+      )}
+
       <main className="flex-1">
         <Suspense fallback={<PageLoader />}>{renderCurrentPage()}</Suspense>
       </main>
-      <Footer onNavigate={handleNavigate} language={language} />
+
+      {!isAdminPage && (
+        <Footer onNavigate={handleNavigate} language={language} />
+      )}
+
       <CertificateModal member={certificateMember} onClose={() => setCertificateMember(null)} language={language} />
       <SocialShareModal isOpen={socialModalOpen} onClose={() => setSocialModalOpen(false)} currentPage={currentPage} property={undefined} />
-      <WhatsAppWidget />
+      
+      {!isAdminPage && <WhatsAppWidget />}
     </div>
   );
 }

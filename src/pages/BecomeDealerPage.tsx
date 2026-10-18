@@ -18,8 +18,6 @@ interface BecomeDealerPageProps {
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = '/api/erp';
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 const formatPhoneNumber = (phone: string): string => {
   let cleaned = phone.replace(/[\s\-()]/g, '');
@@ -230,7 +228,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         
         const imgResponse = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
-          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          headers: { },
           credentials: 'omit',
           body: imgFormData,
         });
@@ -252,7 +250,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         
         const uploadResponse = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
-          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          headers: { },
           credentials: 'omit',
           body: videoFormData,
         });
@@ -269,7 +267,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         cnicFrontForm.append('folder', 'Home');
         const r = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
-          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          headers: { },
           credentials: 'omit',
           body: cnicFrontForm,
         });
@@ -287,7 +285,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         cnicBackForm.append('folder', 'Home');
         const r = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
-          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          headers: { },
           credentials: 'omit',
           body: cnicBackForm,
         });
@@ -305,7 +303,7 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
         proofForm.append('folder', 'Home');
         const r = await fetch(`${API_BASE}/method/upload_file`, {
           method: 'POST',
-          headers: { Authorization: `token ${API_KEY}:${API_SECRET}` },
+          headers: { },
           credentials: 'omit',
           body: proofForm,
         });
@@ -359,7 +357,6 @@ export const BecomeDealerPage: React.FC<BecomeDealerPageProps> = ({ onNavigate }
       const response = await fetch(`${API_BASE}/method/realtorx.api.become_dealer`, {
         method: 'POST',
         headers: {
-          Authorization: `token ${API_KEY}:${API_SECRET}`,
           'Content-Type': 'application/json',
         },
         credentials: 'omit',

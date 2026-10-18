@@ -31,8 +31,6 @@ interface CustomerPortalPageProps {
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = '/api/erp';
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 type TabType = 'overview' | 'bookings' | 'deals' | 'payments' | 'visits';
 
@@ -93,7 +91,6 @@ export const CustomerPortalPage: React.FC<CustomerPortalPageProps> = ({ onNaviga
           {
             method: 'POST',
             headers: {
-              Authorization: `token ${API_KEY}:${API_SECRET}`,
               'Content-Type': 'application/json',
             },
             credentials: 'omit',

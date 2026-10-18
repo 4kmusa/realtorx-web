@@ -2,8 +2,6 @@
 // Property Service - Fetches real data from ERPNext
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 const API_BASE = '/api/erp';  // Always use Vite proxy for LAN + prod
 
@@ -193,7 +191,7 @@ async function loadProjectNameCache(): Promise<Map<string, string>> {
     try {
       const metaRes = await fetch(
         `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent(doctype)}`,
-        { headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' }, credentials: 'omit' }
+        { headers: { Accept: 'application/json' }, credentials: 'omit' }
       );
       if (metaRes.ok) {
         const metaData = await metaRes.json();
@@ -214,7 +212,7 @@ async function loadProjectNameCache(): Promise<Map<string, string>> {
       `?fields=${encodeURIComponent(JSON.stringify(fields))}&limit_page_length=0`;
 
     const res = await fetch(url, {
-      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      headers: { Accept: 'application/json' },
       credentials: 'omit',
     });
 
@@ -300,7 +298,7 @@ export async function fetchProperties(): Promise<Property[]> {
     const [response, projectMap] = await Promise.all([
       fetch(url, {
         method: 'GET',
-        headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+        headers: { Accept: 'application/json' },
         credentials: 'omit',
       }),
       loadProjectNameCache(),
@@ -329,7 +327,7 @@ export async function fetchProperty(id: string): Promise<Property | null> {
     const [response, projectMap] = await Promise.all([
       fetch(url, {
         method: 'GET',
-        headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+        headers: { Accept: 'application/json' },
         credentials: 'omit',
       }),
       loadProjectNameCache(),
@@ -376,7 +374,7 @@ async function getMemberFieldMeta(): Promise<MemberFieldMeta> {
   try {
     const url = `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RealtorX Member')}`;
     const res = await fetch(url, {
-      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      headers: { Accept: 'application/json' },
       credentials: 'omit',
     });
     if (!res.ok) { cachedMemberMeta = empty; return empty; }
@@ -444,7 +442,7 @@ export async function fetchDealers(): Promise<Dealer[]> {
 
     const res = await fetch(url, {
       method: 'GET',
-      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      headers: { Accept: 'application/json' },
       credentials: 'omit',
       cache: 'no-store',
     });
@@ -502,7 +500,6 @@ export async function fetchDealerApplicationByEmail(
       `${API_BASE}/method/realtor_x.api.get_dealer_application?email=${encodeURIComponent(email)}`,
       {
         headers: {
-          Authorization: `token ${API_KEY}:${API_SECRET}`,
           Accept: 'application/json',
         },
         credentials: 'omit',
@@ -565,7 +562,7 @@ async function getProjectFieldMeta(): Promise<ProjectFieldMeta> {
   try {
     const url = `${API_BASE}/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent('RX Project')}`;
     const res = await fetch(url, {
-      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      headers: { Accept: 'application/json' },
       credentials: 'omit',
     });
     if (!res.ok) { cachedProjectMeta = empty; return empty; }
@@ -642,7 +639,7 @@ export async function fetchProjects(): Promise<Project[]> {
 
     const [res, allProperties] = await Promise.all([
       fetch(url, {
-        headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+        headers: { Accept: 'application/json' },
         credentials: 'omit',
       }),
       fetchProperties(),
@@ -718,7 +715,7 @@ export async function fetchWebsiteLinks(section?: string): Promise<WebsiteLink[]
       `&order_by=display_order+asc&limit_page_length=0`;
 
     const res = await fetch(url, {
-      headers: { Authorization: `token ${API_KEY}:${API_SECRET}`, Accept: 'application/json' },
+      headers: { Accept: 'application/json' },
       credentials: 'omit',
     });
 

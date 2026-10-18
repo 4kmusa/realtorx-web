@@ -2,8 +2,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = '/api/erp';
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 const STORAGE_KEY = 'realtorx_auth_user';
 
 export interface AuthUser {

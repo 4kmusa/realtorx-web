@@ -53,8 +53,7 @@ export const ERPNextHub: React.FC<ERPNextHubProps> = ({
         {
           headers: {
             Accept: 'application/json',
-            Authorization: `token ${config.apiKey}:${config.apiSecret}`,
-          },
+            },
         }
       );
 
@@ -107,8 +106,7 @@ export const ERPNextHub: React.FC<ERPNextHubProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `token ${config.apiKey}:${config.apiSecret}`,
-        },
+          },
         body: JSON.stringify(payload),
       });
 
@@ -305,7 +303,7 @@ export const ERPNextHub: React.FC<ERPNextHubProps> = ({
             <div className="min-w-0">
               <div className="text-xs text-slate-400 mb-0.5">API Key</div>
               <div className="text-sm text-white font-medium truncate">
-                {config.apiKey.slice(0, 8)}...
+                [redacted]
               </div>
             </div>
           </div>

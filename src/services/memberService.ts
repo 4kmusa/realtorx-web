@@ -9,14 +9,11 @@ import {
 
 const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
 const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
-const API_KEY = import.meta.env.VITE_ERPNEXT_API_KEY || '';
-const API_SECRET = import.meta.env.VITE_ERPNEXT_API_SECRET || '';
 
 const AUTH_HEADERS = {
   'Content-Type': 'application/json',
   Accept: 'application/json',
-  Authorization: `token ${API_KEY}:${API_SECRET}`,
-};
+  };
 
 // ═══════════════════════════════════════════════════════
 // Fetch Member Profile by Email

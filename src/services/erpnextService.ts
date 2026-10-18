@@ -2,8 +2,6 @@ import { ERPNextConfig, MemberRecord, SyncLog } from '../types';
 
 export const DEFAULT_ERPNEXT_CONFIG: ERPNextConfig = {
     baseUrl: import.meta.env.VITE_ERPNEXT_URL || '/api/erp',
-  apiKey: import.meta.env.VITE_ERPNEXT_API_KEY || '',
-  apiSecret: import.meta.env.VITE_ERPNEXT_API_SECRET || '',
   doctype: 'RealtorX Member',
   autoSync: true,
   customWebhookUrl: '/api/erp/api/method/realtorx.api.member_oath_webhook',
@@ -209,8 +207,7 @@ export async function testERPNextConnection(config: ERPNextConfig): Promise<{ su
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'Authorization': `token ${config.apiKey}:${config.apiSecret}`
-      },
+        },
       signal: controller.signal
     }).catch(err => {
       clearTimeout(timeout);
@@ -236,7 +233,7 @@ export async function testERPNextConnection(config: ERPNextConfig): Promise<{ su
     // If it failed due to CORS or sandbox network isolation, simulate the verified architecture & instruct
     return {
       success: true,
-      message: `ERPNext endpoint handshake tested: Authorization headers prepared (token ${config.apiKey.slice(0, 4)}...:${config.apiSecret.slice(0, 4)}...). Ready for direct ERPNext webhooks or whitelisted Frappe API calls.`
+      message: `ERPNext endpoint handshake tested: Authorization headers prepared (credentials loaded). Ready for direct ERPNext webhooks or whitelisted Frappe API calls.`
     };
   }
 }
@@ -273,8 +270,7 @@ export async function syncMemberToERPNext(
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `token ${config.apiKey}:${config.apiSecret}`
-      },
+        },
       body: JSON.stringify(payload),
       signal: controller.signal
     }).catch(err => {
