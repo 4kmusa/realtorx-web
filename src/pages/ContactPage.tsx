@@ -1,6 +1,7 @@
 // src/pages/ContactPage.tsx
 import React, { useState } from 'react';
 import { PageId, Language } from '../types';
+import { callPost } from '../services/api/client';
 import {
   MapPin,
   Phone,
@@ -26,8 +27,6 @@ const WHATSAPP_NUMBER = '923049383785';
 const EMAIL_PRIMARY = 'info@realtorx.co';
 const EMAIL_SALES = 'sales@realtorx.co';
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
-const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className={className} aria-hidden="true">
@@ -44,42 +43,35 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
+  const [duplicate, setDuplicate] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) return;
+    if (!consent) {
+      setError('Please confirm that we may contact you about your request.');
+      return;
+    }
 
     setSending(true);
     setError(null);
-
     try {
-      const payload = {
-        lead_name: name,
-        phone,
-        email: email || '',
-        city: 'Karachi',
-        lead_source: 'Website',
-        source: 'Contact Page',
-        status: 'New',
-        priority: 'Medium',
-        notes: `Subject: ${subject}\n\nMessage: ${message}`,
-      };
-
-      const res = await fetch(`${API_BASE}/resource/RX Lead`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      const result = await callPost<{ lead: string; duplicate: boolean }>('realtor_x.api.v1.submit_contact_form', {
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        subject,
+        message: message.trim(),
+        consent: 1,
+        landing_page: window.location.pathname.slice(0, 500),
       });
-
-      if (!res.ok) {
-        // Even if ERP fails, we show success so user doesn't get stuck
-        console.warn('Lead post failed:', res.status);
-      }
-
+      if (!result?.lead) throw new Error('We could not send your message. Please try again or call us.');
+      setDuplicate(!!result.duplicate);
       setSent(true);
-    } catch (err) {
-      console.error(err);
-      setSent(true);
+    } catch (err: any) {
+      // Never report success when the request was not saved.
+      setError(err?.message || 'We could not send your message. Please try again or call us.');
     } finally {
       setSending(false);
     }
@@ -281,9 +273,11 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   Message Received!
                 </h3>
                 <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-                  Thank you, <strong className="text-white">{name}</strong>. Your message has been
-                  routed to our Bahria Town relationship desk. An advisor will get back to you
-                  within 24 hours.
+                  Thank you, <strong className="text-white">{name}</strong>.{' '}
+                  {duplicate
+                    ? 'We already had a recent request from this number, so we added your new message to it.'
+                    : 'Your message has been saved for our relationship desk.'}{' '}
+                  An advisor will get back to you shortly.
                 </p>
               </div>
 
@@ -305,6 +299,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     setEmail('');
                     setSubject('Property Purchase Inquiry');
                     setMessage('');
+                    setConsent(false);
+                    setDuplicate(false);
                   }}
                   className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors"
                 >
@@ -402,8 +398,18 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                 />
               </div>
 
+              <label className="flex items-start gap-2 text-xs text-slate-400">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[#F5A623]"
+                />
+                <span>I agree that RealtorX may contact me by phone, WhatsApp or email about this request.</span>
+              </label>
+
               {error && (
-                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2 text-xs text-red-300">
+                <div role="alert" className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2 text-xs text-red-300">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>

@@ -1,8 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
+import * as api from '../services/api/client';
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
-const API_BASE = '/api/erp';
-const STORAGE_KEY = 'realtorx_auth_user';
+// Identity comes only from the Frappe session (realtor_x.api.session.get_session_info).
+// Nothing about the user is persisted in localStorage: editing browser storage can
+// never change who the server thinks you are.
+
+const LEGACY_STORAGE_KEY = 'realtorx_auth_user';
 
 export interface AuthUser {
   email: string;
@@ -14,6 +17,7 @@ export interface AuthUser {
   roles: string[];
   is_customer: boolean;
   is_dealer: boolean;
+  is_staff: boolean;
   is_website_user: boolean;
 }
 
@@ -24,291 +28,116 @@ interface SignupData {
   password: string;
 }
 
+type Result = { success: boolean; error?: string };
+
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
-  signup: (data: SignupData) => Promise<{ success: boolean; error?: string }>;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (data: SignupData) => Promise<Result>;
+  login: (email: string, password: string) => Promise<Result>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<AuthUser | null>;
+  /** @deprecated Roles are granted by the server; this now just re-reads the session. */
   updateUserRole: (role: string) => void;
+}
+
+interface SessionInfo {
+  user: string;
+  is_authenticated: boolean;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  user_image?: string;
+  roles?: string[];
+  is_staff?: boolean;
+  is_customer?: boolean;
+  is_dealer?: boolean;
+  csrf_token?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ═══════════════════════════════════════════════════════
-// Helper: Save / Read user from localStorage
-// ═══════════════════════════════════════════════════════
-function saveUserToStorage(user: AuthUser | null) {
-  if (user) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(STORAGE_KEY);
-  }
-}
-
-function readUserFromStorage(): AuthUser | null {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch (e) {
-    console.error('Failed to parse stored user:', e);
-  }
-  return null;
+function toAuthUser(info: SessionInfo): AuthUser {
+  const roles = info.roles || [];
+  return {
+    email: info.user,
+    full_name: info.full_name || info.user,
+    first_name: info.first_name || '',
+    last_name: info.last_name || '',
+    phone: info.phone || '',
+    user_image: info.user_image || '',
+    roles,
+    is_customer: !!info.is_customer,
+    is_dealer: !!info.is_dealer,
+    is_staff: !!info.is_staff,
+    is_website_user: roles.includes('Website User'),
+  };
 }
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(() => readUserFromStorage());
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // ═══════════════════════════════════════════════════════
-  // Build AuthUser from raw data
-  // ═══════════════════════════════════════════════════════
-  function buildAuthUser(data: any): AuthUser {
-    const roles: string[] = (data.roles || []).map((r: any) =>
-      typeof r === 'string' ? r : r.role
-    );
-
-    if (roles.length === 0) roles.push('Website User');
-
-    return {
-      email: data.email || data.name || '',
-      full_name:
-        data.full_name ||
-        `${data.first_name || ''} ${data.last_name || ''}`.trim() ||
-        data.email,
-      first_name: data.first_name || '',
-      last_name: data.last_name || '',
-      phone: data.phone || data.mobile_no || '',
-      user_image: data.user_image || '',
-      roles,
-      is_customer: roles.includes('Customer'),
-      is_dealer: roles.includes('Dealer'),
-      is_website_user: roles.includes('Website User'),
-    };
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // Refresh user from backend (best-effort, silently fails)
-  // ═══════════════════════════════════════════════════════
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async (): Promise<AuthUser | null> => {
     try {
-      const response = await fetch(
-        `${API_BASE}/method/frappe.auth.get_logged_user`,
-        {
-          headers: { Accept: 'application/json' },
-          credentials: 'include',
-        }
-      );
-
-      if (!response.ok) {
-        return;
+      const info = await api.callGet<SessionInfo>('realtor_x.api.session.get_session_info');
+      if (!info?.is_authenticated) {
+        api.setCsrfToken(null);
+        setUser(null);
+        return null;
       }
-
-      const data = await response.json();
-      const email = data.message;
-
-      if (!email || email === 'Guest') return;
-
-      // Fetch user + roles in parallel (roles via custom API bypasses filtering)
-      const [userResponse, rolesResponse] = await Promise.all([
-        fetch(`${API_BASE}/resource/User/${encodeURIComponent(email)}`, {
-          headers: { Accept: 'application/json' },
-          credentials: 'include',
-        }),
-        fetch(`${API_BASE}/method/realtorx.api.get_my_roles`, {
-          headers: { Accept: 'application/json' },
-          credentials: 'include',
-        }),
-      ]);
-
-      if (!userResponse.ok) return;
-
-      const userData = await userResponse.json();
-      const user = userData.data;
-
-      // Inject roles from custom API (bypasses field filtering)
-      if (rolesResponse.ok) {
-        try {
-          const rolesData = await rolesResponse.json();
-          const rolesFromApi = rolesData.message?.roles || [];
-          if (rolesFromApi.length > 0) {
-            user.roles = rolesFromApi.map((r: string) => ({ role: r }));
-          }
-        } catch (e) {
-          console.warn('Failed to parse roles:', e);
-        }
-      }
-
-      const authUser = buildAuthUser(user);
-
-      setUser(authUser);
-      saveUserToStorage(authUser);
-    } catch (error) {
-      console.warn('Session refresh skipped:', error);
+      api.setCsrfToken(info.csrf_token);
+      const next = toAuthUser(info);
+      setUser(next);
+      return next;
+    } catch {
+      // Network failure: keep whatever state we had rather than logging the user out.
+      return null;
     }
-  };
+  }, []);
 
-  // ═══════════════════════════════════════════════════════
-  // Manually update user role in localStorage
-  // (Bypasses session cookie issue on cross-origin)
-  // ═══════════════════════════════════════════════════════
-  const updateUserRole = (role: string) => {
-    if (!user) return;
-
-    const updatedUser: AuthUser = {
-      ...user,
-      roles: [...new Set([...user.roles, role])],
-      is_customer: role === 'Customer' ? true : user.is_customer,
-      is_dealer: role === 'Dealer' ? true : user.is_dealer,
-    };
-
-    setUser(updatedUser);
-    saveUserToStorage(updatedUser);
-  };
-
-  // ═══════════════════════════════════════════════════════
-  // Signup
-  // ═══════════════════════════════════════════════════════
-  const signup = async (data: SignupData): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email: string, password: string): Promise<Result> => {
     try {
-      const response = await fetch(
-        `${API_BASE}/method/realtorx.api.signup`,
-        {
-          method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok || result.exception) {
-        return {
-          success: false,
-          error: result.exception || result.message || 'Signup failed',
-        };
-      }
-
-      // Build user object from signup response + form data
-      const authUser: AuthUser = {
-        email: data.email,
-        full_name: data.full_name,
-        first_name: data.full_name.split(' ')[0] || '',
-        last_name: data.full_name.split(' ').slice(1).join(' ') || '',
-        phone: data.phone,
-        roles: ['Website User'],
-        is_customer: false,
-        is_dealer: false,
-        is_website_user: true,
-      };
-
-      setUser(authUser);
-      saveUserToStorage(authUser);
-
-      // Try to establish session (best-effort)
-      await login(data.email, data.password);
-
+      await api.login(email.trim(), password);
+      const next = await refreshUser();
+      if (!next) return { success: false, error: 'Signed in, but the session could not be established. Please try again.' };
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message || 'Network error' };
+      const message = error?.status === 401 ? 'Invalid email or password.' : error?.message;
+      return { success: false, error: message || 'Sign in failed.' };
     }
   };
 
-  // ═══════════════════════════════════════════════════════
-  // Login — accepts "Logged In" AND "No App"
-  // ═══════════════════════════════════════════════════════
-  const login = async (
-    email: string,
-    password: string
-  ): Promise<{ success: boolean; error?: string }> => {
+  const signup = async (data: SignupData): Promise<Result> => {
     try {
-      const formData = new URLSearchParams();
-      formData.append('usr', email);
-      formData.append('pwd', password);
-
-      const response = await fetch(`${API_BASE}/method/login`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString(),
-      });
-
-      const result = await response.json();
-
-      const authSuccess =
-        response.ok &&
-        (result.message === 'Logged In' ||
-          result.message === 'No App' ||
-          result.full_name);
-
-      if (!authSuccess) {
-        return {
-          success: false,
-          error: result.message || 'Invalid email or password',
-        };
-      }
-
-      const authUser: AuthUser = {
-        email: email,
-        full_name: result.full_name || email,
-        first_name: (result.full_name || email).split(' ')[0] || '',
-        last_name: (result.full_name || '').split(' ').slice(1).join(' ') || '',
-        phone: '',
-        roles: ['Website User'],
-        is_customer: false,
-        is_dealer: false,
-        is_website_user: true,
-      };
-
-      setUser(authUser);
-      saveUserToStorage(authUser);
-
-      // Best-effort: fetch full details from backend
-      setTimeout(() => refreshUser(), 500);
-
-      return { success: true };
+      await api.callPost('realtor_x.api.session.signup', { ...data });
     } catch (error: any) {
-      return { success: false, error: error.message || 'Network error' };
+      return { success: false, error: error?.message || 'Sign up failed.' };
     }
+    return login(data.email, data.password);
   };
 
-  // ═══════════════════════════════════════════════════════
-  // Logout
-  // ═══════════════════════════════════════════════════════
   const logout = async () => {
     try {
-      await fetch(`${API_BASE}/method/logout`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } catch (error) {
-      console.warn('Logout API error:', error);
+      await api.logout();
+    } catch {
+      /* session may already be gone */
     }
-    document.cookie = 'sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    localStorage.clear();
-    sessionStorage.clear();
+    sessionStorage.removeItem('realtorx_dealer_flow');
     setUser(null);
-    saveUserToStorage(null);
   };
 
-  // ═══════════════════════════════════════════════════════
-  // On mount — try to refresh
-  // ═══════════════════════════════════════════════════════
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      // Only refresh from backend if user was previously logged in (localStorage)
-      const stored = readUserFromStorage();
-      if (stored) {
-        await refreshUser();
-      }
-      setLoading(false);
-    })();
-  }, []);
+    // Remove the identity cache written by older builds; it is no longer trusted.
+    try {
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+    refreshUser().finally(() => setLoading(false));
+  }, [refreshUser]);
 
   return (
     <AuthContext.Provider
@@ -320,7 +149,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         logout,
         refreshUser,
-        updateUserRole,
+        updateUserRole: () => {
+          void refreshUser();
+        },
       }}
     >
       {children}

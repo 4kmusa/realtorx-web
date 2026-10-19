@@ -1,5 +1,6 @@
 // src/components/Footer.tsx
 import React, { useState, useEffect } from 'react';
+import { callPost } from '../services/api/client';
 import { PageId, Language } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
 import { BRAND_TAGLINES } from '../data/mockProperties';
@@ -53,7 +54,9 @@ function useScrollReveal() {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSocialModal }) => {
   const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
+  const [subscribed, setSubscribed] = useState<'' | 'subscribed' | 'already_subscribed'>('');
+  const [subscribeError, setSubscribeError] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
   const [showTop, setShowTop] = useState(false);
 
   useScrollReveal();
@@ -64,12 +67,24 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    setSubscribed(true);
-    setEmail('');
-    setTimeout(() => setSubscribed(false), 4000);
+    setSubscribing(true);
+    setSubscribeError('');
+    try {
+      const result = await callPost<{ status: 'subscribed' | 'already_subscribed' }>(
+        'realtor_x.api.v1.subscribe_newsletter',
+        { email: email.trim() }
+      );
+      setSubscribed(result?.status === 'already_subscribed' ? 'already_subscribed' : 'subscribed');
+      setEmail('');
+    } catch (err: any) {
+      // Only confirm a subscription the server actually stored.
+      setSubscribeError(err?.message || 'Could not subscribe right now. Please try again.');
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   const scrollToTop = () => {
@@ -147,9 +162,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                       <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-white">Subscribed!</div>
+                      <div className="text-sm font-semibold text-white">
+                        {subscribed === 'already_subscribed' ? 'You are already subscribed' : 'Subscribed!'}
+                      </div>
                       <div className="text-xs text-slate-400">
-                        We'll send you the next update.
+                        We'll email you when we publish new listings.
                       </div>
                     </div>
                   </div>
@@ -168,6 +185,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                     </div>
                     <button
                       type="submit"
+                      disabled={subscribing}
                       className="relative px-6 py-3.5 rounded-xl text-sm font-bold text-slate-950 bg-[#F5A623] hover:bg-[#E59615] transition-all shadow-lg shadow-[#F5A623]/20 hover:shadow-[#F5A623]/40 flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden group active:scale-[0.98]"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
@@ -175,6 +193,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                       <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-0.5 transition-transform" />
                     </button>
                   </form>
+                )}
+                {subscribeError && (
+                  <p role="alert" className="mt-2 text-xs text-rose-400">
+                    {subscribeError}
+                  </p>
                 )}
               </div>
             </div>
@@ -232,7 +255,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                 {[
                   { label: 'All Listings', route: 'properties' as PageId },
                   { label: 'Projects', route: 'projects' as PageId },
+                  { label: 'Developers', route: 'developers' as PageId },
+                  { label: 'Book a Site Visit', route: 'site-visit' as PageId },
                   { label: 'Services', route: 'services' as PageId },
+                  { label: 'FAQ', route: 'faq' as PageId },
+                  { label: 'Contact', route: 'contact' as PageId },
                   { label: 'About Us', route: 'about' as PageId },
                 ].map((item) => (
                   <li key={item.label}>
@@ -287,13 +314,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
               </div>
               <ul className="space-y-3 text-xs">
                 {[
-                  'Privacy Policy',
-                  'Terms of Service',
-                  'Cookie Policy',
-                  'Disclaimer',
-                ].map((label) => (
+                  { label: 'Privacy Notice', route: 'privacy' as PageId },
+                  { label: 'Terms of Use', route: 'terms' as PageId },
+                ].map(({ label, route }) => (
                   <li key={label}>
-                    <button className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group">
+                    <button
+                      onClick={() => onNavigate(route)}
+                      className="text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 group"
+                    >
                       <span className="w-0 h-[1px] bg-[#22C55E] group-hover:w-3 transition-all duration-300" />
                       <span>{label}</span>
                     </button>

@@ -1,911 +1,594 @@
-// src/pages/PropertyDetailPage.tsx
-import React, { useState, useEffect } from 'react';
-import { PageId, Language } from '../types';
-import { fetchProperty, fetchProperties, Property } from '../services/propertyService';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   MapPin,
-  ShieldCheck,
-  CheckCircle2,
-  Calendar,
-  ArrowLeft,
-  Share2,
-  Heart,
-  Building,
-  Check,
-  Send,
-  Loader2,
-  AlertCircle,
   Bed,
   Bath,
-  Ruler,
-  Tag,
-  Wallet,
-  FileText,
-  ImageOff,
-  Zap,
+  CheckCircle2,
+  ChevronLeft,
   ChevronRight,
-  Phone,
-  Mail,
-  Clock,
+  Check,
+  Building2,
+  Layers,
+  Shield,
+  Home,
+  Tag,
+  FileText,
+  ArrowLeft,
+  BadgeCheck,
+  Share2,
 } from 'lucide-react';
+import InquiryModal from '../components/InquiryModal';
+import { Badge, StatusBadge } from '../components/ui/Badge';
+import { Skeleton } from '../components/ui/Skeleton';
+import { ErrorState } from '../components/ui/ErrorState';
 
-interface PropertyDetailPageProps {
-  propertyId: string;
-  onNavigate: (page: PageId, extraId?: string) => void;
-  language: Language;
-  onOpenSocialModal?: () => void;
+interface SimilarProperty {
+  name: string;
+  property_title: string;
+  list_price?: number;
+  size?: number;
+  size_unit?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  status?: string;
+  custom_image_1?: string;
 }
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
-const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
-const WHATSAPP_NUMBER = '923049383785';
-const FAVORITES_KEY = 'realtorx_favorites';
-const PHONE_DISPLAY = '+92 304 9383785';
-const PHONE_TEL = '+923049383785';
-const EMAIL_PRIMARY = 'info@realtorx.co';
-
-const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
-  <svg
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-    className={className}
-    aria-hidden="true"
-  >
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-  </svg>
-);
-
-const hasRealImage = (url?: string): boolean => {
-  if (!url) return false;
-  return !url.startsWith('data:');
+const formatPrice = (price?: number) => {
+  if (!price) return 'Price on Call';
+  if (price >= 10000000) return `PKR ${(price / 10000000).toFixed(2)} Crore`;
+  if (price >= 100000) return `PKR ${(price / 100000).toFixed(2)} Lakh`;
+  return `PKR ${price.toLocaleString()}`;
 };
 
-// ═══════════════════════════════════════════════════════
-// Scroll Reveal Hook
-// ═══════════════════════════════════════════════════════
-function useScrollReveal(deps: React.DependencyList = []) {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    const checkAndObserve = () => {
-      document.querySelectorAll('.scroll-reveal:not(.is-visible)').forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const inView = rect.top < window.innerHeight && rect.bottom > 0;
-        if (inView) el.classList.add('is-visible');
-        else observer.observe(el);
-      });
-    };
-
-    checkAndObserve();
-
-    const mutationObserver = new MutationObserver(() => checkAndObserve());
-    mutationObserver.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      observer.disconnect();
-      mutationObserver.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+function DetailSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#0B1A30]">
+      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
+        <Skeleton className="mb-6 h-4 w-72" />
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+          <div className="space-y-4">
+            <Skeleton className="h-[400px] rounded-2xl md:h-[500px]" />
+            <div className="flex gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-24 w-24" />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-6">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-28 rounded-xl" />
+            <div className="grid grid-cols-2 gap-4">
+              <Skeleton className="h-24 rounded-xl" />
+              <Skeleton className="h-24 rounded-xl" />
+            </div>
+            <Skeleton className="h-14 rounded-xl" />
+          </div>
+        </div>
+        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <Skeleton className="h-64 rounded-2xl lg:col-span-2" />
+          <Skeleton className="h-64 rounded-2xl" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({
+export default function PropertyDetailPage({
   propertyId,
   onNavigate,
-  language,
-  onOpenSocialModal,
-}) => {
-  const [property, setProperty] = useState<Property | null>(null);
-  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
+}: {
+  propertyId: string;
+  onNavigate: (page: string, id?: string) => void;
+}) {
+  const [prop, setProp] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [error, setError] = useState('');
+  const [similar, setSimilar] = useState<SimilarProperty[]>([]);
 
-  // Booking Form State
-  const [visitorName, setVisitorName] = useState('');
-  const [visitorPhone, setVisitorPhone] = useState('');
-  const [visitorEmail, setVisitorEmail] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
-  const [timeSlot, setTimeSlot] = useState('11:00 AM – 1:00 PM');
-  const [bookingSubmitted, setBookingSubmitted] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showInquiry, setShowInquiry] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  useScrollReveal([similarProperties.length, loading]);
-
-  useEffect(() => {
-    async function loadProperty() {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchProperty(propertyId);
-        if (!data) {
-          setError('Property not found.');
-          setProperty(null);
+  const load = useCallback(() => {
+    if (!propertyId) return;
+    setLoading(true);
+    setError('');
+    fetch(`/api/erp/method/realtor_x.api.v1.get_public_property_details?property_id=${encodeURIComponent(propertyId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.message && !data.exception) {
+          setProp(data.message);
+          const imgs = [
+            data.message.custom_image_1,
+            data.message.custom_image_2,
+            data.message.custom_image_3,
+          ].filter(Boolean) as string[];
+          setGalleryImages(imgs);
+          setCurrentIndex(0);
         } else {
-          setProperty(data);
-          const all = await fetchProperties();
-          const similar = all
-            .filter((p) => p.erpCode !== propertyId && p.category === data.category)
-            .slice(0, 3);
-          setSimilarProperties(similar);
+          setError(data?.exception || 'Property details not found.');
         }
-      } catch (err) {
+        setLoading(false);
+      })
+      .catch((err) => {
         console.error(err);
         setError('Failed to load property details.');
-      } finally {
         setLoading(false);
-      }
-    }
-    if (propertyId) loadProperty();
+      });
   }, [propertyId]);
 
   useEffect(() => {
-    if (!property) return;
-    try {
-      const favs = localStorage.getItem(FAVORITES_KEY);
-      if (favs) {
-        const set = new Set(JSON.parse(favs));
-        setIsFavorite(set.has(property.erpCode));
-      }
-    } catch {}
-  }, [property]);
+    load();
+  }, [load]);
 
-  const toggleFavorite = () => {
-    if (!property) return;
-    try {
-      const favs = localStorage.getItem(FAVORITES_KEY);
-      const set = new Set<string>(favs ? JSON.parse(favs) : []);
-      if (set.has(property.erpCode)) set.delete(property.erpCode);
-      else set.add(property.erpCode);
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(set)));
-      setIsFavorite(set.has(property.erpCode));
-    } catch {}
-  };
-
-  const handleBookingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!visitorName.trim() || !visitorPhone.trim()) {
-      setBookingError('Please enter your name and phone number.');
+  // Similar properties in the same project
+  useEffect(() => {
+    if (!prop?.project || !prop?.name) {
+      setSimilar([]);
       return;
     }
-    if (!property) return;
-
-    setBookingLoading(true);
-    setBookingError(null);
-
-    try {
-      const leadData = {
-        lead_name: visitorName,
-        phone: visitorPhone,
-        email: visitorEmail || '',
-        city: 'Karachi',
-        lead_source: 'Website',
-        source: 'Online',
-        status: 'New',
-        priority: 'High',
-        notes: `Site Visit request for: ${property.title} (${property.erpCode}). Preferred date: ${preferredDate}, Time: ${timeSlot}`,
-      };
-
-      const leadResponse = await fetch(`${API_BASE}/resource/RX Lead`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(leadData),
+    let cancelled = false;
+    fetch(
+      `/api/erp/method/realtor_x.api.v1.get_project_properties?project_id=${encodeURIComponent(prop.project)}`
+    )
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d) => {
+        if (cancelled) return;
+        const items: SimilarProperty[] = Array.isArray(d?.message) ? d.message : [];
+        setSimilar(items.filter((p) => p.name !== prop.name).slice(0, 4));
+      })
+      .catch(() => {
+        if (!cancelled) setSimilar([]);
       });
+    return () => {
+      cancelled = true;
+    };
+  }, [prop?.project, prop?.name]);
 
-      if (!leadResponse.ok) {
-        const errData = await leadResponse.json().catch(() => ({}));
-        throw new Error(errData?.exception || `Failed to submit (HTTP ${leadResponse.status})`);
-      }
+  // Gallery keyboard navigation
+  useEffect(() => {
+    if (galleryImages.length < 2 || showInquiry) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') setCurrentIndex((p) => (p === 0 ? galleryImages.length - 1 : p - 1));
+      if (e.key === 'ArrowRight') setCurrentIndex((p) => (p === galleryImages.length - 1 ? 0 : p + 1));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [galleryImages.length, showInquiry]);
 
-      setBookingSubmitted(true);
-    } catch (err: any) {
-      console.error(err);
-      setBookingError(err.message || 'Failed to submit. Please try WhatsApp instead.');
-    } finally {
-      setBookingLoading(false);
+  const nextImage = () =>
+    setCurrentIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+  const prevImage = () =>
+    setCurrentIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+
+  const shareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable */
     }
   };
 
-  const handleWhatsAppClick = () => {
-    const msg = property
-      ? `Hello Realtor X, I'm interested in: ${property.title} (${property.erpCode}) - ${property.priceFormatted}`
-      : `Hello Realtor X, I need help with a property.`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-  };
+  if (loading) return <DetailSkeleton />;
 
-  const isNew =
-    property?.dateAdded &&
-    Date.now() - new Date(property.dateAdded).getTime() < 7 * 24 * 60 * 60 * 1000;
-
-  // ═══════════════════════════════════════════════════
-  // LOADING
-  // ═══════════════════════════════════════════════════
-  if (loading) {
+  if (error || !prop) {
     return (
-      <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-4 bg-slate-800/60 rounded w-40 mb-8 animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="h-[460px] bg-slate-800/60 rounded-3xl animate-pulse" />
-            <div className="h-12 bg-slate-800/60 rounded w-3/4 animate-pulse" />
-            <div className="h-6 bg-slate-800/40 rounded w-1/2 animate-pulse" />
-            <div className="h-36 bg-slate-800/40 rounded-3xl animate-pulse" />
-          </div>
-          <div className="lg:col-span-1">
-            <div className="h-[560px] bg-slate-800/60 rounded-3xl animate-pulse" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ═══════════════════════════════════════════════════
-  // ERROR
-  // ═══════════════════════════════════════════════════
-  if (error || !property) {
-    return (
-      <div className="py-24 max-w-2xl mx-auto px-4 text-center">
-        <div className="w-24 h-24 mx-auto mb-7 rounded-3xl bg-red-500/10 border border-red-500/30 flex items-center justify-center">
-          <AlertCircle className="w-12 h-12 text-red-400" />
-        </div>
-        <h2 className="text-3xl font-bold text-white mb-3 font-heading">Property Not Found</h2>
-        <p className="text-slate-400 mb-10 max-w-md mx-auto leading-relaxed">
-          {error || 'This property may have been sold or removed.'}
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0B1A30] px-4">
+        <ErrorState
+          title="Property unavailable"
+          message={error || 'This listing could not be loaded.'}
+          onRetry={load}
+          className="w-full max-w-lg"
+        />
         <button
+          type="button"
           onClick={() => onNavigate('properties')}
-          className="relative px-7 py-3.5 bg-[#F5A623] hover:bg-[#F5A623] text-[#0B1A30] font-bold rounded-2xl transition-all inline-flex items-center gap-2 shadow-xl shadow-[#F5A623]/25 active:scale-[0.98] overflow-hidden group"
+          className="mt-6 flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white"
         >
-          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-          <ArrowLeft className="w-4 h-4 relative z-10" />
-          <span className="relative z-10">Back to Properties</span>
+          <ArrowLeft className="h-4 w-4" /> Back to Properties
         </button>
       </div>
     );
   }
 
-  // ═══════════════════════════════════════════════════
-  // MAIN VIEW
-  // ═══════════════════════════════════════════════════
-  const images = property.images || [];
-  const activeImage = images[activeImageIndex] || images[0];
-  const activeImageIsReal = hasRealImage(activeImage);
+  const description = prop.custom_description || prop.description || '';
+  const features = prop.custom_features
+    ? prop.custom_features.split('\n').filter((f: string) => f.trim() !== '')
+    : [];
+  const category = prop.custom_property_category || 'Property';
+  const ownership = prop.custom_ownership || 'N/A';
+  const propertyType = prop.property_type || 'N/A';
+  const status = prop.status || 'Available';
+  const bedrooms = prop.bedrooms || 0;
+  const bathrooms = prop.bathrooms || 0;
 
-  const projectDisplay =
-    property.project && property.project !== property.erpCode ? property.project : '';
-  const precinctDisplay = property.precinct || '';
-  const locationDisplay = property.location || '';
-
-  const whatsappMsg = `Hello Realtor X, I'm interested in: ${property.title} (${property.erpCode}) - ${property.priceFormatted}`;
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
+  const openInquiry = () => setShowInquiry(true);
 
   return (
-    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <div className="min-h-screen bg-[#0B1A30] pb-28 lg:pb-20">
+      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
+        {/* Breadcrumbs + share */}
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <nav aria-label="Breadcrumb" className="flex min-w-0 flex-wrap items-center gap-2 text-sm text-slate-400">
+            <button
+              type="button"
+              onClick={() => onNavigate('properties')}
+              className="flex items-center gap-1.5 transition-colors hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" /> Properties
+            </button>
+            {prop.project && (
+              <>
+                <span className="text-slate-600">/</span>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('project-details', prop.project)}
+                  className="truncate transition-colors hover:text-white"
+                >
+                  {prop.project_name || 'Project'}
+                </button>
+                <span className="text-slate-600">/</span>
+              </>
+            )}
+            <span className="truncate font-medium text-slate-500">{prop.property_title}</span>
+          </nav>
 
-      {/* ═════ BACK + ACTIONS ═════ */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => onNavigate('properties')}
-          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-all group px-3 py-2 rounded-xl hover:bg-white/[0.04]"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          <span>Back to Properties</span>
-        </button>
-
-        <div className="flex items-center gap-2">
           <button
-            onClick={() => onOpenSocialModal?.()}
-            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all"
-            title="Share"
+            type="button"
+            onClick={shareLink}
+            className="flex shrink-0 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-white"
           >
-            <Share2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={toggleFavorite}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${
-              isFavorite
-                ? 'bg-red-500/90 text-white shadow-lg shadow-red-500/40 scale-105'
-                : 'text-slate-400 hover:text-red-400 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-red-500/30'
-            }`}
-            title={isFavorite ? 'Saved' : 'Save'}
-          >
-            <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+            {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Share2 className="h-3.5 w-3.5" />}
+            {copied ? 'Link copied' : 'Share'}
           </button>
         </div>
-      </div>
 
-      {/* ═════ MAIN GRID ═════ */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+          {/* LEFT: GALLERY */}
+          <div className="space-y-4">
+            <div className="group relative h-[400px] overflow-hidden rounded-2xl border border-white/10 bg-slate-800 md:h-[500px]">
+              {/* Branded fallback (behind image) */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#0E2849] to-[#081221]">
+                <Building2 className="h-14 w-14 text-slate-600" />
+                <span className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  No imagery available
+                </span>
+              </div>
 
-        {/* LEFT: Images + Details */}
-        <div className="lg:col-span-2 space-y-6 min-w-0">
-
-          {/* Image Gallery */}
-          <div className="space-y-3">
-            <div className="relative h-[420px] sm:h-[520px] w-full rounded-3xl overflow-hidden border border-white/[0.08] bg-slate-950 shadow-2xl shadow-black/30 group">
-              {activeImageIsReal ? (
+              {galleryImages[currentIndex] && (
                 <img
-                  src={activeImage}
-                  alt={property.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1200ms] ease-out-expo"
+                  key={currentIndex}
+                  src={galleryImages[currentIndex]}
+                  alt={prop.property_title}
+                  className="relative h-full w-full object-cover transition-all duration-500"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
-                  <ImageOff className="w-16 h-16 text-slate-600 mb-3" strokeWidth={1.5} />
-                  <span className="text-sm text-slate-500 font-medium">No Image Available</span>
-                </div>
               )}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent pointer-events-none" />
-
-              {/* Top-left badges */}
-              <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                <span className="px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
-                  {property.category}
-                </span>
-                {property.status && (
-                  <span className="px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#22C55E] text-white shadow-lg shadow-[#22C55E]/30">
-                    {property.status}
-                  </span>
-                )}
-                {isNew && (
-                  <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/30">
-                    <Zap className="w-3 h-3" />
-                    New
-                  </span>
-                )}
+              <div className="absolute left-4 top-4 z-10">
+                <Badge className="border-black/30 bg-[#F5A623] text-black shadow-lg">
+                  {category}
+                </Badge>
+              </div>
+              <div className="absolute right-4 top-4 z-10">
+                <StatusBadge status={status} />
               </div>
 
-              {/* Property Code */}
-              <div className="absolute bottom-4 right-4 bg-slate-950/85 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10">
-                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
-                  Property Code
-                </div>
-                <div className="text-sm font-bold text-white">{property.erpCode}</div>
-              </div>
-
-              {/* Photos count */}
-              {images.length > 1 && activeImageIsReal && (
-                <span className="absolute bottom-4 left-4 text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg font-medium text-white">
-                  {activeImageIndex + 1} / {images.length} photos
-                </span>
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Previous image"
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white opacity-100 backdrop-blur-sm transition-all hover:bg-[#F5A623] hover:text-black md:opacity-0 md:group-hover:opacity-100"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Next image"
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white opacity-100 backdrop-blur-sm transition-all hover:bg-[#F5A623] hover:text-black md:opacity-0 md:group-hover:opacity-100"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                  <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/10 bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                    {currentIndex + 1} / {galleryImages.length}
+                  </div>
+                </>
               )}
             </div>
 
-            {/* Thumbnails */}
-            {images.length > 1 && (
-              <div className="flex gap-2.5 overflow-x-auto pb-2 hide-scrollbar">
-                {images.map((img, idx) => {
-                  const isReal = hasRealImage(img);
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveImageIndex(idx)}
-                      className={`w-24 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition-all duration-300 ${
-                        activeImageIndex === idx
-                          ? 'border-[#94A3B8] ring-2 ring-[#94A3B8]/30 scale-105'
-                          : 'border-white/[0.08] hover:border-white/[0.2]'
-                      }`}
-                    >
-                      {isReal ? (
-                        <img
-                          src={img}
-                          alt={`${property.title} ${idx + 1}`}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-900">
-                          <ImageOff className="w-5 h-5 text-slate-600" />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+            {galleryImages.length > 1 && (
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    aria-label={`View image ${idx + 1}`}
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                      currentIndex === idx
+                        ? 'border-[#F5A623]'
+                        : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Title + Location */}
-          <div className="scroll-reveal">
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-white font-heading leading-tight tracking-[-0.02em] mb-4">
-              {property.title}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-300">
-              {(precinctDisplay || projectDisplay) && (
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center">
-                    <MapPin className="w-3.5 h-3.5 text-[#F5A623]" />
-                  </div>
-                  <span className="font-medium">{precinctDisplay || projectDisplay}</span>
-                </div>
-              )}
-              {locationDisplay && locationDisplay !== precinctDisplay && (
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
-                    <Building className="w-3.5 h-3.5 text-[#94A3B8]" />
-                  </div>
-                  <span>{locationDisplay}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Price Box */}
-          <div className="relative rounded-3xl overflow-hidden border border-[#94A3B8]/25 shadow-2xl shadow-[#94A3B8]/10 scroll-reveal">
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-[#0B1A30] to-slate-900" />
-            <div
-              className="absolute inset-0 opacity-60"
-              style={{
-                background:
-                  'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
-              }}
-            />
-            <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
-
-            <div className="relative p-7 sm:p-8 flex flex-wrap items-center justify-between gap-6">
-              <div>
-                <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-400 mb-2">
-                  Asking Price
-                </div>
-                <div className="text-3xl sm:text-4xl font-bold text-[#F5A623] font-medium leading-none drop-shadow-lg">
-                  {property.priceFormatted}
-                </div>
+          {/* RIGHT: DETAILS */}
+          <div className="space-y-6">
+            <div>
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <Badge className="border-emerald-500/25 bg-emerald-500/10 text-emerald-400">
+                  <BadgeCheck className="h-3 w-3" /> Verified Listing
+                </Badge>
               </div>
-              <div className="text-right">
-                <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-400 mb-2">
-                  Size
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-white font-heading">
-                  {property.size} {property.sizeUnit}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Key Details Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 scroll-reveal">
-            <DetailBox icon={Tag} color="#94A3B8" label="Category" value={property.category} />
-            <DetailBox icon={FileText} color="#F5A623" label="Ownership" value={property.ownership || '—'} />
-            <DetailBox
-              icon={CheckCircle2}
-              color="#22C55E"
-              label="Status"
-              value={property.status || '—'}
-              valueColor="#22C55E"
-            />
-            <DetailBox icon={Ruler} color="#94A3B8" label="Precinct" value={property.precinct || '—'} />
-
-            {property.bedrooms ? (
-              <DetailBox icon={Bed} color="#94A3B8" label="Bedrooms" value={String(property.bedrooms)} />
-            ) : null}
-            {property.bathrooms ? (
-              <DetailBox icon={Bath} color="#94A3B8" label="Bathrooms" value={String(property.bathrooms)} />
-            ) : null}
-
-            <DetailBox
-              icon={Wallet}
-              color="#F5A623"
-              label="Listing Type"
-              value={property.listing_type || '—'}
-            />
-            <DetailBox
-              icon={Calendar}
-              color="#22C55E"
-              label="Listed On"
-              value={property.dateAdded || '—'}
-            />
-          </div>
-
-          {/* Description */}
-          {property.description && property.description.trim() ? (
-            <div className="p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] scroll-reveal">
-              <h2 className="text-xl font-bold text-white mb-4 font-heading flex items-center gap-3">
-                <span className="w-1 h-6 rounded-full bg-[#F5A623]" />
-                Description
-              </h2>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed whitespace-pre-line">
-                {property.description}
-              </p>
-            </div>
-          ) : null}
-
-          {/* Features */}
-          {property.features && property.features.length > 0 && (
-            <div className="p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] scroll-reveal">
-              <h2 className="text-xl font-bold text-white mb-5 font-heading flex items-center gap-3">
-                <span className="w-1 h-6 rounded-full bg-[#F5A623]" />
-                Key Features
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {property.features.map((f, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] hover:border-[#22C55E]/30 transition-all group"
-                  >
-                    <div className="w-5 h-5 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
-                    </div>
-                    <span className="text-sm text-slate-300 leading-relaxed">{f}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Trust Badge */}
-          <div className="relative p-6 rounded-3xl overflow-hidden border border-[#22C55E]/30 scroll-reveal">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#22C55E]/10 via-transparent to-transparent" />
-            <div className="relative flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-6 h-6 text-[#22C55E]" />
-              </div>
-              <div>
-                <div className="text-base font-bold text-white mb-1.5">
-                  100% Verified with Bahria Town Records
-                </div>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  This property's documents, plot map, and NDC status have been verified by Realtor
-                  X before listing. Zero hidden disputes guaranteed.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT: Booking + Contact (sticky) */}
-        <div className="lg:col-span-1 min-w-0">
-          <div className="space-y-4 lg:sticky lg:top-24">
-
-            {/* BOOKING FORM */}
-            <div className="relative rounded-3xl overflow-hidden border border-[#94A3B8]/30 shadow-2xl shadow-[#94A3B8]/10">
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-900/70" />
-              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
-
-              <div className="relative p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-[#94A3B8]" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white font-heading leading-tight">
-                      Book Site Visit
-                    </h3>
-                    <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">
-                      Free · No obligation
-                    </p>
-                  </div>
-                </div>
-
-                {bookingSubmitted ? (
-                  <div className="text-center py-8 space-y-5">
-                    <div className="w-20 h-20 mx-auto rounded-3xl bg-[#22C55E]/15 border-2 border-[#22C55E]/40 flex items-center justify-center">
-                      <Check className="w-10 h-10 text-[#22C55E]" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-white mb-2">Request Sent!</h4>
-                      <p className="text-sm text-slate-400 leading-relaxed max-w-xs mx-auto">
-                        Our dealer will contact you within 24 hours to confirm your site visit.
-                      </p>
-                    </div>
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-3 px-4 text-sm font-bold text-white bg-[#25D366] hover:bg-[#22C55E] rounded-xl transition-all inline-flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/30"
-                    >
-                      <WhatsAppIcon className="w-4 h-4" />
-                      Continue on WhatsApp
-                    </a>
-                  </div>
-                ) : (
-                  <form onSubmit={handleBookingSubmit} className="space-y-3.5">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={visitorName}
-                        onChange={(e) => setVisitorName(e.target.value)}
-                        placeholder="Enter full name"
-                        className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
-                        Phone / WhatsApp *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={visitorPhone}
-                        onChange={(e) => setVisitorPhone(e.target.value)}
-                        placeholder="+92 300 1234567"
-                        className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
-                        Email (Optional)
-                      </label>
-                      <input
-                        type="email"
-                        value={visitorEmail}
-                        onChange={(e) => setVisitorEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        className="w-full px-4 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
-                          Date
-                        </label>
-                        <input
-                          type="date"
-                          value={preferredDate}
-                          onChange={(e) => setPreferredDate(e.target.value)}
-                          className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-xs text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-400 mb-2 tracking-wide">
-                          Time
-                        </label>
-                        <select
-                          value={timeSlot}
-                          onChange={(e) => setTimeSlot(e.target.value)}
-                          className="w-full px-3.5 py-3 bg-slate-950/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl text-xs text-white focus:outline-none focus:border-[#94A3B8]/60 focus:ring-4 focus:ring-[#94A3B8]/10 transition-all cursor-pointer"
-                        >
-                          <option>11:00 AM – 1:00 PM</option>
-                          <option>2:00 PM – 4:00 PM</option>
-                          <option>4:00 PM – 6:00 PM</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {bookingError && (
-                      <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-300 flex items-start gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                        <span>{bookingError}</span>
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={bookingLoading}
-                      className="relative w-full py-3.5 px-4 text-sm font-bold text-white bg-gradient-to-r from-[#F5A623] to-[#E59615] hover:brightness-110 rounded-xl transition-all shadow-lg shadow-[#F5A623]/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden group active:scale-[0.98]"
-                    >
-                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                      {bookingLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin relative z-10" />
-                          <span className="relative z-10">Submitting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4 relative z-10" />
-                          <span className="relative z-10">Request Site Visit</span>
-                        </>
-                      )}
-                    </button>
-                  </form>
+              <h1 className="font-heading mb-2 text-3xl font-bold tracking-[-0.02em] text-white md:text-4xl">
+                {prop.property_title}
+              </h1>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4" /> {prop.project_name || 'Karachi'}
+                </span>
+                {prop.unit_number && (
+                  <>
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
+                    <span className="flex items-center gap-1.5">
+                      <Home className="h-4 w-4" /> Unit {prop.unit_number}
+                    </span>
+                  </>
                 )}
               </div>
             </div>
 
-            {/* WHATSAPP DIRECT */}
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="relative w-full py-4 px-4 text-sm font-bold text-white bg-[#25D366] hover:bg-[#22C55E] rounded-2xl transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-[#25D366]/30 hover:shadow-[#25D366]/50 overflow-hidden group active:scale-[0.98]"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <WhatsAppIcon className="w-5 h-5 relative z-10" />
-              <span className="relative z-10">Chat on WhatsApp</span>
-            </a>
-
-            {/* QUICK CONTACT */}
-            <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] space-y-3.5">
-              <div className="text-[10px] font-bold text-slate-400 tracking-wide mb-2">
-                Need Help?
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#081221] p-6 shadow-lg">
+              <div>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-500">
+                  Asking Price
+                </p>
+                <p className="text-3xl font-bold text-[#F5A623]">{formatPrice(prop.list_price)}</p>
               </div>
-              <a
-                href={`tel:${PHONE_TEL}`}
-                className="flex items-center gap-3 text-sm text-slate-300 hover:text-white transition-colors group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-[#94A3B8]/15 border border-[#94A3B8]/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Phone className="w-4 h-4 text-[#94A3B8]" />
-                </div>
-                <span>{PHONE_DISPLAY}</span>
-              </a>
-              <a
-                href={`mailto:${EMAIL_PRIMARY}`}
-                className="flex items-center gap-3 text-sm text-slate-300 hover:text-white transition-colors group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-[#F5A623]/15 border border-[#F5A623]/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Mail className="w-4 h-4 text-[#F5A623]" />
-                </div>
-                <span>{EMAIL_PRIMARY}</span>
-              </a>
-              <div className="flex items-center gap-3 text-sm text-slate-300">
-                <div className="w-9 h-9 rounded-xl bg-[#22C55E]/15 border border-[#22C55E]/30 flex items-center justify-center shrink-0">
-                  <Clock className="w-4 h-4 text-[#22C55E]" />
-                </div>
-                <span>Mon – Sat: 10 AM – 8 PM</span>
+              <div className="text-right">
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-500">
+                  Size
+                </p>
+                <p className="text-2xl font-bold text-white">
+                  {prop.size || 0}{' '}
+                  <span className="text-sm font-normal text-slate-400">{prop.size_unit || 'Sq.Yd'}</span>
+                </p>
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#081221] p-4 shadow-lg">
+                <div className="rounded-full bg-[#0B1A30] p-3">
+                  <Bed className="h-5 w-5 text-[#F5A623]" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-white">{bedrooms}</p>
+                  <p className="text-xs uppercase tracking-wider text-slate-500">Bedrooms</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#081221] p-4 shadow-lg">
+                <div className="rounded-full bg-[#0B1A30] p-3">
+                  <Bath className="h-5 w-5 text-[#F5A623]" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-white">{bathrooms}</p>
+                  <p className="text-xs uppercase tracking-wider text-slate-500">Bathrooms</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4">
+              <button
+                type="button"
+                onClick={openInquiry}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F5A623] py-4 font-bold text-black shadow-lg transition-colors hover:bg-[#d98c15]"
+              >
+                <CheckCircle2 className="h-5 w-5" /> Contact Agent for Inquiry
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('site-visit', prop.name)}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 py-3 font-semibold text-white transition-colors hover:bg-white/5"
+              >
+                Request a site visit
+              </button>
+              <p className="mt-4 text-center text-xs text-slate-500">
+                Speak with a RealtorX agent — no obligation.
+              </p>
+            </div>
           </div>
+        </div>
+
+        {/* BOTTOM */}
+        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="space-y-8 lg:col-span-2">
+            {description && (
+              <section className="rounded-2xl border border-white/10 bg-[#081221] p-8 shadow-lg">
+                <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+                  <FileText className="h-5 w-5 text-[#F5A623]" /> Property Description
+                </h2>
+                <div
+                  className="whitespace-pre-line text-sm leading-relaxed text-slate-300 md:text-base"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+              </section>
+            )}
+
+            {features.length > 0 && (
+              <section className="rounded-2xl border border-white/10 bg-[#081221] p-8 shadow-lg">
+                <h2 className="mb-6 flex items-center gap-2 text-2xl font-bold text-white">
+                  <CheckCircle2 className="h-5 w-5 text-[#F5A623]" /> Key Features
+                </h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {features.map((feature: string, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-3 rounded-lg border border-white/5 bg-[#0B1A30] px-4 py-3"
+                    >
+                      <Check className="h-4 w-4 shrink-0 text-[#F5A623]" />
+                      <span className="text-sm font-medium text-slate-300">{feature.trim()}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+
+          <div>
+            <section className="rounded-2xl border border-white/10 bg-[#081221] p-8 shadow-lg">
+              <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-white">
+                <Layers className="h-5 w-5 text-[#F5A623]" /> Property Details
+              </h2>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                  <span className="flex items-center gap-2 text-sm text-slate-400">
+                    <Tag className="h-4 w-4" /> Property Type
+                  </span>
+                  <span className="text-right font-medium text-white">{propertyType}</span>
+                </div>
+
+                <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                  <span className="flex items-center gap-2 text-sm text-slate-400">
+                    <Building2 className="h-4 w-4" /> Project
+                  </span>
+                  <span className="text-right font-medium text-white">{prop.project_name || 'N/A'}</span>
+                </div>
+
+                {prop.tower && (
+                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                    <span className="flex items-center gap-2 text-sm text-slate-400">
+                      <Layers className="h-4 w-4" /> Tower / Building
+                    </span>
+                    <span className="text-right font-medium text-white">{prop.tower}</span>
+                  </div>
+                )}
+
+                {prop.floor && (
+                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                    <span className="flex items-center gap-2 text-sm text-slate-400">
+                      <Layers className="h-4 w-4" /> Floor
+                    </span>
+                    <span className="text-right font-medium text-white">{prop.floor}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                  <span className="flex items-center gap-2 text-sm text-slate-400">
+                    <Home className="h-4 w-4" /> Category
+                  </span>
+                  <span className="text-right font-medium text-white">{category}</span>
+                </div>
+
+                {ownership && ownership !== 'N/A' && (
+                  <div className="flex items-center justify-between pb-3">
+                    <span className="flex items-center gap-2 text-sm text-slate-400">
+                      <Shield className="h-4 w-4" /> Ownership
+                    </span>
+                    <span className="text-right font-medium text-white">{ownership}</span>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+        </div>
+
+        {/* SIMILAR PROPERTIES */}
+        {similar.length > 0 && (
+          <section className="mt-12">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">
+                Similar in {prop.project_name || 'this project'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => onNavigate('properties')}
+                className="text-sm font-semibold text-[#F5A623] transition-colors hover:text-[#d98c15]"
+              >
+                View all →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {similar.map((p) => (
+                <button
+                  key={p.name}
+                  type="button"
+                  onClick={() => onNavigate('property-detail', p.name)}
+                  className="group overflow-hidden rounded-xl border border-white/10 bg-[#081221] text-left transition-all hover:-translate-y-1 hover:border-[#F5A623]/40"
+                >
+                  <div className="relative h-36 overflow-hidden bg-slate-800">
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0E2849] to-[#081221]">
+                      <Building2 className="h-8 w-8 text-slate-600" />
+                    </div>
+                    {p.custom_image_1 && (
+                      <img
+                        src={p.custom_image_1}
+                        alt={p.property_title}
+                        className="relative h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <div className="absolute right-2 top-2 z-10">
+                      <StatusBadge status={p.status} className="!text-[10px]" />
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="mb-1 truncate text-sm font-semibold text-white transition-colors group-hover:text-[#F5A623]">
+                      {p.property_title}
+                    </h3>
+                    <p className="text-sm font-bold text-[#F5A623]">{formatPrice(p.list_price)}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {p.size || 0} {p.size_unit || 'Sq.Yd'}
+                      {p.bedrooms ? ` · ${p.bedrooms} Bed` : ''}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Mobile sticky CTA */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#081221]/95 px-4 py-3 backdrop-blur lg:hidden"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-bold text-[#F5A623]">{formatPrice(prop.list_price)}</p>
+            <p className="truncate text-[11px] text-slate-500">
+              {prop.size || 0} {prop.size_unit || 'Sq.Yd'} · {prop.name}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={openInquiry}
+            className="ml-auto flex shrink-0 items-center gap-2 rounded-xl bg-[#F5A623] px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-[#d98c15]"
+          >
+            <CheckCircle2 className="h-4 w-4" /> Contact Agent
+          </button>
         </div>
       </div>
 
-      {/* ═════ SIMILAR PROPERTIES ═════ */}
-      {similarProperties.length > 0 && (
-        <div className="pt-12 border-t border-white/[0.06]">
-          <div className="flex items-end justify-between mb-8 gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-[#94A3B8] mb-3">
-                <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-                <span>You may also like</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-heading tracking-[-0.02em]">
-                Similar Properties
-              </h2>
-            </div>
-            <button
-              onClick={() => onNavigate('properties')}
-              className="text-xs sm:text-sm font-semibold text-[#94A3B8] hover:text-white flex items-center gap-2 px-4 py-2 rounded-xl border border-[#94A3B8]/30 hover:border-[#F5A623] hover:bg-[#E59615]/10 transition-all group whitespace-nowrap"
-            >
-              <span>View All</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-            {similarProperties.map((sp, idx) => {
-              const isReal = hasRealImage(sp.images[0]);
-              const spIsNew =
-                sp.dateAdded &&
-                Date.now() - new Date(sp.dateAdded).getTime() < 7 * 24 * 60 * 60 * 1000;
-
-              return (
-                <button
-                  key={sp.id}
-                  onClick={() => onNavigate('property-detail', sp.erpCode)}
-                  className="group text-left bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col scroll-reveal"
-                  style={{ animationDelay: `${idx * 80}ms` }}
-                >
-                  <div className="relative h-56 overflow-hidden bg-slate-950">
-                    {isReal ? (
-                      <img
-                        src={sp.images[0]}
-                        alt={sp.title}
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-[900ms] ease-out-expo brightness-95"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/80 to-slate-900">
-                        <ImageOff className="w-9 h-9 text-slate-600 mb-2" strokeWidth={1.5} />
-                        <span className="text-[11px] text-slate-500 font-medium">No Image</span>
-                      </div>
-                    )}
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent pointer-events-none" />
-
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-950/85 backdrop-blur-md border border-white/10 text-white">
-                        {sp.category}
-                      </span>
-                    </div>
-
-                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
-                      <div className="flex flex-col gap-1.5">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          {sp.status && (
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#22C55E] text-white shadow-md">
-                              {sp.status}
-                            </span>
-                          )}
-                          {spIsNew && (
-                            <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-md">
-                              <Zap className="w-2.5 h-2.5" />
-                              New
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-lg font-bold text-[#F5A623] font-medium leading-none drop-shadow-lg">
-                          {sp.priceFormatted}
-                        </div>
-                      </div>
-                      <span className="text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg font-medium text-white shrink-0">
-                        {sp.size} {sp.sizeUnit}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
-                    <div className="space-y-2.5">
-                      <h3 className="font-heading font-bold text-base text-white group-hover:text-[#F5A623] transition-colors leading-snug line-clamp-2 min-h-[2.75rem]">
-                        {sp.title}
-                      </h3>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                        <MapPin className="w-3.5 h-3.5 text-[#F5A623] shrink-0" />
-                        <span className="truncate">
-                          {sp.precinct || sp.project || 'Bahria Town Karachi'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between gap-2">
-                      <div className="text-[10px] text-slate-500 font-medium truncate min-w-0">
-                        {sp.erpCode}
-                      </div>
-                      <span className="text-xs font-bold text-[#94A3B8] group-hover:text-white flex items-center gap-1 transition-colors">
-                        Details
-                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {showInquiry && <InquiryModal propertyId={prop.name} onClose={() => setShowInquiry(false)} />}
     </div>
   );
-};
-
-// ═══════════════════════════════════════════════════════
-// DETAIL BOX
-// ═══════════════════════════════════════════════════════
-const DetailBox: React.FC<{
-  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
-  color: string;
-  label: string;
-  value: string;
-  valueColor?: string;
-}> = ({ icon: Icon, color, label, value, valueColor }) => (
-  <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 group">
-    <div
-      className="flex items-center gap-1.5 text-[10px] tracking-wide font-medium mb-2 transition-colors"
-      style={{ color: 'rgb(148, 163, 184)' }}
-    >
-      <span
-        className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
-        style={{ backgroundColor: `${color}18`, border: `1px solid ${color}30` }}
-      >
-        <Icon className="w-3 h-3" style={{ color }} />
-      </span>
-      <span>{label}</span>
-    </div>
-    <div
-      className="text-sm font-semibold truncate"
-      style={{ color: valueColor || '#ffffff' }}
-      title={value}
-    >
-      {value}
-    </div>
-  </div>
-);
+}

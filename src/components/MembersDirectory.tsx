@@ -53,9 +53,9 @@ export const MembersDirectory: React.FC<MembersDirectoryProps> = ({
             <span>Real Estate Fellowship</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-heading font-bold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-heading font-bold text-white tracking-tight">
             {language === 'en' ? 'The RealtorX Custodians' : 'ریئلٹر ایکس کسٹوڈینز ڈائریکٹری'}
-          </h2>
+          </h1>
 
           <p className="mt-4 text-slate-300 text-sm sm:text-base leading-relaxed">
             {language === 'en'
