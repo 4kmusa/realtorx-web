@@ -1,5 +1,8 @@
 // Member Service - ERPNext integration for RealtorX Members
 
+import { callGet } from './api/client';
+import type { MemberRecord } from '../types';
+
 import {
   MemberProfile,
   MemberReferral,
@@ -147,4 +150,26 @@ export function formatPKR(amount: number | undefined | null): string {
   if (amount >= 10000000) return `PKR ${(amount / 10000000).toFixed(2)} Cr`;
   if (amount >= 100000) return `PKR ${(amount / 100000).toFixed(2)} Lakh`;
   return `PKR ${amount.toLocaleString()}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// Public members directory (approved members only, no contact details)
+// ═══════════════════════════════════════════════════════
+export async function fetchPublicMembers(): Promise<MemberRecord[]> {
+  const rows = await callGet<any[]>('realtor_x.api.v1.get_public_members');
+  return (rows || []).map((r) => ({
+    id: r.name,
+    memberNumber: r.member_id || r.name,
+    fullName: r.full_name || '',
+    firmName: r.firm_name || '',
+    role: r.role || '',
+    city: r.city || '',
+    email: '',
+    tier: r.membership_tier || '',
+    oathAccepted: true,
+    codeAgreed: !!r.code_agreed,
+    joinedAt: r.oath_date || '',
+    bio: r.bio || '',
+    erpnextDocId: r.name,
+  }));
 }

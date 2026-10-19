@@ -72,9 +72,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'home', label: 'Home' },
     { id: 'properties', label: 'Properties' },
     { id: 'projects', label: 'Projects' },
-    { id: 'services', label: 'Services' },
+    
     { id: 'about', label: 'About' },
-    { id: 'contact', label: 'Contact' },
+    
   ];
 
   const isActive = (id: PageId) => {
@@ -126,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ))}
 
                 {/* Become a Dealer — highlighted CTA */}
-                {(user?.roles?.includes('System Manager') || user?.roles?.includes('Administrator')) && (
+                {user?.is_staff && (
                   <button
                     onClick={() => handleNav('admin')}
                     className="text-xs font-medium text-red-400 hover:text-red-300 mr-2"

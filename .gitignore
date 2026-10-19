@@ -10,3 +10,6 @@ coverage/
 # Backup files
 *.bak
 *.bak.*
+
+# Internal audit/planning docs live in the private realtorx-erp-backend repo (docs/), never here.
+docs/

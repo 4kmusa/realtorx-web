@@ -13,7 +13,8 @@ const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' 
   </svg>
 );
 
-export const WhatsAppWidget: React.FC = () => {
+/** `aboveBottomBar` lifts the button above a page's mobile sticky action bar (lg:hidden). */
+export const WhatsAppWidget: React.FC<{ aboveBottomBar?: boolean }> = ({ aboveBottomBar = false }) => {
   const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
   const [pulse, setPulse] = useState(true);
@@ -137,7 +138,7 @@ export const WhatsAppWidget: React.FC = () => {
           setOpen(!open);
           setShowBubble(false);
         }}
-        className={`fixed bottom-6 right-4 sm:right-6 z-[58] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#22C55E] text-white shadow-2xl shadow-[#25D366]/40 flex items-center justify-center transition-all hover:scale-105 ${
+        className={`fixed ${aboveBottomBar ? 'bottom-24 lg:bottom-6' : 'bottom-6'} right-4 sm:right-6 z-[58] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#22C55E] text-white shadow-2xl shadow-[#25D366]/40 flex items-center justify-center transition-all hover:scale-105 ${
           pulse ? 'animate-bounce' : ''
         }`}
         aria-label="Open WhatsApp chat"

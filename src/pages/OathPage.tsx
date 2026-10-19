@@ -1,5 +1,6 @@
 // src/pages/OathPage.tsx
 import React, { useState, useRef, useEffect } from 'react';
+import { createDoc } from '../services/api/client';
 import { PageId, Language } from '../types';
 import { RealtorXLogo } from '../components/RealtorXLogo';
 import {
@@ -27,8 +28,6 @@ interface OathPageProps {
   language: Language;
 }
 
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
-const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
 
 const OATH_PROMISES = [
   'I will always place ethics before personal gain.',
@@ -198,21 +197,8 @@ export const OathPage: React.FC<OathPageProps> = ({ onNavigate, language }) => {
         bio: 'Founding member dedicated to collaboration, ethics and allottee protection.',
       };
 
-      const response = await fetch(`${API_BASE}/resource/RealtorX Member`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(
-          errData?.exception || errData?.message || `Failed (HTTP ${response.status})`
-        );
-      }
-
-      const result = await response.json();
-      setMemberName(result.data?.name || memberId);
+      const created = await createDoc<{ name: string }>('RealtorX Member', payload);
+      setMemberName(created?.name || memberId);
       setSubmitted(true);
     } catch (err: any) {
       console.error(err);

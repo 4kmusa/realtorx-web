@@ -6,6 +6,8 @@ export type PageId =
   | 'home'
   | 'properties'
   | 'property-detail'
+  | 'property-details'
+  | 'project-details'
   | 'projects'
   | 'about'
   | 'services'
@@ -22,7 +24,13 @@ export type PageId =
   | 'erpnext'
   | 'signup'
   | 'login'
-  | 'profile';
+  | 'profile'
+  | 'site-visit'
+  | 'developers'
+  | 'faq'
+  | 'privacy'
+  | 'terms'
+  | 'not-found';
 
 export type Language = 'en' | 'ur';
 

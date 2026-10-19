@@ -1,43 +1,52 @@
+import PropertyDetailPage from './pages/PropertyDetailPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth, AuthProvider } from './context/AuthContext';
-import { PageId, Language, MemberRecord, ERPNextConfig } from './types';
-import { INITIAL_MEMBERS } from './data/cultureData';
-import { DEFAULT_ERPNEXT_CONFIG } from './services/erpnextService';
+import { PageId, Language, MemberRecord } from './types';
+import { fetchPublicMembers } from './services/memberService';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { SEO } from './components/SEO';
 import { SocialShareModal } from './components/SocialShareModal';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { ShieldCheck } from 'lucide-react';
+import { Route, canonicalPage, parseLegacyHash, parsePath, pathFor } from './app/routes';
 
 import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
-import { PropertyDetailPage } from './pages/PropertyDetailPage';
-import { ProjectsPage } from './pages/ProjectsPage';
-import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import ProjectsPage from './pages/ProjectsPage';
 
 const AboutPage = React.lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
-const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
-const ContactPage = React.lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
-const ManifestoPage = React.lazy(() => import('./pages/ManifestoPage').then(m => ({ default: m.ManifestoPage })));
-const BecomeDealerPage = React.lazy(() => import('./pages/BecomeDealerPage').then(m => ({ default: m.BecomeDealerPage })));
+const CustomerPortal = React.lazy(() => import('./features/customer-portal/CustomerPortal'));
+const DealerPortal = React.lazy(() => import('./features/dealer-portal/DealerPortal'));
 const OathPage = React.lazy(() => import('./pages/OathPage').then(m => ({ default: m.OathPage })));
-const CodePage = React.lazy(() => import('./pages/CodePage').then(m => ({ default: m.CodePage })));
-const CustomerPortalPage = React.lazy(() => import('./pages/CustomerPortalPage').then(m => ({ default: m.CustomerPortalPage })));
-const DealerPortalPage = React.lazy(() => import('./pages/DealerPortalPage').then(m => ({ default: m.DealerPortalPage })));
-const SignupPage = React.lazy(() => import('./pages/SignupPage').then(m => ({ default: m.SignupPage })));
-const LoginPage = React.lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
+const ContactPage = React.lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
+const ManifestoPage = React.lazy(() => import('./pages/ManifestoPage').then(m => ({ default: m.ManifestoPage })));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
-const BecomeCustomerPage = React.lazy(() => import('./pages/BecomeCustomerPage').then(m => ({ default: m.BecomeCustomerPage })));
+const CodePage = React.lazy(() => import('./pages/CodePage').then(m => ({ default: m.CodePage })));
+const SiteVisitPage = React.lazy(() => import('./pages/SiteVisitPage'));
+const DevelopersPage = React.lazy(() => import('./pages/DevelopersPage'));
+const FaqPage = React.lazy(() => import('./pages/InfoPages').then(m => ({ default: m.FaqPage })));
+const PrivacyPage = React.lazy(() => import('./pages/InfoPages').then(m => ({ default: m.PrivacyPage })));
+const TermsPage = React.lazy(() => import('./pages/InfoPages').then(m => ({ default: m.TermsPage })));
+const NotFoundPage = React.lazy(() => import('./pages/InfoPages').then(m => ({ default: m.NotFoundPage })));
 
 import { MembersDirectory } from './components/MembersDirectory';
 import { CertificateModal } from './components/CertificateModal';
+import DealerApplyPage from './pages/DealerApplyPage';
 
-const VALID_PAGES: PageId[] = [
-  'home', 'properties', 'property-detail', 'projects', 'about', 'services', 
-  'contact', 'manifesto', 'oath', 'code', 'portal', 'dealer', 'become-dealer', 
-  'admin', 'community', 'signup', 'login', 'profile',
-];
+/** Initial route from the URL; legacy "#page/id" links are rewritten to clean paths. */
+function initialRoute(): Route {
+  const legacy = parseLegacyHash(window.location.hash);
+  if (legacy) {
+    window.history.replaceState(null, '', pathFor(legacy.page, legacy.id) + window.location.search);
+    return legacy;
+  }
+  return parsePath(window.location.pathname);
+}
 
 const PageLoader: React.FC = () => (
   <div className="min-h-[60vh] flex items-center justify-center">
@@ -54,74 +63,38 @@ const PageLoader: React.FC = () => (
 function AppContent() {
   const { user } = useAuth();
   
-  const [currentPage, setCurrentPage] = useState<PageId>(() => {
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const hash = window.location.hash.replace('#', '').split('/')[0] as PageId;
-      if (VALID_PAGES.includes(hash)) return hash;
-    }
-    return 'home';
-  });
-
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>(() => {
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const parts = window.location.hash.replace('#', '').split('/');
-      if (parts[0] === 'property-detail' && parts[1]) return parts[1];
-    }
-    return 'PROP-2026-00001';
-  });
+  const [route, setRoute] = useState<Route>(() => initialRoute());
+  const currentPage = route.page;
+  const selectedPropertyId = route.id;
 
   const [language, setLanguage] = useState<Language>('en');
   const [socialModalOpen, setSocialModalOpen] = useState(false);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      if (!hash) {
-        setCurrentPage('home');
-        return;
-      }
-      const parts = hash.split('/');
-      const pageId = parts[0] as PageId;
-      if (VALID_PAGES.includes(pageId)) {
-        setCurrentPage(pageId);
-        if (pageId === 'property-detail' && parts[1]) setSelectedPropertyId(parts[1]);
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    const onPopState = () => setRoute(parsePath(window.location.pathname));
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const [members, setMembers] = useState<MemberRecord[]>(() => {
-    const saved = localStorage.getItem('realtorx_members');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return INITIAL_MEMBERS; }
-    }
-    return INITIAL_MEMBERS;
-  });
-
-  const [erpConfig] = useState<ERPNextConfig>(() => {
-    const saved = localStorage.getItem('realtorx_erp_config');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return DEFAULT_ERPNEXT_CONFIG; }
-    }
-    return DEFAULT_ERPNEXT_CONFIG;
-  });
+  const [members, setMembers] = useState<MemberRecord[]>([]);
+  useEffect(() => {
+    if (currentPage !== 'community' || members.length) return;
+    fetchPublicMembers()
+      .then(setMembers)
+      .catch(() => setMembers([]));
+  }, [currentPage, members.length]);
 
   const [certificateMember, setCertificateMember] = useState<MemberRecord | null>(null);
 
-  useEffect(() => {
-    localStorage.setItem('realtorx_members', JSON.stringify(members));
-  }, [members]);
+
+  
+  const handleDealerApplyClick = () => handleNavigate('become-dealer');
 
   const handleNavigate = (page: PageId, extraId?: string) => {
-    if (extraId) {
-      setSelectedPropertyId(extraId);
-      window.location.hash = `#${page}/${extraId}`;
-    } else {
-      window.location.hash = page === 'home' ? '' : `#${page}`;
-    }
-    setCurrentPage(page);
+    const target = canonicalPage(page);
+    const url = pathFor(target, extraId);
+    if (url !== window.location.pathname) window.history.pushState(null, '', url);
+    setRoute({ page: target, id: extraId || null });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -133,32 +106,43 @@ function AppContent() {
         return <PropertiesPage onNavigate={handleNavigate} language={language} />;
       case 'property-detail':
         return (
-          <PropertyDetailPage
-            propertyId={selectedPropertyId}
-            onNavigate={handleNavigate}
-            language={language}
-            onOpenSocialModal={() => setSocialModalOpen(true)}
-          />
+          <PropertyDetailPage propertyId={selectedPropertyId || ''} onNavigate={handleNavigate} />
         );
       case 'projects':
-        return <ProjectsPage onNavigate={handleNavigate} language={language} />;
+        return <ProjectsPage onNavigate={handleNavigate} />;
+      case 'login':
+        return <LoginPage onNavigate={handleNavigate} />;
+      case 'signup':
+        return <SignupPage onNavigate={handleNavigate} />;
+      case 'project-details':
+        return <ProjectDetailPage projectId={selectedPropertyId || ''} onNavigate={handleNavigate} />;
+      case 'property-details':
+        return <PropertyDetailPage propertyId={selectedPropertyId || ''} onNavigate={handleNavigate} />;
       case 'about':
         return <AboutPage onNavigate={handleNavigate} language={language} />;
-      case 'services':
-        return <ServicesPage onNavigate={handleNavigate} language={language} />;
-      case 'contact':
-        return <ContactPage onNavigate={handleNavigate} language={language} />;
-      case 'manifesto':
-        return <ManifestoPage onNavigate={handleNavigate} language={language} />;
+      
+      
+      
       
       case 'admin':
-        if (!user || (!user.roles?.includes('System Manager') && !user.roles?.includes('Administrator') && user.email !== 'admin@realtorx.com')) {
+        if (!user?.is_staff) {
           return <HomePage onNavigate={handleNavigate} language={language} />;
         }
-        return <AdminDashboardPage onNavigate={handleNavigate} language={language} />;
+        return (
+          <div className="py-20 max-w-2xl mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">Administration</h2>
+            <p className="text-slate-400 mb-8">
+              CRM, inventory, bookings and finance are managed in the RealtorX back office.
+            </p>
+            <a
+              href="/app"
+              className="inline-block px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-[#F5A623] hover:brightness-110"
+            >
+              Open back office
+            </a>
+          </div>
+        );
 
-      case 'become-dealer':
-        return <BecomeDealerPage onNavigate={handleNavigate} language={language} />;
       case 'oath': {
         const cameFromDealerFlow = sessionStorage.getItem('realtorx_dealer_flow') === 'true';
         if (!cameFromDealerFlow) {
@@ -172,7 +156,7 @@ function AppContent() {
                 The Founding Member Oath is a personal commitment taken by Realtor X dealers. If you want to become a dealer, please start the application process.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <button onClick={() => handleNavigate('become-dealer')} className="px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-md">
+                <button onClick={handleDealerApplyClick} className="px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] to-[#FFA500] hover:brightness-110 transition-all shadow-md">
                   Apply to Become a Dealer
                 </button>
                 <button onClick={() => handleNavigate('manifesto')} className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 transition-all">
@@ -184,20 +168,12 @@ function AppContent() {
         }
         return <OathPage onNavigate={handleNavigate} language={language} />;
       }
-      case 'code':
-        return <CodePage onNavigate={handleNavigate} language={language} />;
+      
       case 'portal':
-        return <CustomerPortalPage onNavigate={handleNavigate} language={language} />;
+        return <CustomerPortal section={selectedPropertyId} onNavigate={handleNavigate} />;
       case 'dealer':
-        return <DealerPortalPage onNavigate={handleNavigate} language={language} />;
-      case 'signup':
-        return <SignupPage onNavigate={handleNavigate} language={language} />;
-      case 'login':
-        return <LoginPage onNavigate={handleNavigate} language={language} />;
-      case 'profile':
-        return <ProfilePage onNavigate={handleNavigate} language={language} />;
-      case 'become-customer':
-        return <LoginPage onNavigate={handleNavigate} language={language} />;
+        return <DealerPortal section={selectedPropertyId} onNavigate={handleNavigate} />;
+
       case 'community':
         return (
           <MembersDirectory
@@ -210,38 +186,56 @@ function AppContent() {
             language={language}
           />
         );
+      case 'become-dealer':
+        return <DealerApplyPage onNavigate={handleNavigate} />;
+      case 'contact':
+        return <ContactPage onNavigate={handleNavigate} language={language} />;
+      case 'services':
+        return <ServicesPage onNavigate={handleNavigate} language={language} />;
+      case 'manifesto':
+        return <ManifestoPage onNavigate={handleNavigate} language={language} />;
+      case 'code':
+        return <CodePage onNavigate={handleNavigate} language={language} />;
+      case 'profile':
+        return <ProfilePage onNavigate={handleNavigate} language={language} />;
+      case 'site-visit':
+        return <SiteVisitPage propertyId={selectedPropertyId} onNavigate={handleNavigate} />;
+      case 'developers':
+        return <DevelopersPage onNavigate={handleNavigate} />;
+      case 'faq':
+        return <FaqPage onNavigate={handleNavigate} />;
+      case 'privacy':
+        return <PrivacyPage />;
+      case 'terms':
+        return <TermsPage onNavigate={handleNavigate} />;
+      case 'not-found':
+        return <NotFoundPage onNavigate={handleNavigate} />;
       default:
         return <HomePage onNavigate={handleNavigate} language={language} />;
     }
   };
 
-  const isAdminPage = currentPage === 'admin';
-
   return (
     <div className="min-h-screen bg-[#0A1628] text-slate-100 flex flex-col font-sans">
       <SEO pageId={currentPage} property={undefined} />
       
-      {!isAdminPage && (
-        <Navbar
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          language={language}
-          onToggleLanguage={() => setLanguage((prev) => (prev === 'en' ? 'ur' : 'en'))}
-        />
-      )}
+      <Navbar
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+        language={language}
+        onToggleLanguage={() => setLanguage((prev) => (prev === 'en' ? 'ur' : 'en'))}
+      />
 
       <main className="flex-1">
         <Suspense fallback={<PageLoader />}>{renderCurrentPage()}</Suspense>
       </main>
 
-      {!isAdminPage && (
-        <Footer onNavigate={handleNavigate} language={language} />
-      )}
+      <Footer onNavigate={handleNavigate} language={language} />
 
       <CertificateModal member={certificateMember} onClose={() => setCertificateMember(null)} language={language} />
       <SocialShareModal isOpen={socialModalOpen} onClose={() => setSocialModalOpen(false)} currentPage={currentPage} property={undefined} />
       
-      {!isAdminPage && <WhatsAppWidget />}
+      <WhatsAppWidget aboveBottomBar={currentPage === 'property-detail'} />
     </div>
   );
 }

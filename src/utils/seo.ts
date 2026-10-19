@@ -21,7 +21,37 @@ export interface PageSEOMetadata {
 
 const DEFAULT_IMAGE = '/images/realtorx_engraved_wall_1790597184603.jpg';
 
+function simplePage(
+  title: string,
+  description: string,
+  canonicalPath: string,
+  schemaType: PageSEOMetadata['schemaType'] = 'WebSite'
+): () => PageSEOMetadata {
+  return () => ({
+    title,
+    description,
+    ogTitle: title,
+    ogDescription: description,
+    ogImage: DEFAULT_IMAGE,
+    ogType: 'website',
+    twitterCard: 'summary_large_image',
+    twitterTitle: title,
+    twitterDescription: description,
+    twitterImage: DEFAULT_IMAGE,
+    canonicalPath,
+    schemaType,
+  });
+}
+
 export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetadata> = {
+  'site-visit': simplePage('Request a Site Visit | Realtor X', 'Request a guided visit to a RealtorX project or property at a time that suits you.', '/site-visit', 'ContactPage'),
+  developers: simplePage('Developers | Realtor X', 'Developers whose projects are marketed by RealtorX, with currently available inventory.', '/developers', 'CollectionPage'),
+  faq: simplePage('FAQ | Realtor X', 'Answers about inquiries, site visits, bookings, payments and becoming a RealtorX dealer.', '/faq'),
+  privacy: simplePage('Privacy Notice | Realtor X', 'How RealtorX handles the information you share through this website.', '/privacy'),
+  terms: simplePage('Terms of Use | Realtor X', 'Terms for using the RealtorX website.', '/terms'),
+  'not-found': simplePage('Page Not Found | Realtor X', 'The page you are looking for does not exist.', '/'),
+  'property-details': (property?: Property) => PAGE_SEO_MAP['property-detail'](property),
+  'project-details': () => ({ ...PAGE_SEO_MAP.projects(), canonicalPath: window.location.pathname }),
   home: () => ({
     title: 'Realtor X — Real Estate. Reimagined. | Bahria Town Karachi',
     description: `${REALTORX_PHILOSOPHY_QUOTE} Bahria Town Karachi's premier community-first property marketplace with verified listings and fair 80/20 commission model.`,
@@ -50,7 +80,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Verified Bahria Town Properties | Realtor X Marketplace',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/bahria_town_karachi_1790600916751.jpg',
-    canonicalPath: '/#properties',
+    canonicalPath: '/properties',
     schemaType: 'CollectionPage',
   }),
 
@@ -67,7 +97,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
       twitterTitle: `${p.title} — ${p.priceFormatted} | Realtor X`,
       twitterDescription: `${REALTORX_PHILOSOPHY_QUOTE}`,
       twitterImage: p.images[0] || '/images/villa_bahria_luxury_1790600936792.jpg',
-      canonicalPath: `/#properties/${p.id}`,
+      canonicalPath: `/properties/${p.id}`,
       schemaType: 'RealEstateAgent',
     };
   },
@@ -83,7 +113,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Bahria Town Karachi 1 & 2 Mega Projects | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/plot_precinct_bahria_1790600998798.jpg',
-    canonicalPath: '/#projects',
+    canonicalPath: '/projects',
     schemaType: 'CollectionPage',
   }),
 
@@ -98,7 +128,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'About Realtor X — Transforming Pakistan Real Estate',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
-    canonicalPath: '/#about',
+    canonicalPath: '/about',
     schemaType: 'AboutPage',
   }),
 
@@ -113,7 +143,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Brokerage & Advisory Services | Realtor X Bahria Town',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/commercial_bahria_hub_1790600954734.jpg',
-    canonicalPath: '/#services',
+    canonicalPath: '/services',
     schemaType: 'RealEstateAgent',
   }),
 
@@ -128,7 +158,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Contact Realtor X — Bahria Town Karachi Headquarters',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/bahria_town_karachi_1790600916751.jpg',
-    canonicalPath: '/#contact',
+    canonicalPath: '/contact',
     schemaType: 'ContactPage',
   }),
 
@@ -143,7 +173,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'The RealtorX Manifesto — Why We Exist | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_engraved_wall_1790597184603.jpg',
-    canonicalPath: '/#manifesto',
+    canonicalPath: '/manifesto',
     schemaType: 'Article',
   }),
 
@@ -158,7 +188,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'The RealtorX Founding Member Oath | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
-    canonicalPath: '/#oath',
+    canonicalPath: '/oath',
     schemaType: 'RealEstateAgent',
   }),
 
@@ -173,7 +203,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'The RealtorX Code — 8 Ethical Principles | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_hub_atrium_1790597209570.jpg',
-    canonicalPath: '/#code',
+    canonicalPath: '/code',
     schemaType: 'Article',
   }),
 
@@ -188,7 +218,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Customer Portal & Allotment Vault | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/villa_bahria_luxury_1790600936792.jpg',
-    canonicalPath: '/#portal',
+    canonicalPath: '/customer',
     schemaType: 'WebSite',
   }),
 
@@ -203,7 +233,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Dealer Portal & 60% Commission Hub | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_hub_atrium_1790597209570.jpg',
-    canonicalPath: '/#dealer',
+    canonicalPath: '/dealer',
     schemaType: 'WebSite',
   }),
 
@@ -218,7 +248,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Become a Partner Dealer — 80% Split | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_founding_ceremony_1790597198456.jpg',
-    canonicalPath: '/#become-dealer',
+    canonicalPath: '/become-a-dealer',
     schemaType: 'RealEstateAgent',
   }),
 
@@ -234,7 +264,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Admin Dashboard | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: DEFAULT_IMAGE,
-    canonicalPath: '/#admin',
+    canonicalPath: '/admin',
     schemaType: 'WebSite',
   }),
   community: () => ({
@@ -248,7 +278,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Custodians Wall of Honor — Verified Members | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_engraved_wall_1790597184603.jpg',
-    canonicalPath: '/#community',
+    canonicalPath: '/community',
     schemaType: 'CollectionPage',
   }),
 
@@ -263,7 +293,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'ERPNext REST API Integration Hub | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: '/images/realtorx_hub_atrium_1790597209570.jpg',
-    canonicalPath: '/#erpnext',
+    canonicalPath: '/erpnext',
     schemaType: 'WebSite',
   }),
 
@@ -278,7 +308,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Create Account | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: DEFAULT_IMAGE,
-    canonicalPath: '/#signup',
+    canonicalPath: '/signup',
     schemaType: 'WebSite',
   }),
 
@@ -293,7 +323,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Login | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: DEFAULT_IMAGE,
-    canonicalPath: '/#login',
+    canonicalPath: '/login',
     schemaType: 'WebSite',
   }),
 
@@ -308,7 +338,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'My Profile | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: DEFAULT_IMAGE,
-    canonicalPath: '/#profile',
+    canonicalPath: '/profile',
     schemaType: 'WebSite',
   }),
 
@@ -323,7 +353,7 @@ export const PAGE_SEO_MAP: Record<PageId, (property?: Property) => PageSEOMetada
     twitterTitle: 'Become a Customer | Realtor X',
     twitterDescription: REALTORX_PHILOSOPHY_QUOTE,
     twitterImage: DEFAULT_IMAGE,
-    canonicalPath: '/#become-customer',
+    canonicalPath: '/contact',
     schemaType: 'WebSite',
   }),
 };
