@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { X, MessageCircle } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '923049383785';
-const WHATSAPP_MESSAGE = "Assalam-o-Alaikum, I'd like to know more about Realtor X properties in Bahria Town Karachi.";
+const WHATSAPP_MESSAGE = "Assalam-o-Alaikum, I'd like to know more about RealtorX.";
 
 const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' }) => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className={className} aria-hidden="true">
@@ -41,8 +41,8 @@ export const WhatsAppWidget: React.FC<{ aboveBottomBar?: boolean }> = ({ aboveBo
 
   const quickMessages = [
     { label: '💬 Property Inquiry', text: "I'd like to inquire about a property listed on Realtor X." },
-    { label: '📅 Book a Site Visit', text: "I'd like to book a guided site visit in Bahria Town Karachi." },
-    { label: '🏢 Become a Dealer', text: "I'm interested in becoming a Realtor X dealer." },
+    { label: '🤝 Membership', text: "I'm interested in becoming a RealtorX member." },
+    { label: '🏢 Developer Program', text: "I'd like to know about the RealtorX Developer Program." },
     { label: '📄 NDC / Docs Help', text: "I need help verifying plot documents / NDC status." },
   ];
 

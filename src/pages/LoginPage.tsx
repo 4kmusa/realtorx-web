@@ -5,17 +5,25 @@ import { PageId } from '../types';
 
 export const AFTER_LOGIN_KEY = 'realtorx_after_login';
 
-/** Where to send a user after sign-in: the page they were trying to reach, else their portal. */
-export function landingPageFor(user: AuthUser | null): PageId {
-  const intended = sessionStorage.getItem(AFTER_LOGIN_KEY) as PageId | null;
+type Nav = (page: PageId, id?: string) => void;
+
+/** Where to send a user after sign-in: the page they were trying to reach ("page" or
+ *  "page/id"), else their portal. */
+export function landingPageFor(user: AuthUser | null): string {
+  const intended = sessionStorage.getItem(AFTER_LOGIN_KEY);
   sessionStorage.removeItem(AFTER_LOGIN_KEY);
   if (intended) return intended;
-  if (user?.is_dealer) return 'dealer';
-  if (user?.is_customer) return 'portal';
+  if (user?.is_staff) return 'admin';
+  if (user?.member) return 'member';
   return 'home';
 }
 
-export default function LoginPage({ onNavigate }: { onNavigate: (page: PageId) => void }) {
+export function goToLanding(onNavigate: Nav, user: AuthUser | null) {
+  const [page, ...rest] = landingPageFor(user).split('/');
+  onNavigate(page as PageId, rest.join('/') || undefined);
+}
+
+export default function LoginPage({ onNavigate }: { onNavigate: Nav }) {
   const { login, refreshUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +36,7 @@ export default function LoginPage({ onNavigate }: { onNavigate: (page: PageId) =
     setSubmitting(true);
     const result = await login(email, password);
     if (result.success) {
-      onNavigate(landingPageFor(await refreshUser()));
+      goToLanding(onNavigate, await refreshUser());
     } else {
       setError(result.error || 'Invalid email or password.');
     }

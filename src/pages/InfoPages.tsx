@@ -42,49 +42,58 @@ const linkClass = 'text-[#F5A623] hover:underline';
 export function FaqPage({ onNavigate }: { onNavigate: Nav }) {
   const faqs: { q: string; a: React.ReactNode }[] = [
     {
-      q: 'How do I ask about a property?',
+      q: 'What is RealtorX?',
+      a: 'A real estate community: a verified marketplace, a membership of oath-bound professionals, a Solution Desk for problems and the RealtorX Hub where the community meets.',
+    },
+    {
+      q: 'Why are there no phone numbers on listings?',
       a: (
         <>
-          Open the property and use <em>Contact Agent</em>, or send a message from the{' '}
-          <button className={linkClass} onClick={() => onNavigate('contact')}>contact page</button>. Your request is saved
-          to our CRM with the property you were viewing, and an advisor calls you back.
+          Every listing is handled by a RealtorX member realtor. Press <em>I&apos;m interested</em> on a property and the realtor
+          calls you. This protects owners and buyers from spam and keeps every conversation accountable.
         </>
       ),
     },
     {
-      q: 'Can I book a site visit online?',
+      q: 'How do I post my property?',
       a: (
         <>
-          You can <button className={linkClass} onClick={() => onNavigate('site-visit')}>request a visit</button> with a
-          preferred date and time. It is not confirmed until our team calls you to agree the appointment.
+          <button className={linkClass} onClick={() => onNavigate('post-listing')}>Post a property</button> after signing in. RealtorX
+          checks the documents, owner identity, price, photos and location before the listing goes live, and you are told the reason if
+          changes are needed.
         </>
       ),
     },
     {
-      q: 'Is the price on the website final?',
-      a: 'Prices shown are the current list prices. The price you pay is the one recorded in your approved booking and contract.',
+      q: 'Who handles my listing?',
+      a: 'A RealtorX member realtor: one you choose from the member list, or the best available realtor in your area ("Best for me").',
     },
     {
-      q: 'Why does a unit show as reserved or disappear from the list?',
-      a: 'Inventory is updated as soon as a unit is booked, so a unit you saw earlier may already be reserved for another buyer. Ask us about similar units.',
-    },
-    {
-      q: 'How do I become a RealtorX dealer?',
+      q: 'How do I become a member?',
       a: (
         <>
-          Submit the <button className={linkClass} onClick={() => onNavigate('become-dealer')}>dealer application</button>.
-          Our team reviews it and completes verification with you (CNIC, bank details and video KYC) before dealer access is
-          activated. Commission terms are set out in your dealer agreement.
+          <button className={linkClass} onClick={() => onNavigate('join')}>Apply online</button>: choose your member type, complete your
+          profile, read the Manifesto, accept the Code and take the Oath. After verification you attend an orientation at the Hub, then
+          you receive your Member ID and digital card.
         </>
       ),
     },
     {
-      q: 'How do I access my customer portal?',
-      a: 'After your booking is recorded, our team sets up portal access for your email address. The portal shows your bookings, payment schedule and receipts.',
+      q: 'What is the Solution Desk?',
+      a: (
+        <>
+          A team that works on real estate problems: stuck investments, delayed projects, mergers, legal and documentation issues.{' '}
+          <button className={linkClass} onClick={() => onNavigate('solutions')}>Submit a problem</button> and follow its progress online.
+        </>
+      ),
     },
     {
-      q: 'How should I make payments?',
-      a: 'Use only the payment details given in your official booking documents and keep every receipt. Payments are credited to your account after our finance team verifies them.',
+      q: 'Can I book a meeting room at the Hub?',
+      a: 'Approved members can request meeting rooms, desks and developer pods from their member page. The Hub team confirms each request.',
+    },
+    {
+      q: 'Are payments taken on the website?',
+      a: 'No. Membership subscriptions and developer packages are arranged with the RealtorX Community Team.',
     },
     {
       q: 'How is my information used?',
@@ -119,38 +128,47 @@ export function PrivacyPage() {
     <Shell title="Privacy notice" intro={<DraftNotice />}>
       <Section heading="What we collect">
         <p>
-          When you send an inquiry, contact request or site-visit request we store your name, mobile number, optional email,
-          your message, the property or project you asked about, your preferred visit date and time, whether you agreed to
-          be contacted (and when), and the page and campaign link (UTM parameters) that brought you to us.
+          <b>Accounts:</b> name, email, mobile number and password (stored in hashed form).
         </p>
         <p>
-          If you create an account we store your name, email, mobile number and password (stored in hashed form). Dealer
-          applicants also provide CNIC, city and, during verification, identity documents and bank details.
+          <b>Membership applications:</b> member type, company, city, CNIC, experience, areas served, specialization, profile text, the
+          date you accepted the Manifesto, Code and Oath, and the verification documents you upload (CNIC copies and business documents,
+          stored privately).
+        </p>
+        <p>
+          <b>Listings:</b> the property details, photos and videos you submit, your contact details and the owner&apos;s details that our
+          team records during verification.
+        </p>
+        <p>
+          <b>Requests:</b> when you press &quot;I&apos;m interested&quot;, contact us, submit a Solution Desk case or register for an event, we
+          store your name, mobile number, optional email, your message, whether you agreed to be contacted, and the page and campaign link
+          (UTM parameters) that brought you to us.
         </p>
       </Section>
       <Section heading="Why we use it">
         <p>
-          To respond to your request, arrange visits, process bookings and payments, verify dealers, and understand which
-          campaigns bring us inquiries. We do not sell your information.
+          To verify members and listings, connect buyers with the realtor handling a property, work on Solution Desk cases, run the Hub and
+          events, and understand which campaigns bring people to RealtorX. We do not sell your information.
         </p>
       </Section>
       <Section heading="Who can see it">
         <p>
-          RealtorX staff who handle your request and, where a lead is assigned to a dealer, that dealer only. Customers and
-          dealers can only see their own records in the portals.
+          Phone numbers and emails are never published. RealtorX staff see what they need for their role. When you are interested in a
+          property, your details go to the RealtorX realtor handling it. The member directory shows only professional profile information.
+          Verification documents and owner details are visible to RealtorX staff only.
         </p>
       </Section>
       <Section heading="Cookies">
         <p>
-          We use a session cookie to keep you signed in and to protect forms against cross-site requests. Saved favourites
-          are stored only in your browser.
+          We use a session cookie to keep you signed in and to protect forms against cross-site requests. Map previews and videos are loaded
+          from Google Maps and YouTube when you open a listing that has them.
         </p>
       </Section>
       <Section heading="Your choices">
         <p>
           To access, correct or delete your information, email{' '}
-          <a className={linkClass} href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Records needed for contracts,
-          payments or legal obligations may have to be kept.
+          <a className={linkClass} href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Records needed for legal obligations may have to be
+          kept.
         </p>
       </Section>
     </Shell>
@@ -162,26 +180,29 @@ export function TermsPage({ onNavigate }: { onNavigate: Nav }) {
     <Shell title="Terms of use" intro={<DraftNotice />}>
       <Section heading="Listings">
         <p>
-          Property information, images and prices are provided for guidance and may change. Availability is confirmed only
-          when a booking is approved by RealtorX. Nothing on this website is an offer or a binding agreement.
+          Listings must be accurate and be for property you own or are authorised to list. RealtorX may decline, edit the status of or
+          remove any listing and will tell you why. Information, images and prices are for guidance; nothing on this website is an offer or
+          a binding agreement.
         </p>
       </Section>
-      <Section heading="Bookings and payments">
+      <Section heading="Membership">
         <p>
-          Bookings, payment plans, cancellations and refunds are governed by the booking and contract documents you sign, not
-          by this website.
+          Membership is granted after verification, orientation and the RealtorX Oath, and may be suspended for breaches of the RealtorX
+          Code. Members must not use RealtorX to bypass the realtor handling a listing.
+        </p>
+      </Section>
+      <Section heading="Solution Desk and Hub">
+        <p>
+          The Solution Desk works on a best-effort basis and does not give legal or financial advice. Hub bookings are requests until the Hub
+          team confirms them.
         </p>
       </Section>
       <Section heading="Accounts">
-        <p>
-          Keep your password private. You are responsible for activity under your account. Dealer access requires approval
-          and may be suspended in line with the dealer agreement.
-        </p>
+        <p>Keep your password private. You are responsible for activity under your account.</p>
       </Section>
       <Section heading="Questions">
         <p>
-          <button className={linkClass} onClick={() => onNavigate('contact')}>Contact us</button> with any questions about
-          these terms.
+          <button className={linkClass} onClick={() => onNavigate('contact')}>Contact us</button> with any questions about these terms.
         </p>
       </Section>
     </Shell>

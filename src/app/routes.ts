@@ -1,45 +1,61 @@
 import { PageId } from '../types';
 
-// Clean URL routing (History API). Every PageId has one canonical path; pages that
-// take an id (property, project) use "/<base>/<id>". Old "#page/id" links are
-// converted on load so existing shared links keep working.
+// Clean URL routing (History API). Every PageId has one canonical path; pages that take an id
+// use "/<base>/<id>"; portal pages keep a multi-segment section ("/member/leads/LD-1").
+// Old links from the former sales model are redirected to their new homes.
 
-const PATHS: Partial<Record<PageId, string>> = {
+const PATHS: Record<PageId, string> = {
   home: '/',
   properties: '/properties',
   'property-detail': '/properties',
   projects: '/projects',
   'project-details': '/projects',
+  'project-3d': '/projects',
+  'post-listing': '/post-listing',
+  'my-listings': '/my-listings',
+  join: '/join',
+  member: '/member',
+  members: '/members',
+  solutions: '/solutions',
+  hub: '/hub',
+  'developer-program': '/developer-program',
   about: '/about',
-  services: '/services',
-  contact: '/contact',
   manifesto: '/manifesto',
-  oath: '/oath',
-  portal: '/customer',
-  dealer: '/dealer',
-  'become-dealer': '/become-a-dealer',
+  code: '/code',
+  contact: '/contact',
   admin: '/admin',
-  community: '/community',
   signup: '/signup',
   login: '/login',
-  profile: '/profile',
-  'site-visit': '/site-visit',
-  developers: '/developers',
   faq: '/faq',
   privacy: '/privacy',
   terms: '/terms',
+  'not-found': '/404',
 };
 
 /** Pages that take an id segment, keyed by base path. */
 const ID_PAGES: Record<string, PageId> = {
   properties: 'property-detail',
   projects: 'project-details',
+  'post-listing': 'post-listing',
+  'my-listings': 'my-listings',
+  members: 'members',
 };
 
-/** Legacy page ids that now render another page. */
-const ALIASES: Partial<Record<PageId, PageId>> = {
-  'property-details': 'property-detail',
-  'become-customer': 'contact',
+/** Pages that only exist with an id and share their base path with a list page. */
+const DETAIL_ONLY: PageId[] = ['property-detail', 'project-details', 'project-3d'];
+const NESTED_PAGES: PageId[] = ['member'];
+
+/** Old paths (former sales model and earlier names) -> new page. */
+const REDIRECTS: Record<string, PageId> = {
+  'become-a-dealer': 'join',
+  oath: 'join',
+  dealer: 'member',
+  customer: 'member',
+  profile: 'member',
+  community: 'members',
+  developers: 'developer-program',
+  services: 'solutions',
+  'site-visit': 'properties',
 };
 
 export interface Route {
@@ -47,38 +63,30 @@ export interface Route {
   id: string | null;
 }
 
-export function canonicalPage(page: PageId): PageId {
-  return ALIASES[page] || page;
-}
-
-/** Portal pages keep a multi-segment section path, e.g. /customer/payments/PAY-1. */
-const NESTED_PAGES: PageId[] = ['portal', 'dealer'];
-
 export function pathFor(page: PageId, id?: string | null): string {
-  const target = canonicalPage(page);
-  const base = PATHS[target] ?? '/';
+  const base = PATHS[page] ?? '/';
+  if (page === 'project-3d' && id) return `/projects/${encodeURIComponent(id)}/3d`;
   if (!id) return base;
-  const tail = NESTED_PAGES.includes(target)
-    ? id.split('/').map(encodeURIComponent).join('/')
-    : encodeURIComponent(id);
+  const tail = NESTED_PAGES.includes(page) ? id.split('/').map(encodeURIComponent).join('/') : encodeURIComponent(id);
   return `${base.replace(/\/$/, '')}/${tail}`;
 }
 
 const BY_PATH: Record<string, PageId> = Object.fromEntries(
   Object.entries(PATHS)
-    .filter(([page]) => !Object.values(ID_PAGES).includes(page as PageId))
-    .map(([page, path]) => [path as string, page as PageId])
+    .filter(([page]) => !DETAIL_ONLY.includes(page as PageId))
+    .map(([page, path]) => [path, page as PageId])
 );
 
 export function parsePath(pathname: string): Route {
   const clean = pathname.replace(/\/+$/, '') || '/';
   if (BY_PATH[clean]) return { page: BY_PATH[clean], id: null };
   const [, base, id, ...rest] = clean.split('/');
-  // /customer/<section>[/<id>] and /dealer/<section>[/<id>] stay on the portal pages.
-  const nested = [id, ...rest].filter(Boolean).map(decodeURIComponent).join('/') || null;
-  if (base === 'customer') return { page: 'portal', id: nested };
-  if (base === 'dealer') return { page: 'dealer', id: nested };
-  if (base === 'site-visit' && id && !rest.length) return { page: 'site-visit', id: decodeURIComponent(id) };
+  if (base === 'member') {
+    const nested = [id, ...rest].filter(Boolean).map(decodeURIComponent).join('/') || null;
+    return { page: 'member', id: nested };
+  }
+  if (base === 'projects' && id && rest.length === 1 && rest[0] === '3d') return { page: 'project-3d', id: decodeURIComponent(id) };
+  if (REDIRECTS[base]) return { page: REDIRECTS[base], id: null };
   if (id && !rest.length && ID_PAGES[base]) return { page: ID_PAGES[base], id: decodeURIComponent(id) };
   return { page: 'not-found', id: null };
 }
@@ -89,7 +97,8 @@ export function parseLegacyHash(hash: string): Route | null {
   if (!raw) return null;
   const [page, id] = raw.split('/');
   if (!page) return null;
-  const known = (Object.keys(PATHS) as PageId[]).concat(Object.keys(ALIASES) as PageId[]);
-  if (!known.includes(page as PageId)) return null;
-  return { page: canonicalPage(page as PageId), id: id ? decodeURIComponent(id) : null };
+  if (REDIRECTS[page]) return { page: REDIRECTS[page], id: null };
+  if (page === 'property-details') return { page: 'property-detail', id: id ? decodeURIComponent(id) : null };
+  if (!(page in PATHS)) return null;
+  return { page: page as PageId, id: id ? decodeURIComponent(id) : null };
 }

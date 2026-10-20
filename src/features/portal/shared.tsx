@@ -1,4 +1,4 @@
-// Sections used by both portals: support tickets, notifications, account security.
+// Sections shared by the member portal: notifications and account security.
 import React, { useState } from 'react';
 import { Bell, LifeBuoy, Loader2, MessageSquare } from 'lucide-react';
 import { callPost } from '../../services/api/client';
@@ -7,195 +7,29 @@ import {
   BackLink, DataTable, DataView, Field, Notice, PrimaryButton, SectionHeader, formatDate, inputClass, useApi,
 } from './kit';
 
-interface Ticket {
-  name: string;
-  subject: string;
-  status: string;
-  priority?: string;
-  opening_date?: string;
-  modified: string;
-}
-
-interface TicketDetail {
-  ticket: Ticket & { description?: string; creation: string };
-  messages: { name: string; content: string; creation: string; from_me: boolean }[];
-}
-
-export function SupportSection({ ticketId, go }: { ticketId?: string; go: (section: string) => void }) {
-  if (ticketId) return <TicketView id={ticketId} back={() => go('support')} />;
-  return <TicketList open={(id) => go(`support/${id}`)} />;
-}
-
-function TicketList({ open }: { open: (id: string) => void }) {
-  const state = useApi<Ticket[]>('realtor_x.api.portal.my_tickets');
-  const [form, setForm] = useState({ subject: '', description: '', priority: 'Medium' });
-  const [showForm, setShowForm] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      const res = await callPost<{ ticket: string }>('realtor_x.api.portal.create_ticket', form);
-      setForm({ subject: '', description: '', priority: 'Medium' });
-      setShowForm(false);
-      open(res.ticket);
-    } catch (err: any) {
-      setError(err?.message || 'Could not create the ticket.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <>
-      <SectionHeader
-        title="Support"
-        description="Questions about your account, documents or payments. Our team replies here."
-        action={!showForm && <PrimaryButton onClick={() => setShowForm(true)}>New request</PrimaryButton>}
-      />
-      {showForm && (
-        <form onSubmit={submit} className="mb-6 space-y-3 rounded-xl border border-white/10 bg-[#0B1A30] p-4">
-          <Field label="Subject" htmlFor="t-subject">
-            <input id="t-subject" required maxLength={140} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className={inputClass} />
-          </Field>
-          <Field label="How can we help?" htmlFor="t-desc">
-            <textarea id="t-desc" required rows={4} maxLength={5000} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={`${inputClass} resize-y`} />
-          </Field>
-          <Field label="Priority" htmlFor="t-priority">
-            <select id="t-priority" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} className={inputClass}>
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
-          </Field>
-          {error && <Notice tone="error">{error}</Notice>}
-          <div className="flex gap-2">
-            <PrimaryButton type="submit" busy={busy}>
-              {busy && <Loader2 className="h-4 w-4 animate-spin" />} Submit
-            </PrimaryButton>
-            <button type="button" onClick={() => setShowForm(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300 hover:bg-white/5">
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
-      <DataView
-        state={state}
-        isEmpty={(rows) => rows.length === 0}
-        empty={{ icon: LifeBuoy, title: 'No support requests', description: 'Requests you open will appear here with our replies.' }}
-      >
-        {(rows) => (
-          <DataTable
-            rows={rows}
-            rowKey={(r) => r.name}
-            onRowClick={(r) => open(r.name)}
-            columns={[
-              { header: 'Reference', cell: (r) => <span className="font-mono text-xs">{r.name}</span> },
-              { header: 'Subject', cell: (r) => r.subject },
-              { header: 'Status', cell: (r) => <StatusBadge status={r.status} /> },
-              { header: 'Updated', cell: (r) => formatDate(r.modified) },
-            ]}
-          />
-        )}
-      </DataView>
-    </>
-  );
-}
-
-function TicketView({ id, back }: { id: string; back: () => void }) {
-  const state = useApi<TicketDetail>('realtor_x.api.portal.my_ticket', { name: id }, id);
-  const [message, setMessage] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-
-  const reply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      state.setData(await callPost<TicketDetail>('realtor_x.api.portal.reply_ticket', { name: id, message }));
-      setMessage('');
-    } catch (err: any) {
-      setError(err?.message || 'Could not send your reply.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <>
-      <BackLink onClick={back}>All requests</BackLink>
-      <DataView state={state}>
-        {({ ticket, messages }) => (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-white/10 bg-[#0B1A30] p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-lg font-semibold text-white">{ticket.subject}</h2>
-                <StatusBadge status={ticket.status} />
-              </div>
-              <p className="mt-1 text-xs text-slate-500">
-                {ticket.name} · opened {formatDate(ticket.creation)}
-              </p>
-              {ticket.description && (
-                <div className="mt-3 whitespace-pre-line text-sm text-slate-300">{ticket.description.replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '')}</div>
-              )}
-            </div>
-            {messages.length === 0 && <p className="text-sm text-slate-500">No replies yet.</p>}
-            {messages.map((m) => (
-              <div
-                key={m.name}
-                className={`rounded-xl border p-3 text-sm ${m.from_me ? 'ml-8 border-[#F5A623]/20 bg-[#F5A623]/5' : 'mr-8 border-white/10 bg-[#0B1A30]'}`}
-              >
-                <p className="mb-1 text-xs text-slate-500">
-                  {m.from_me ? 'You' : 'RealtorX'} · {formatDate(m.creation)}
-                </p>
-                <p className="whitespace-pre-line text-slate-200">{m.content}</p>
-              </div>
-            ))}
-            {ticket.status !== 'Closed' ? (
-              <form onSubmit={reply} className="space-y-2">
-                <label htmlFor="t-reply" className="sr-only">Reply</label>
-                <textarea id="t-reply" required rows={3} value={message} onChange={(e) => setMessage(e.target.value)} className={inputClass} placeholder="Write a reply…" />
-                {error && <Notice tone="error">{error}</Notice>}
-                <PrimaryButton type="submit" busy={busy}>
-                  <MessageSquare className="h-4 w-4" /> Send reply
-                </PrimaryButton>
-              </form>
-            ) : (
-              <Notice>This request is closed. Open a new one if you need more help.</Notice>
-            )}
-          </div>
-        )}
-      </DataView>
-    </>
-  );
-}
-
 interface NotificationRow {
   name: string;
   subject: string;
-  type?: string;
-  link?: string;
+  type: string;
+  document_type: string | null;
+  document_name: string | null;
+  link: string | null;
   read: number;
   creation: string;
 }
 
-/** Unread count for the portal navigation badge; refreshes when `key` changes. */
 export function useUnreadCount(key: string): number {
-  const state = useApi<NotificationRow[]>('realtor_x.api.portal.my_notifications', undefined, key);
+  const state = useApi<NotificationRow[]>('realtor_x.api.account.my_notifications', undefined, key);
   return state.data?.filter((n) => !n.read).length || 0;
 }
 
 export function NotificationsSection({ openLink }: { openLink: (link: string) => void }) {
-  const state = useApi<NotificationRow[]>('realtor_x.api.portal.my_notifications');
+  const state = useApi<NotificationRow[]>('realtor_x.api.account.my_notifications');
   const [busy, setBusy] = useState(false);
   const markAll = async () => {
     setBusy(true);
     try {
-      await callPost('realtor_x.api.portal.mark_notifications_read');
+      await callPost('realtor_x.api.account.mark_notifications_read');
       state.reload();
     } finally {
       setBusy(false);
@@ -212,7 +46,7 @@ export function NotificationsSection({ openLink }: { openLink: (link: string) =>
       <DataView
         state={state}
         isEmpty={(rows) => rows.length === 0}
-        empty={{ icon: Bell, title: 'No notifications yet', description: 'You will see updates about bookings, payments and support here.' }}
+        empty={{ icon: Bell, title: 'No notifications yet', description: 'Membership updates, buyer leads, listing reviews, case updates and Hub bookings appear here.' }}
       >
         {(rows) => (
           <ul className="divide-y divide-white/5 rounded-xl border border-white/10 bg-[#0B1A30]">
@@ -220,7 +54,7 @@ export function NotificationsSection({ openLink }: { openLink: (link: string) =>
               <li key={n.name}>
                 <button
                   onClick={async () => {
-                    if (!n.read) await callPost('realtor_x.api.portal.mark_notifications_read', { names: JSON.stringify([n.name]) }).catch(() => undefined);
+                    if (!n.read) await callPost('realtor_x.api.account.mark_notifications_read', { names: JSON.stringify([n.name]) }).catch(() => undefined);
                     if (n.link) openLink(n.link);
                     else state.reload();
                   }}
@@ -272,7 +106,7 @@ export function SecuritySection({ email }: { email: string }) {
     setBusy(true);
     setResult(null);
     try {
-      await callPost('realtor_x.api.portal.logout_other_sessions');
+      await callPost('realtor_x.api.account.logout_other_sessions');
       setResult({ tone: 'success', text: 'All other sessions have been signed out.' });
     } catch (err: any) {
       setResult({ tone: 'error', text: err?.message || 'Could not sign out other sessions.' });

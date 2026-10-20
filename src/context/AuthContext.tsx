@@ -15,10 +15,20 @@ export interface AuthUser {
   phone?: string;
   user_image?: string;
   roles: string[];
-  is_customer: boolean;
-  is_dealer: boolean;
   is_staff: boolean;
-  is_website_user: boolean;
+  /** ERPNext back office address (site config `realtorx_desk_url`), when configured. */
+  desk_url: string | null;
+  /** RealtorX membership as reported by the server (null when the user never applied). */
+  member: MemberSummary | null;
+}
+
+export interface MemberSummary {
+  status: string;
+  member_type: string;
+  member_id: string | null;
+  is_approved: boolean;
+  is_realtor: boolean;
+  is_developer: boolean;
 }
 
 interface SignupData {
@@ -38,8 +48,6 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<Result>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<AuthUser | null>;
-  /** @deprecated Roles are granted by the server; this now just re-reads the session. */
-  updateUserRole: (role: string) => void;
 }
 
 interface SessionInfo {
@@ -52,8 +60,8 @@ interface SessionInfo {
   user_image?: string;
   roles?: string[];
   is_staff?: boolean;
-  is_customer?: boolean;
-  is_dealer?: boolean;
+  member?: MemberSummary | null;
+  desk_url?: string | null;
   csrf_token?: string;
 }
 
@@ -69,10 +77,9 @@ function toAuthUser(info: SessionInfo): AuthUser {
     phone: info.phone || '',
     user_image: info.user_image || '',
     roles,
-    is_customer: !!info.is_customer,
-    is_dealer: !!info.is_dealer,
     is_staff: !!info.is_staff,
-    is_website_user: roles.includes('Website User'),
+    member: info.member || null,
+    desk_url: info.desk_url || null,
   };
 }
 
@@ -125,7 +132,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch {
       /* session may already be gone */
     }
-    sessionStorage.removeItem('realtorx_dealer_flow');
     setUser(null);
   };
 
@@ -149,9 +155,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         logout,
         refreshUser,
-        updateUserRole: () => {
-          void refreshUser();
-        },
       }}
     >
       {children}

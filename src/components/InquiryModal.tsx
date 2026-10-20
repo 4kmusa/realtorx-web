@@ -30,9 +30,13 @@ const PK_MOBILE = /^0?3\d{9}$/;
 
 export default function InquiryModal({
   propertyId,
+  propertyTitle,
+  realtorName,
   onClose,
 }: {
   propertyId: string;
+  propertyTitle?: string;
+  realtorName?: string | null;
   onClose: () => void;
 }) {
   const [formData, setFormData] = useState<FormData>({
@@ -126,10 +130,16 @@ export default function InquiryModal({
         <div className="flex items-center justify-between border-b border-white/10 bg-[#081221] p-6">
           <div>
             <h2 id="inquiry-title" className="text-xl font-bold text-white">
-              Contact Agent
+              I&apos;m interested
             </h2>
             <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-400">
-              <Hash className="h-3 w-3" /> {propertyId}
+              <Hash className="h-3 w-3" /> {propertyTitle || propertyId}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-slate-400">
+              {realtorName
+                ? `Your details go to ${realtorName}, the RealtorX realtor for this property, who will call you back.`
+                : 'Your details go to the RealtorX realtor for this property, who will call you back.'}{' '}
+              Phone numbers are never shown publicly.
             </p>
           </div>
           <button

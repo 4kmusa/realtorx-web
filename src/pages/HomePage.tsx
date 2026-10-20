@@ -1,1044 +1,252 @@
-// src/pages/HomePage.tsx
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { PageId, Language } from '../types';
-import { BRAND_TAGLINES, HOW_IT_WORKS_STEPS, TESTIMONIALS } from '../data/mockProperties';
-import { fetchProperties, fetchDealers, Property, Dealer } from '../services/propertyService';
+// Home (/): the RealtorX community at a glance. Every number shown comes from the live system.
+import React, { useEffect, useState } from 'react';
 import {
-  Search,
-  MapPin,
-  Building,
-  Bed,
-  Bath,
-  ArrowRight,
-  ShieldCheck,
-  Users,
-  Percent,
-  Award,
-  CheckCircle2,
-  ChevronRight,
-  Heart,
-  Star,
-  BadgeCheck,
-  Compass,
-  Zap,
-  TrendingUp,
-  BookOpen,
+  ArrowRight, BadgeCheck, Building2, CalendarDays, ClipboardCheck, CreditCard, Handshake, LifeBuoy, MapPin, Search, ShieldCheck, UserPlus, Users,
 } from 'lucide-react';
-import { AnimatedNumber } from '../components/AnimatedNumber';
+import { PageId, Language } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { callGet } from '../services/api/client';
+import InquiryModal from '../components/InquiryModal';
+import { ListingCard } from '../features/marketplace/MarketplacePage';
+import { PublicListing, searchListings } from '../features/marketplace/api';
+import { HubEvent, formatWhen } from '../features/community/HubPage';
+import { PHILOSOPHY } from '../features/membership/content';
 
-interface HomePageProps {
-  onNavigate: (page: PageId, extraId?: string) => void;
-  language: Language;
-}
+type Nav = (page: PageId, id?: string) => void;
 
-// ═══════════════════════════════════════════════════════
-// Scroll Reveal Hook
-// ═══════════════════════════════════════════════════════
-function useScrollReveal(deps: React.DependencyList = []) {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
-    );
+const PILLARS: { icon: React.ElementType; title: string; text: string; page: PageId; cta: string }[] = [
+  { icon: Building2, title: 'Marketplace', text: 'Verified listings for sale and rent. No phone numbers on show: every buyer is handled by a RealtorX member realtor.', page: 'properties', cta: 'Browse properties' },
+  { icon: Users, title: 'Membership', text: 'Realtors, agencies, developers, investors and solution partners, verified and bound by the RealtorX Oath.', page: 'join', cta: 'Become a member' },
+  { icon: LifeBuoy, title: 'Solution Desk', text: 'Stuck investment, delayed project, merger or legal problem? A case manager takes it from submission to resolution.', page: 'solutions', cta: 'Submit a problem' },
+  { icon: CalendarDays, title: 'RealtorX Hub', text: 'Meeting rooms, desks and developer pods for members, plus orientations, trainings and networking events.', page: 'hub', cta: 'See the Hub' },
+];
 
-    const checkAndObserve = () => {
-      document.querySelectorAll('.scroll-reveal:not(.is-visible)').forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const inView = rect.top < window.innerHeight && rect.bottom > 0;
-        if (inView) el.classList.add('is-visible');
-        else observer.observe(el);
-      });
-    };
+const JOURNEY: { icon: React.ElementType; title: string; text: string }[] = [
+  { icon: UserPlus, title: 'Apply', text: 'Tell us who you are: realtor, agency, developer, investor or partner.' },
+  { icon: ClipboardCheck, title: 'Verification', text: 'The Community Team checks your identity and profile.' },
+  { icon: Users, title: 'Orientation', text: 'Attend an orientation at the RealtorX Hub.' },
+  { icon: ShieldCheck, title: 'The Oath', text: 'Read the Manifesto, accept the Code and take the Oath.' },
+  { icon: CreditCard, title: 'Member ID', text: 'Receive your digital member card and community access.' },
+];
 
-    checkAndObserve();
-
-    const mutationObserver = new MutationObserver(() => checkAndObserve());
-    mutationObserver.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      observer.disconnect();
-      mutationObserver.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-}
-
-// ═══════════════════════════════════════════════════════
-// Animated counter
-// ═══════════════════════════════════════════════════════
-
-export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
-  const [selectedType, setSelectedType] = useState<string>('All');
-  const [selectedProject, setSelectedProject] = useState<string>('All');
-  const [budgetRange, setBudgetRange] = useState<string>('All');
-
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [dealers, setDealers] = useState<Dealer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const featuredRef = useRef<HTMLElement>(null);
-
-  useScrollReveal([properties.length, dealers.length, loading]);
+export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language }) {
+  const { user } = useAuth();
+  const [purpose, setPurpose] = useState('Sell');
+  const [location, setLocation] = useState('');
+  const [latest, setLatest] = useState<PublicListing[]>([]);
+  const [totals, setTotals] = useState<{ listings: number | null; members: number | null }>({ listings: null, members: null });
+  const [events, setEvents] = useState<HubEvent[]>([]);
+  const [interest, setInterest] = useState<PublicListing | null>(null);
 
   useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [props, dealerList] = await Promise.all([fetchProperties(), fetchDealers()]);
-        setProperties(props);
-        setDealers(dealerList);
-        if (props.length === 0) {
-          setError('No properties available yet. Please check back soon.');
-        }
-      } catch (err) {
-        setError('Unable to load properties. Please try again later.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
+    searchListings({ sort: 'newest' })
+      .then((r) => {
+        setLatest(r.items.slice(0, 6));
+        setTotals((t) => ({ ...t, listings: r.total }));
+      })
+      .catch(() => setLatest([]));
+    callGet<unknown[]>('realtor_x.api.v1.get_public_members')
+      .then((rows) => setTotals((t) => ({ ...t, members: rows?.length ?? 0 })))
+      .catch(() => undefined);
+    callGet<HubEvent[]>('realtor_x.api.community.get_events').then((e) => setEvents((e || []).slice(0, 3))).catch(() => setEvents([]));
   }, []);
 
-  const filteredProperties = useMemo(() => {
-    return properties.filter((p) => {
-      if (selectedType !== 'All') {
-        const catMap: Record<string, string> = {
-          'Residential Plot': 'Residential Plot',
-          'Commercial Plot': 'Commercial Plot',
-          House: 'House',
-          Flat: 'Apartment',
-          Shop: 'Commercial Shop',
-        };
-        const target = catMap[selectedType];
-        if (target && p.category !== target) return false;
-      }
-      if (selectedProject !== 'All') {
-        const haystack = `${p.precinct || ''} ${p.title || ''} ${p.project || ''}`.toUpperCase();
-        if (!haystack.includes(selectedProject.toUpperCase())) return false;
-      }
-      if (budgetRange !== 'All') {
-        const price = p.pricePkr || 0;
-        if (budgetRange === 'under-50-lakh' && price >= 5000000) return false;
-        if (budgetRange === '50-to-1-crore' && (price < 5000000 || price >= 10000000)) return false;
-        if (budgetRange === '1-to-3-crore' && (price < 10000000 || price >= 30000000)) return false;
-        if (budgetRange === 'above-3-crore' && price < 30000000) return false;
-      }
-      return true;
-    });
-  }, [properties, selectedType, selectedProject, budgetRange]);
-
-  const hasActiveFilters =
-    selectedType !== 'All' || selectedProject !== 'All' || budgetRange !== 'All';
-
-  const resetFilters = () => {
-    setSelectedType('All');
-    setSelectedProject('All');
-    setBudgetRange('All');
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const search = (e: React.FormEvent) => {
     e.preventDefault();
-    featuredRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const params = new URLSearchParams({ purpose });
+    if (location.trim()) params.set('location', location.trim());
+    window.history.pushState(null, '', `/properties?${params.toString()}`);
+    onNavigate('properties');
   };
-
 
   return (
-    <div className="space-y-12 sm:space-y-16 lg:space-y-20">
+    <div className="bg-[#0B1A30]">
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <img src="/images/realtorx_hub_atrium_1790597209570.webp" alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B1A30]/60 via-[#0B1A30]/80 to-[#0B1A30]" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-20 sm:px-6 lg:px-8 lg:pt-28">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F5A623]">RealtorX · Connect. Collaborate. Grow.</p>
+          <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
+            The real estate community built on trust.
+          </h1>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300">
+            A verified marketplace, a community of oath-bound professionals, a desk that solves problems and a Hub where it all meets.
+          </p>
 
-      {/* ═══════════════════════════════════════════════════
-          1. HERO
-         ═══════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden min-h-[600px] lg:min-h-[680px] flex items-center">
-        {/* ── Background image ── */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/images/bahria_town_karachi_1790600916751.webp"
-            alt="Bahria Town Karachi"
-            className="w-full h-full object-cover"
-            loading="eager"
-          />
-          {/* Dark overlay for text readability */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(180deg, rgba(11, 26, 48, 0.85) 0%, rgba(11, 26, 48, 0.75) 40%, rgba(11, 26, 48, 0.92) 100%)',
-            }}
-          />
-          {/* Subtle orange glow at top */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
-            }}
-          />
-        </div>
-
-        {/* ── Content ── */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-16 lg:py-20">
-
-          {/* Headline */}
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold tracking-[-0.03em] text-white leading-[1.05] font-heading drop-shadow-2xl">
-              Real Estate.{' '}
-              <span className="text-[#F5A623]">Reimagined.</span>
-            </h1>
-
-            <p className="mt-5 text-base sm:text-lg text-slate-200 max-w-xl mx-auto leading-relaxed">
-              Connect with verified dealers, explore real properties, and invest with complete trust in Bahria Town Karachi.
-            </p>
-
-            <div className="mt-4 font-urdu text-lg text-[#F5A623]">
-              {BRAND_TAGLINES.urduTagline}
-            </div>
-          </div>
-
-          {/* Search pill */}
-          <div className="max-w-3xl mx-auto">
-            <form
-              onSubmit={handleSearchSubmit}
-              className="flex flex-col sm:flex-row items-stretch gap-1.5 p-1.5 rounded-2xl bg-[#0B1A30]/95 backdrop-blur-xl border border-white/[0.12] shadow-2xl shadow-black/50"
-            >
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors w-full"
-              >
-                <option value="All" className="bg-[#0B1A30]">All Categories</option>
-                <option value="Residential Plot" className="bg-[#0B1A30]">Residential Plots</option>
-                <option value="Commercial Plot" className="bg-[#0B1A30]">Commercial Plots</option>
-                <option value="House" className="bg-[#0B1A30]">Houses</option>
-                <option value="Flat" className="bg-[#0B1A30]">Apartments</option>
-                <option value="Shop" className="bg-[#0B1A30]">Commercial Shops</option>
-              </select>
-
-              <div className="hidden sm:block w-px my-2.5 bg-white/[0.12]" />
-
-              <select
-                value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors w-full"
-              >
-                <option value="All" className="bg-[#0B1A30]">All Projects</option>
-                <option value="BTK-1" className="bg-[#0B1A30]">Bahria Town Karachi</option>
-                <option value="BTK-2" className="bg-[#0B1A30]">Bahria Town Karachi 2</option>
-                <option value="Bahria Heights" className="bg-[#0B1A30]">Bahria Heights</option>
-                <option value="Jinnah Avenue" className="bg-[#0B1A30]">Jinnah Avenue</option>
-              </select>
-
-              <div className="hidden sm:block w-px my-2.5 bg-white/[0.12]" />
-
-              <select
-                value={budgetRange}
-                onChange={(e) => setBudgetRange(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-transparent text-sm text-white focus:outline-none cursor-pointer rounded-xl hover:bg-white/[0.05] transition-colors w-full"
-              >
-                <option value="All" className="bg-[#0B1A30]">Any Price</option>
-                <option value="under-50-lakh" className="bg-[#0B1A30]">Under 50 Lakh</option>
-                <option value="50-to-1-crore" className="bg-[#0B1A30]">50 Lakh – 1 Crore</option>
-                <option value="1-to-3-crore" className="bg-[#0B1A30]">1 – 3 Crore</option>
-                <option value="above-3-crore" className="bg-[#0B1A30]">3 Crore +</option>
-              </select>
-
-              <button
-                type="submit"
-                className="shrink-0 px-5 py-3 rounded-xl bg-[#F5A623] hover:bg-[#E59615] text-[#0B1A30] font-semibold text-sm transition-colors flex items-center justify-center gap-2 sm:w-auto w-full"
-              >
-                <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">Search</span>
-              </button>
-            </form>
-
-            {/* Meta row */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
-                <span>100% Verified plots & NDC status</span>
-              </span>
-              <span className="w-px h-3 bg-slate-500" />
-              <button
-                onClick={() => onNavigate('become-dealer')}
-                type="button"
-                className="text-[#F5A623] hover:text-[#E59615] font-medium inline-flex items-center gap-1 group transition-colors"
-              >
-                <span>Earn 80% commission</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+          <form onSubmit={search} className="mt-8 max-w-3xl rounded-2xl border border-white/10 bg-[#081221]/90 p-3 shadow-2xl backdrop-blur">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex shrink-0 rounded-xl bg-white/5 p-1" role="tablist" aria-label="Purpose">
+                {[['Sell', 'Buy'], ['Rent', 'Rent']].map(([value, label]) => (
+                  <button key={value} type="button" role="tab" aria-selected={purpose === value} onClick={() => setPurpose(value)}
+                    className={`rounded-lg px-4 py-2 text-sm font-semibold ${purpose === value ? 'bg-[#F5A623] text-slate-950' : 'text-slate-300'}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="relative flex-1">
+                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <label htmlFor="home-location" className="sr-only">Location</label>
+                <input id="home-location" value={location} onChange={(e) => setLocation(e.target.value)} maxLength={140}
+                  placeholder="City, area or project"
+                  className="w-full rounded-xl border border-white/10 bg-[#0B1A30] py-3 pl-9 pr-3 text-sm text-white placeholder-slate-500 focus:border-[#F5A623]/60 focus:outline-none" />
+              </div>
+              <button type="submit" className="flex items-center justify-center gap-2 rounded-xl bg-[#F5A623] px-6 py-3 text-sm font-bold text-slate-950 hover:brightness-110">
+                <Search className="h-4 w-4" /> Search
               </button>
             </div>
-          </div>
+          </form>
 
-          {/* CTAs */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={() => onNavigate('properties')}
-              className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-white/10 hover:bg-white/[0.16] border border-white/[0.15] hover:border-white/[0.25] backdrop-blur-md transition-all flex items-center gap-2"
-            >
-              <Compass className="w-4 h-4" />
-              <span>Explore Properties</span>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button onClick={() => onNavigate(user?.member ? 'member' : 'join')} className="flex items-center gap-2 rounded-xl border border-[#F5A623]/50 bg-[#F5A623]/10 px-5 py-3 text-sm font-semibold text-[#F5A623] hover:bg-[#F5A623]/20">
+              {user?.member ? 'My membership' : 'Join RealtorX'} <ArrowRight className="h-4 w-4" />
             </button>
-
-            <button
-              onClick={() => onNavigate('become-dealer')}
-              className="px-6 py-3 rounded-xl text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] transition-colors shadow-lg shadow-[#F5A623]/30 flex items-center gap-2"
-            >
-              <Award className="w-4 h-4" />
-              <span>Become a Dealer</span>
+            <button onClick={() => onNavigate('post-listing')} className="rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/5">
+              Post your property
             </button>
           </div>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════
-          2. PHILOSOPHY BANNER
-         ═══════════════════════════════════════════════════ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
-        <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/30">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
-          <div
-            className="absolute inset-0 pointer-events-none opacity-60"
-            style={{
-              background:
-                'radial-gradient(ellipse at 30% 20%, rgba(36, 144, 239, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(245, 166, 35, 0.10) 0%, transparent 50%)',
-            }}
-          />
-          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F5A623]/50 to-transparent" />
-
-          <div className="relative p-8 sm:p-12 lg:p-14 text-center">
-            <div className="inline-flex items-center gap-3 mb-5">
-                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-xs font-semibold tracking-wide text-[#F5A623]">The Heart of Realtor X</span>
-              </div>
-
-            <blockquote className="text-xl sm:text-2xl lg:text-3xl font-heading italic text-white max-w-4xl mx-auto leading-[1.25] tracking-[-0.01em] text-balance">
-              "{BRAND_TAGLINES.philosophy}"
-            </blockquote>
-
-            <div className="mt-6 font-urdu text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-loose">
-              {BRAND_TAGLINES.philosophyUrdu}
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-slate-500">
-              <span className="text-[#94A3B8] font-semibold">CONNECT.</span>
-              <span className="text-slate-600">·</span>
-              <span className="text-[#94A3B8] font-semibold">COLLABORATE.</span>
-              <span className="text-slate-600">·</span>
-              <span className="text-[#F5A623] font-semibold">GROW.</span>
-              <span className="text-slate-600 hidden sm:inline">|</span>
-              <button
-                onClick={() => onNavigate('manifesto')}
-                className="text-[#F5A623] hover:text-[#F5A623] flex items-center gap-1.5 font-semibold group"
-              >
-                <span>Read The Manifesto</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          3. FEATURED PROPERTIES
-         ═══════════════════════════════════════════════════ */}
-      <section ref={featuredRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-3">
-              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-              <span>Prime Inventory</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-              {hasActiveFilters ? 'Matching Properties' : 'Featured Properties'}
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 mt-3 leading-relaxed">
-              {hasActiveFilters
-                ? `${filteredProperties.length} properties match your filters`
-                : 'Hand-picked verified villas, commercial shops, plots, and apartments ready for immediate transfer.'}
-            </p>
-          </div>
-
-          <button
-            onClick={() => onNavigate('properties')}
-            className="text-xs sm:text-sm font-semibold text-[#94A3B8] hover:text-white flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl border border-[#94A3B8]/30 hover:border-[#F5A623] hover:bg-[#E59615]/10 transition-all group whitespace-nowrap"
-          >
-            <span>View All</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-slate-900/70 border border-slate-800 rounded-3xl overflow-hidden animate-pulse"
-              >
-                <div className="h-56 w-full bg-slate-800/50" />
-                <div className="p-6 space-y-3">
-                  <div className="h-5 bg-slate-800/60 rounded w-3/4" />
-                  <div className="h-4 bg-slate-800/40 rounded w-1/2" />
-                  <div className="h-4 bg-slate-800/40 rounded w-2/3" />
-                </div>
-              </div>
-            ))
-          ) : properties.length === 0 ? (
-            <div className="col-span-full text-center py-20 bg-slate-900/40 border border-slate-800 rounded-3xl">
-              <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center">
-                <Building className="w-9 h-9 text-slate-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">Properties Coming Soon</h3>
-              <p className="text-sm text-slate-400 max-w-md mx-auto mb-7">
-                {error || 'Our verified Bahria Town properties will be listed here soon.'}
-              </p>
-              <button
-                onClick={() => onNavigate('contact')}
-                className="px-6 py-3 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-xl transition-all shadow-lg shadow-[#F5A623]/25"
-              >
-                Contact Us for Details
-              </button>
-            </div>
-          ) : filteredProperties.length === 0 ? (
-            <div className="col-span-full text-center py-20 bg-slate-900/40 border border-slate-800 rounded-3xl">
-              <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center">
-                <Search className="w-9 h-9 text-slate-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No Properties Match</h3>
-              <p className="text-sm text-slate-400 max-w-md mx-auto mb-7">
-                Try changing the filter selections or reset to see all properties.
-              </p>
-              <button
-                onClick={resetFilters}
-                className="px-6 py-3 text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] rounded-xl transition-all shadow-lg shadow-[#F5A623]/25"
-              >
-                Reset Filters
-              </button>
-            </div>
-          ) : (
-            filteredProperties.slice(0, 6).map((property, idx) => (
-              <div
-                key={property.id}
-                className="group bg-gradient-to-b from-slate-900/70 to-slate-900/50 border border-white/[0.06] hover:border-[#F5A623]/50 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-[#94A3B8]/10 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
-                style={{ animationDelay: `${idx * 60}ms` }}
-              >
-                <div>
-                  <div className="relative h-32 sm:h-48 lg:h-60 w-full overflow-hidden">
-                    <img
-                      src={property.images[0]}
-                      alt={property.title}
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-[900ms] ease-out-expo brightness-95"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-
-                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
-                      <span className="px-1.5 py-0.5 sm:px-3 sm:py-1 rounded sm:rounded-lg text-[8px] sm:text-[10px] font-bold uppercase tracking-wide bg-[#F5A623] text-[#0B1A30] shadow-lg shadow-[#F5A623]/30">
-                        {property.category}
-                      </span>
-                      {property.status === 'Hot Deal' && (
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#F5A623] text-slate-950 shadow-lg">
-                          <Zap className="w-2.5 h-2.5" />
-                          Hot Deal
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 flex items-end justify-between text-white gap-1.5 sm:gap-2">
-                      <span className="text-sm sm:text-lg lg:text-xl font-bold text-[#F5A623] truncate">
-                        {property.priceFormatted}
-                      </span>
-                      <span className="hidden sm:inline-block text-[9px] sm:text-[11px] bg-slate-950/85 backdrop-blur-md border border-white/10 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg font-medium shrink-0">
-                        {property.size} {property.sizeUnit}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-3">
-                    <h3 className="font-heading font-bold text-sm sm:text-base lg:text-lg text-white group-hover:text-[#F5A623] transition-colors leading-tight sm:leading-snug line-clamp-2 sm:min-h-[3rem]">
-                      {property.title}
-                    </h3>
-
-                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-slate-400">
-                      <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#F5A623] shrink-0" />
-                      <span className="truncate">
-                        {property.precinct || 'Bahria Town Karachi'}
-                      </span>
-                    </div>
-
-                    {property.bedrooms || property.bathrooms ? (
-                      <div className="flex items-center gap-4 text-xs text-slate-300 pt-1">
-                        {property.bedrooms ? (
-                          <span className="flex items-center gap-1.5">
-                            <Bed className="w-3.5 h-3.5 text-slate-500" />
-                            {property.bedrooms} Beds
-                          </span>
-                        ) : null}
-                        {property.bathrooms ? (
-                          <span className="flex items-center gap-1.5">
-                            <Bath className="w-3.5 h-3.5 text-slate-500" />
-                            {property.bathrooms} Baths
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : property.ownership ? (
-                      <div className="flex items-center gap-2 text-xs text-slate-400">
-                        <span className="text-[11px] font-medium">{property.ownership}</span>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="p-3 sm:p-5 pt-0 sm:pt-0">
-                  <div className="border-t border-white/[0.06] pt-2 sm:pt-4 flex items-center justify-between gap-1.5 sm:gap-3">
-                    <div className="text-[11px] text-slate-500 truncate min-w-0">
-                      {property.listing_type ? (
-                        <span className="text-[#F5A623] font-semibold">
-                          {property.listing_type}
-                        </span>
-                      ) : (
-                        <span>{property.erpCode}</span>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => onNavigate('property-detail', property.erpCode)}
-                      className="px-4 py-2 text-xs font-bold text-white bg-white/[0.06] hover:bg-[#E59615] border border-white/[0.08] hover:border-[#F5A623] rounded-xl transition-all flex items-center gap-1.5 shrink-0 group/btn"
-                    >
-                      <span>Details</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
+          {(totals.listings !== null || totals.members !== null) && (
+            <dl className="mt-12 grid max-w-xl grid-cols-2 gap-6">
+              {totals.listings !== null && (
+                <div><dt className="text-xs uppercase tracking-wider text-slate-400">Verified listings</dt><dd className="mt-1 text-3xl font-bold text-white">{totals.listings}</dd></div>
+              )}
+              {totals.members !== null && (
+                <div><dt className="text-xs uppercase tracking-wider text-slate-400">Oath-bound members</dt><dd className="mt-1 text-3xl font-bold text-white">{totals.members}</dd></div>
+              )}
+            </dl>
           )}
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          4. WHY REALTOR X
-         ═══════════════════════════════════════════════════ */}
-      <section className="relative bg-[#0B1A30] py-16 sm:py-20 border-y border-white/[0.06] overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none opacity-40"
-          style={{
-            background:
-              'radial-gradient(ellipse at 50% 0%, rgba(36, 144, 239, 0.08) 0%, transparent 60%)',
-          }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12 scroll-reveal">
-            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
-              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-              <span>The Realtor X Difference</span>
-              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-              Why Homeowners &amp; Dealers Choose Us
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed max-w-2xl mx-auto">
-              Transforming the real estate transaction into a transparent, collaborative, and
-              dignified experience.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            {[
-              {
-                icon: ShieldCheck,
-                title: 'Verified Listings',
-                desc: 'Zero fake ads or disputed files. Every plot, villa, and shop is audited with Bahria Town transfer office records.',
-              },
-              {
-                icon: Users,
-                title: 'Trusted Dealers',
-                desc: 'Our dealers take the Realtor X Founding Oath, committing to absolute honesty and client-first service.',
-              },
-              {
-                icon: Percent,
-                title: 'Fair 80/20 Split',
-                desc: 'We empower realtors with 80% commission split to the closing agent, creating a supportive fraternity.',
-              },
-              {
-                icon: Award,
-                title: 'Community First',
-                desc: 'Dedicated allottee advocacy desk. We resolve construction delays and transfer bottlenecks together.',
-              },
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={idx}
-                  className="group p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500 hover:-translate-y-1 shadow-lg hover:shadow-2xl scroll-reveal"
-                  style={{ animationDelay: `${idx * 80}ms` }}
-                >
-                  <div className="w-14 h-14 rounded-2xl bg-[#94A3B8]/[0.12] border border-[#94A3B8]/25 flex items-center justify-center mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                    <Icon className="w-6 h-6 text-[#94A3B8]" />
-                  </div>
-                  <h3 className="font-heading font-bold text-lg text-white mb-2.5">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          5. STATS BAR
-         ═══════════════════════════════════════════════════ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
-        <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/30">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-slate-900 to-[#0B1A30]" />
-          <div
-            className="absolute inset-0 opacity-50"
-            style={{
-              background:
-                'radial-gradient(ellipse at 20% 50%, rgba(36, 144, 239, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 50%)',
-            }}
-          />
-
-          <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-8 p-10 sm:p-12 text-center">
-            <div>
-              <div className="text-4xl sm:text-5xl font-extrabold text-[#F5A623] font-heading tabular-nums">
-                {properties.length > 0 ? <><AnimatedNumber value={properties.length} />+</> : '0'}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
-                Verified Listings
-              </div>
-            </div>
-
-            <div>
-              <div className="text-4xl sm:text-5xl font-extrabold text-[#F5A623] font-heading tabular-nums">
-                {dealers.length > 0 ? <><AnimatedNumber value={dealers.length} />+</> : '—'}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
-                Registered Dealers
-              </div>
-            </div>
-
-            <div>
-              <div className="text-4xl sm:text-5xl font-extrabold text-[#22C55E] font-heading tabular-nums">
-                80/20
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
-                Commission Split
-              </div>
-            </div>
-
-            <div>
-              <div className="text-4xl sm:text-5xl font-extrabold text-white font-heading tabular-nums">
-                100%
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mt-3">
-                Verified Documents
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          6. HOW IT WORKS
-         ═══════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
-          <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
-            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-            <span>Simple, Transparent, Secured</span>
-            <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-            How Realtor X Works
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-            A frictionless journey from finding your dream property to receiving the transfer deed.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          {HOW_IT_WORKS_STEPS.map((step, idx) => (
-            <div
-              key={idx}
-              className="group relative p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/40 transition-all duration-500 hover:-translate-y-1 scroll-reveal"
-              style={{ animationDelay: `${idx * 100}ms` }}
-            >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#94A3B8] to-[#94A3B8] flex items-center justify-center text-white font-black font-heading text-xl mb-5 shadow-lg shadow-[#F5A623]/25 group-hover:scale-110 transition-transform duration-500">
-                {step.step}
-              </div>
-              <h3 className="font-heading font-bold text-lg text-white mb-1.5">
-                {step.title}
-              </h3>
-              <div className="font-urdu text-sm text-[#F5A623] mb-3 leading-relaxed">
-                {step.titleUrdu}
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">{step.desc}</p>
-            </div>
+      {/* Pillars */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-2xl font-bold text-white sm:text-3xl">One platform for the whole real estate ecosystem</h2>
+        <p className="mt-2 max-w-2xl text-sm text-slate-400">RealtorX is not just a listing website. It is a community with its own marketplace, solutions and home.</p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PILLARS.map(({ icon: Icon, title, text, page, cta }) => (
+            <button key={title} onClick={() => onNavigate(page)} className="group flex flex-col rounded-2xl border border-white/10 bg-[#081221] p-6 text-left transition-colors hover:border-[#F5A623]/40">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F5A623]/10 text-[#F5A623]"><Icon className="h-5 w-5" /></span>
+              <span className="mt-4 text-lg font-semibold text-white">{title}</span>
+              <span className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{text}</span>
+              <span className="mt-5 flex items-center gap-1 text-sm font-semibold text-[#F5A623]">{cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+            </button>
           ))}
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          7. BAHRIA TOWN SPOTLIGHT
-         ═══════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
-        <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] bg-[#0B1A30] shadow-2xl shadow-black/40">
-          <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-            <div className="lg:col-span-7 p-10 sm:p-12 lg:p-14 space-y-6">
-              <div className="inline-flex items-center gap-3 mb-5">
-                <span className="w-6 h-[1px] bg-current" style={{ color: '#F5A623' }} />
-                <span className="text-xs font-semibold tracking-wide text-[#F5A623]">The Flagship Master Development</span>
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-                Bahria Town Karachi: <span className="text-[#94A3B8]">A City Within A City</span>
-              </h2>
-
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-                Featuring the world's 3rd largest mosque, international-standard hospitals, golf
-                courses, theme parks, and 100% underground electrified utilities. Realtor X is
-                permanently rooted inside Bahria Town.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
-                {['Grand Jamia Mosque', 'Danzoo Safari & Carnival', 'Saudi German Hospital', '400-ft Jinnah Avenue'].map(
-                  (item) => (
-                    <div key={item} className="flex items-center gap-2.5 text-sm text-slate-300">
-                      <div className="w-5 h-5 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 flex items-center justify-center shrink-0">
-                        <CheckCircle2 className="w-3 h-3 text-[#22C55E]" />
-                      </div>
-                      <span>{item}</span>
-                    </div>
-                  )
-                )}
-              </div>
-
-              <div className="pt-5 flex flex-wrap gap-3">
-                <button
-                  onClick={() => onNavigate('projects')}
-                  className="relative px-6 py-3 rounded-xl text-sm font-semibold text-[#0B1A30] bg-[#F5A623] hover:bg-[#E59615] transition-all shadow-lg shadow-[#F5A623]/25 flex items-center gap-2 group overflow-hidden active:scale-[0.98]"
-                >
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                  <span className="relative z-10">Explore Bahria Precincts</span>
-                  <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-                <button
-                  onClick={() => onNavigate('contact')}
-                  className="px-6 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] transition-all"
-                >
-                  Contact Our Office
-                </button>
-              </div>
+      {/* Latest listings */}
+      <section className="border-y border-white/[0.06] bg-[#081221]">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-white sm:text-3xl">Latest verified listings</h2>
+              <p className="mt-2 text-sm text-slate-400">Checked by RealtorX before going live. Press &quot;I&apos;m interested&quot; and the realtor calls you.</p>
             </div>
-
-            <div className="lg:col-span-5 h-72 sm:h-96 lg:h-full min-h-[400px] relative overflow-hidden">
-              <img
-                src="/images/bahria_town_karachi_1790600916751.webp"
-                alt="Bahria Town Karachi Grand View"
-                referrerPolicy="no-referrer"
-                loading="lazy"
-                className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-[1200ms] ease-out-expo"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#0B1A30] via-[#0B1A30]/30 to-transparent" />
+            <button onClick={() => onNavigate('properties')} className="flex items-center gap-1 text-sm font-semibold text-[#F5A623] hover:underline">
+              View all <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+          {latest.length ? (
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {latest.map((item) => (
+                <ListingCard key={item.name} item={item} onOpen={() => onNavigate('property-detail', item.name)} onInterest={() => setInterest(item)} />
+              ))}
             </div>
+          ) : (
+            <div className="mt-8 rounded-2xl border border-dashed border-white/15 p-10 text-center">
+              <p className="text-sm text-slate-400">New listings appear here as soon as RealtorX approves them.</p>
+              <button onClick={() => onNavigate('post-listing')} className="mt-4 rounded-xl bg-[#F5A623] px-5 py-2.5 text-sm font-bold text-slate-950">Post the first property</button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* How the marketplace works */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-2">
+          <div>
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">A marketplace with a realtor behind every listing</h2>
+            <ol className="mt-6 space-y-4">
+              {[
+                ['Post', 'Owners, members and developers post with photos, videos and a map location.'],
+                ['Verify', 'RealtorX checks documents, owner identity, price and photos before approval.'],
+                ['Tag', 'Each listing is tagged to a RealtorX member realtor, chosen by the owner or by RealtorX.'],
+                ['Connect', 'Buyers press "I\'m interested". Numbers stay private; the realtor calls back.'],
+              ].map(([title, text], i) => (
+                <li key={title} className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5A623] text-sm font-bold text-slate-950">{i + 1}</span>
+                  <span><span className="block font-semibold text-white">{title}</span><span className="text-sm text-slate-400">{text}</span></span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">The membership journey</h2>
+            <ol className="mt-6 space-y-3">
+              {JOURNEY.map(({ icon: Icon, title, text }) => (
+                <li key={title} className="flex items-start gap-4 rounded-xl border border-white/10 bg-[#081221] p-4">
+                  <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[#F5A623]" />
+                  <span><span className="block font-semibold text-white">{title}</span><span className="text-sm text-slate-400">{text}</span></span>
+                </li>
+              ))}
+            </ol>
+            <button onClick={() => onNavigate('join')} className="mt-5 rounded-xl bg-[#F5A623] px-5 py-3 text-sm font-bold text-slate-950 hover:brightness-110">Start your application</button>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          8. CULTURE PREVIEW
-         ═══════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
-          <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#F5A623] mb-4">
-            <span className="w-6 h-[1px] bg-[#F5A623]/60" />
-            <span>Our Guiding Pillars</span>
-            <span className="w-6 h-[1px] bg-[#F5A623]/60" />
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-            The Culture of Realtor X
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-            Why people don't just join Realtor X — they belong to Realtor X.
-          </p>
+      {/* Developers + Solution Desk */}
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-16 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#13294a] to-[#081221] p-8">
+          <Handshake className="h-8 w-8 text-[#F5A623]" />
+          <h3 className="mt-4 text-xl font-bold text-white">Developer Program</h3>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">Showcase projects and brochures, get assigned RealtorX realtors, a dedicated desk at the Hub and live buyer-interest numbers.</p>
+          <button onClick={() => onNavigate('developer-program')} className="mt-5 flex items-center gap-1 text-sm font-semibold text-[#F5A623] hover:underline">Learn more <ArrowRight className="h-4 w-4" /></button>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
-          {[
-            {
-              doc: 'Document 01 · Why We Exist',
-              title: 'The RealtorX Manifesto',
-              quote:
-                '"Real estate is not just about land, buildings or transactions. It is about people. It is about dreams. It is about trust."',
-              cta: 'Read Full Manifesto',
-              route: 'manifesto' as PageId,
-              icon: BookOpen,
-            },
-            {
-              doc: 'Document 02 · What We Promise',
-              title: 'The Founding Member Oath',
-              quote:
-                'The solemn commitments taken by every custodian dealer. Place ethics before profit and never mislead this community.',
-              cta: 'Affirm & Sign Oath',
-              route: 'oath' as PageId,
-              icon: Award,
-            },
-            {
-              doc: 'Document 03 · How We Behave',
-              title: 'The RealtorX Code (8 Tenets)',
-              quote:
-                'Integrity First, Collaboration Before Competition, Solutions Over Excuses. Concrete rules for client transparency.',
-              cta: 'Explore The 8 Principles',
-              route: 'code' as PageId,
-              icon: ShieldCheck,
-            },
-          ].map((card, idx) => {
-            const CardIcon = card.icon;
-            return (
-              <div
-                key={idx}
-                onClick={() => onNavigate(card.route)}
-                className="group cursor-pointer p-7 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/40 transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between scroll-reveal"
-                style={{ animationDelay: `${idx * 100}ms` }}
-              >
-                <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <div className="w-9 h-9 rounded-xl bg-[#94A3B8]/[0.12] border border-[#94A3B8]/25 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                      <CardIcon className="w-4 h-4 text-[#94A3B8]" />
-                    </div>
-                    <div className="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-semibold">
-                      {card.doc}
-                    </div>
-                  </div>
-
-                  <h3 className="font-heading font-bold text-xl text-white group-hover:text-[#F5A623] transition-colors leading-tight mb-3">
-                    {card.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                    {card.quote}
-                  </p>
-                </div>
-
-                <div className="mt-7 flex items-center gap-1.5 text-xs font-semibold text-[#94A3B8]">
-                  <span>{card.cta}</span>
-                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            );
-          })}
+        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#13294a] to-[#081221] p-8">
+          <LifeBuoy className="h-8 w-8 text-[#F5A623]" />
+          <h3 className="mt-4 text-xl font-bold text-white">Problems deserve solutions</h3>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">Allottees, investors and developers bring stuck files, delayed projects and disputes to the Solution Desk. A case manager follows each one to resolution.</p>
+          <button onClick={() => onNavigate('solutions')} className="mt-5 flex items-center gap-1 text-sm font-semibold text-[#F5A623] hover:underline">Submit a problem <ArrowRight className="h-4 w-4" /></button>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          9. TESTIMONIALS
-         ═══════════════════════════════════════════════════ */}
-      <section className="relative bg-[#0B1A30] py-16 sm:py-20 border-y border-white/[0.06] overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none opacity-40"
-          style={{
-            background:
-              'radial-gradient(ellipse at 50% 100%, rgba(245, 166, 35, 0.08) 0%, transparent 60%)',
-          }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12 scroll-reveal">
-            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#94A3B8] mb-4">
-              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-              <span>Real Stories</span>
-              <span className="w-6 h-[1px] bg-[#94A3B8]/60" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-              Voices From Our Community
-            </h2>
+      {/* Events */}
+      {events.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between">
+            <h2 className="text-2xl font-bold text-white">Upcoming at the Hub</h2>
+            <button onClick={() => onNavigate('hub')} className="text-sm font-semibold text-[#F5A623] hover:underline">All events</button>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
-            {TESTIMONIALS.map((t, idx) => (
-              <div
-                key={idx}
-                className="p-7 rounded-3xl bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-white/[0.06] hover:border-white/[0.15] transition-all duration-500 flex flex-col justify-between scroll-reveal"
-                style={{ animationDelay: `${idx * 100}ms` }}
-              >
-                <div className="space-y-5">
-                  <div className="flex items-center gap-1 text-[#F5A623]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-slate-300 italic leading-relaxed">
-                    "{t.quote}"
-                  </p>
-                </div>
-
-                <div className="pt-5 mt-5 border-t border-white/[0.06]">
-                  <div className="font-heading font-semibold text-white text-sm">
-                    {t.author}
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    {t.role} · {t.location}
-                  </div>
-                </div>
-              </div>
+          <ul className="mt-6 grid gap-4 md:grid-cols-3">
+            {events.map((e) => (
+              <li key={e.name} className="rounded-2xl border border-white/10 bg-[#081221] p-5">
+                <span className="rounded bg-[#F5A623]/15 px-2 py-0.5 text-xs font-semibold text-[#F5A623]">{e.event_type}</span>
+                <p className="mt-3 font-semibold text-white">{e.title}</p>
+                <p className="mt-1 text-sm text-slate-400">{formatWhen(e.starts_on)}</p>
+              </li>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          10. REGISTERED DEALERS
-         ═══════════════════════════════════════════════════ */}
-      {dealers.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-reveal">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#F5A623] mb-4">
-              <span className="w-6 h-[1px] bg-[#F5A623]/60" />
-              <span>Meet The Fraternity</span>
-              <span className="w-6 h-[1px] bg-[#F5A623]/60" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading tracking-[-0.02em] leading-tight">
-              Registered Dealers
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-              Verified Realtor X members committed to ethical, client-first real estate.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {dealers.map((dealer, idx) => {
-              const showDesignation = dealer.designation && dealer.designation !== dealer.firm;
-              const showFirm = dealer.firm && dealer.firm !== dealer.designation;
-
-              return (
-                <div
-                  key={dealer.id}
-                  className="group relative p-6 rounded-3xl bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/[0.06] hover:border-[#F5A623]/50 transition-all duration-500 hover:-translate-y-1 flex flex-col items-center text-center overflow-hidden scroll-reveal"
-                  style={{ animationDelay: `${idx * 60}ms` }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{
-                      background:
-                        'radial-gradient(ellipse at 50% 0%, rgba(36, 144, 239, 0.12) 0%, transparent 60%)',
-                    }}
-                  />
-
-                  <div className="relative w-20 h-20 rounded-full p-[2px] bg-gradient-to-br from-[#94A3B8]/50 via-[#F5A623]/40 to-[#94A3B8]/50 mb-4 group-hover:from-[#94A3B8] group-hover:to-[#94A3B8] transition-all duration-500">
-                    <div className="w-full h-full rounded-full overflow-hidden bg-[#0B1A30] flex items-center justify-center">
-                      {dealer.imageUrl ? (
-                        <img
-                          src={dealer.imageUrl}
-                          alt={dealer.name}
-                          referrerPolicy="no-referrer"
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-2xl font-bold text-[#94A3B8] font-heading">
-                          {dealer.name.charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="relative flex items-center gap-1 mb-1.5 max-w-full">
-                    <h3 className="font-heading font-bold text-sm text-white truncate">
-                      {dealer.name}
-                    </h3>
-                    <BadgeCheck className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
-                  </div>
-
-                  {showDesignation && (
-                    <div className="relative text-[10px] text-[#F5A623] uppercase tracking-[0.12em] truncate w-full">
-                      {dealer.designation}
-                    </div>
-                  )}
-
-                  {showFirm && (
-                    <div className="relative text-[11px] text-slate-400 truncate w-full mt-1">
-                      {dealer.firm}
-                    </div>
-                  )}
-
-                  {dealer.city && (
-                    <div className="relative flex items-center gap-1 text-[10px] text-slate-500 mt-2">
-                      <MapPin className="w-3 h-3" />
-                      <span>{dealer.city}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          </ul>
         </section>
       )}
 
-      {/* ═══════════════════════════════════════════════════
-          11. DUAL CTA
-         ═══════════════════════════════════════════════════ */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6 scroll-reveal">
-        <div className="relative rounded-[2rem] overflow-hidden border border-[#94A3B8]/20 shadow-2xl shadow-[#94A3B8]/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1A30] via-[#0B1A30] to-[#0B1A30]" />
-          <div
-            className="absolute inset-0 opacity-60"
-            style={{
-              background:
-                'radial-gradient(ellipse at 30% 50%, rgba(36, 144, 239, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(245, 166, 35, 0.12) 0%, transparent 60%)',
-            }}
-          />
-          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#94A3B8]/60 to-transparent" />
-
-          <div className="relative p-10 sm:p-14 text-center space-y-6">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F5A623] flex items-center justify-center shadow-xl shadow-[#F5A623]/30">
-              <TrendingUp className="w-6 h-6 text-slate-950" />
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold text-white font-heading tracking-[-0.02em] leading-tight max-w-3xl mx-auto text-balance">
-              Join the Realtor X Movement
-            </h2>
-
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Whether you are buying a dream villa, securing an investment plot, or are a local
-              dealer looking for a fair 80/20 partnership, we welcome you.
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
-              <button
-                onClick={() => onNavigate('become-dealer')}
-                className="relative px-7 py-3.5 rounded-2xl text-sm font-bold text-slate-950 bg-gradient-to-r from-[#F5A623] via-[#F5A623] to-[#F5A623] hover:bg-[#E59615] transition-all duration-300 shadow-xl shadow-[#F5A623]/30 hover:shadow-[#F5A623]/50 flex items-center gap-2 overflow-hidden group active:scale-[0.98]"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                <Award className="w-4 h-4 relative z-10" />
-                <span className="relative z-10">Become a Dealer</span>
-                <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-
-              <button
-                onClick={() => onNavigate('properties')}
-                className="px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] backdrop-blur-md transition-all duration-300 flex items-center gap-2"
-              >
-                <Compass className="w-4 h-4 text-[#94A3B8]" />
-                <span>Browse Properties</span>
-              </button>
-            </div>
+      {/* Philosophy */}
+      <section className="relative overflow-hidden border-t border-white/[0.06]">
+        <img src="/images/realtorx_engraved_wall_1790597184603.webp" alt="" className="absolute inset-0 h-full w-full object-cover opacity-15" />
+        <div className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
+          <BadgeCheck className="mx-auto h-8 w-8 text-[#F5A623]" />
+          <blockquote className="mt-6 text-2xl font-semibold leading-snug text-white sm:text-3xl">&ldquo;{PHILOSOPHY}&rdquo;</blockquote>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <button onClick={() => onNavigate('manifesto')} className="rounded-xl border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/5">Read the Manifesto</button>
+            <button onClick={() => onNavigate('code')} className="rounded-xl border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/5">The RealtorX Code</button>
           </div>
         </div>
       </section>
+
+      {interest && <InquiryModal propertyId={interest.name} propertyTitle={interest.property_title} realtorName={interest.realtor?.name} onClose={() => setInterest(null)} />}
     </div>
   );
-};
+}
+
+export default HomePage;

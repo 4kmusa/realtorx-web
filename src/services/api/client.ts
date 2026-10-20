@@ -104,6 +104,17 @@ export async function callPost<T = any>(method: string, data?: Record<string, un
   return (payload.message ?? null) as T;
 }
 
+/** POST a single file (multipart field "file") plus extra fields to a whitelisted method. */
+export async function uploadFile<T = any>(method: string, file: File, data?: Record<string, string>): Promise<T> {
+  const body = new FormData();
+  for (const [key, value] of Object.entries(data || {})) body.append(key, value);
+  body.append('file', file, file.name);
+  const headers: Record<string, string> = {};
+  if (csrfToken) headers['X-Frappe-CSRF-Token'] = csrfToken;
+  const payload = await request<{ message?: T }>(`/method/${method}`, { method: 'POST', headers, body });
+  return (payload.message ?? null) as T;
+}
+
 /** Insert a document through the standard REST API (permissions enforced server-side). */
 export async function createDoc<T = any>(doctype: string, doc: Record<string, unknown>): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };

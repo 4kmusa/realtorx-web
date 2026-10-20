@@ -38,7 +38,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('Property Purchase Inquiry');
+  const [subject, setSubject] = useState('Property Inquiry');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -373,12 +373,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     onChange={(e) => setSubject(e.target.value)}
                     className="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#94A3B8] focus:ring-2 focus:ring-[#94A3B8]/20 transition-all cursor-pointer"
                   >
-                    <option>Property Purchase Inquiry</option>
-                    <option>Book a Guided Site Visit</option>
-                    <option>Plot Title / NDC Verification</option>
-                    <option>List My Bahria Property</option>
-                    <option>Dealer Partnership (80/20 Split)</option>
-                    <option>Allottee Relief / Dispute Help</option>
+                    <option>Property Inquiry</option>
+                    <option>Listing My Property</option>
+                    <option>Membership</option>
+                    <option>Developer Program</option>
+                    <option>Connect Me With a Member</option>
+                    <option>Hub Booking or Event</option>
                     <option>General Inquiry</option>
                   </select>
                 </div>

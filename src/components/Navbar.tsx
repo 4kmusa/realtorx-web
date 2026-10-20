@@ -69,16 +69,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const navItems: { id: PageId; label: string }[] = [
-    { id: 'home', label: 'Home' },
-    { id: 'properties', label: 'Properties' },
+    { id: 'properties', label: 'Marketplace' },
     { id: 'projects', label: 'Projects' },
-    
+    { id: 'solutions', label: 'Solution Desk' },
+    { id: 'hub', label: 'Hub' },
+    { id: 'members', label: 'Members' },
     { id: 'about', label: 'About' },
-    
   ];
+  const member = user?.member;
 
   const isActive = (id: PageId) => {
     if (id === 'properties') return currentPage === 'properties' || currentPage === 'property-detail';
+    if (id === 'projects') return currentPage === 'projects' || currentPage === 'project-details';
     return currentPage === id;
   };
 
@@ -125,26 +127,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                 ))}
 
-                {/* Become a Dealer — highlighted CTA */}
+                {/* Community Team link (staff) and membership CTA */}
                 {user?.is_staff && (
                   <button
                     onClick={() => handleNav('admin')}
-                    className="text-xs font-medium text-red-400 hover:text-red-300 mr-2"
+                    className="text-xs font-medium text-[#F5A623] hover:text-white mr-2"
                   >
-                    Admin
+                    Community Team
                   </button>
                 )}
                 <button
-                  onClick={() => handleNav('become-dealer')}
+                  onClick={() => handleNav(member ? 'member' : 'join')}
                   className={`ml-3 relative transition-all duration-300 py-2 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-[13px] overflow-hidden group ${
-                    currentPage === 'become-dealer'
+                    currentPage === 'join' || currentPage === 'member'
                       ? 'bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/20'
                       : 'text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/30 hover:bg-[#F5A623]/15 hover:border-[#F5A623]/50 hover:shadow-lg hover:shadow-[#F5A623]/10'
                   }`}
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   <Briefcase className="w-3.5 h-3.5 relative z-10" />
-                  <span className="relative z-10">Become a Dealer</span>
+                  <span className="relative z-10">{member ? 'My membership' : 'Join RealtorX'}</span>
+                </button>
+                <button
+                  onClick={() => handleNav('post-listing')}
+                  className="ml-2 py-2 px-3 rounded-xl text-[13px] font-semibold text-white border border-white/15 hover:bg-white/[0.06]"
+                >
+                  + Post property
                 </button>
 
                 {navItems.slice(5).map((item) => (
@@ -234,33 +242,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => handleNav('profile')}
-                          className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
-                        >
-                          <User className="w-4 h-4 text-[#94A3B8]" />
-                          <span>My Profile</span>
-                        </button>
-
-                        {user.is_customer && (
+                        {member && (
                           <button
-                            onClick={() => handleNav('portal')}
-                            className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
-                          >
-                            <User className="w-4 h-4 text-[#94A3B8]" />
-                            <span>Customer Dashboard</span>
-                          </button>
-                        )}
-
-                        {user.is_dealer && (
-                          <button
-                            onClick={() => handleNav('dealer')}
+                            onClick={() => handleNav('member')}
                             className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
                           >
                             <Briefcase className="w-4 h-4 text-[#F5A623]" />
-                            <span>Dealer Dashboard</span>
+                            <span>Member portal{member.member_id ? ` · ${member.member_id}` : ''}</span>
                           </button>
                         )}
+
+                        <button
+                          onClick={() => handleNav('my-listings')}
+                          className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
+                        >
+                          <User className="w-4 h-4 text-[#94A3B8]" />
+                          <span>My listings</span>
+                        </button>
 
                         <div className="h-[1px] bg-white/[0.06] my-1" />
 
@@ -329,12 +327,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           ))}
 
           <button
-            onClick={() => handleNav('become-dealer')}
+            onClick={() => handleNav(member ? 'member' : 'join')}
             className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-[#F5A623] flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20 mt-3"
           >
             <Briefcase className="w-4 h-4" />
-            <span>Become a Dealer</span>
+            <span>{member ? 'My membership' : 'Join RealtorX'}</span>
           </button>
+          <button
+            onClick={() => handleNav('post-listing')}
+            className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white border border-white/15 mt-2"
+          >
+            + Post property
+          </button>
+          {isAuthenticated && (
+            <button
+              onClick={() => handleNav('my-listings')}
+              className="w-full text-left py-3 px-4 rounded-xl text-base font-medium text-slate-300 hover:bg-white/[0.04] hover:text-white"
+            >
+              My listings
+            </button>
+          )}
 
           {navItems.slice(5).map((item) => (
             <button
@@ -391,13 +403,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <div className="text-[11px] text-slate-400 truncate">{user.email}</div>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleNav('profile')}
-                  className="w-full py-3 px-4 text-sm font-semibold text-white bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-left flex items-center gap-2 transition-colors"
-                >
-                  <User className="w-4 h-4 text-[#94A3B8]" />
-                  <span>My Profile</span>
-                </button>
+                {user.is_staff && (
+                  <button
+                    onClick={() => handleNav('admin')}
+                    className="w-full py-3 px-4 text-sm font-semibold text-white bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-left flex items-center gap-2 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-[#94A3B8]" />
+                    <span>Community Team back office</span>
+                  </button>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full py-3 px-4 text-sm font-medium text-red-300 bg-red-500/10 hover:bg-red-500/15 rounded-xl text-left flex items-center gap-2 transition-colors"

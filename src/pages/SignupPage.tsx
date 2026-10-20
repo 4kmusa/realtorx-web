@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { PageId } from '../types';
-import { landingPageFor } from './LoginPage';
+import { goToLanding } from './LoginPage';
 
-export default function SignupPage({ onNavigate }: { onNavigate: (page: PageId) => void }) {
+export default function SignupPage({ onNavigate }: { onNavigate: (page: PageId, id?: string) => void }) {
   const { signup, refreshUser } = useAuth();
   const [form, setForm] = useState({ full_name: '', email: '', phone: '', password: '' });
   const [error, setError] = useState('');
@@ -23,7 +23,7 @@ export default function SignupPage({ onNavigate }: { onNavigate: (page: PageId) 
     setSubmitting(true);
     const result = await signup(form);
     if (result.success) {
-      onNavigate(landingPageFor(await refreshUser()));
+      goToLanding(onNavigate, await refreshUser());
     } else {
       setError(result.error || 'Sign up failed.');
     }

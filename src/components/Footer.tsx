@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { callPost } from '../services/api/client';
 import { PageId, Language } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
-import { BRAND_TAGLINES } from '../data/mockProperties';
+import { PHILOSOPHY } from '../features/membership/content';
 import {
   MapPin,
   Phone,
@@ -150,8 +150,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
                   New listings, straight to your inbox.
                 </h3>
                 <p className="text-sm text-slate-400 mt-2 max-w-lg leading-relaxed">
-                  Be the first to know about verified Bahria Town properties, price drops, and
-                  exclusive Realtor X listings.
+                  Be the first to know about new verified listings, Hub events and community news.
                 </p>
               </div>
 
@@ -211,7 +210,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
               <RealtorXLogo size="xl" showSubtitle={false} />
 
               <p className="text-xs text-slate-300 italic font-heading leading-relaxed max-w-sm">
-                "{BRAND_TAGLINES.philosophy}"
+                "{PHILOSOPHY}"
               </p>
 
               <div className="text-xs text-slate-400 font-medium">
@@ -219,8 +218,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
               </div>
 
               <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-                Realtor X is the trusted real estate ecosystem for Bahria Town Karachi. Built on
-                integrity, transparent verified documentation, and authentic allottee protection.
+                RealtorX is a real estate community: a verified marketplace, oath-bound members, a
+                Solution Desk and the RealtorX Hub, starting in Bahria Town Karachi.
               </p>
 
               {/* Social Icons */}
@@ -253,14 +252,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
               </div>
               <ul className="space-y-3 text-xs">
                 {[
-                  { label: 'All Listings', route: 'properties' as PageId },
+                  { label: 'Marketplace', route: 'properties' as PageId },
+                  { label: 'Post a Property', route: 'post-listing' as PageId },
                   { label: 'Projects', route: 'projects' as PageId },
-                  { label: 'Developers', route: 'developers' as PageId },
-                  { label: 'Book a Site Visit', route: 'site-visit' as PageId },
-                  { label: 'Services', route: 'services' as PageId },
+                  { label: 'Developer Program', route: 'developer-program' as PageId },
+                  { label: 'Solution Desk', route: 'solutions' as PageId },
+                  { label: 'RealtorX Hub', route: 'hub' as PageId },
                   { label: 'FAQ', route: 'faq' as PageId },
                   { label: 'Contact', route: 'contact' as PageId },
-                  { label: 'About Us', route: 'about' as PageId },
                 ].map((item) => (
                   <li key={item.label}>
                     <button
@@ -285,11 +284,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, language, onOpenSoci
               </div>
               <ul className="space-y-3 text-xs">
                 {[
+                  { label: 'Join RealtorX', route: 'join' as PageId },
+                  { label: 'Member Directory', route: 'members' as PageId },
                   { label: 'Manifesto', route: 'manifesto' as PageId },
-                  { label: 'Founding Oath', route: 'oath' as PageId },
-                  { label: 'The Code', route: 'code' as PageId },
-                  { label: 'Become a Dealer', route: 'become-dealer' as PageId },
-                  { label: 'Members', route: 'community' as PageId },
+                  { label: 'The Code & Oath', route: 'code' as PageId },
+                  { label: 'About Us', route: 'about' as PageId },
                 ].map((item) => (
                   <li key={item.label}>
                     <button

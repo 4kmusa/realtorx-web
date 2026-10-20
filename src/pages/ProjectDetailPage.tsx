@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { MapPin, ArrowLeft, Building2, Bed, Bath, Maximize, ArrowRight } from 'lucide-react';
+import { MapPin, ArrowLeft, Building2, Bed, Bath, Maximize, ArrowRight, Box } from 'lucide-react';
 
-export default function ProjectDetailPage({ projectId, onNavigate }: { projectId: string, onNavigate: (page: string, id?: string) => void }) {
+export default function ProjectDetailPage({ projectId, onNavigate }: { projectId: string, onNavigate: (page: any, id?: string) => void }) {
   const [properties, setProperties] = useState<any[]>([]);
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +60,11 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
             <span>•</span>
             <span className="text-[#F5A623] font-semibold">{project?.status}</span>
           </div>
+          {project?.has_3d && (
+            <button onClick={() => onNavigate('project-3d', projectId)} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#F5A623] px-5 py-3 text-sm font-bold text-slate-950 hover:brightness-110">
+              <Box className="h-4 w-4" /> Explore in 3D
+            </button>
+          )}
         </div>
       </div>
 
