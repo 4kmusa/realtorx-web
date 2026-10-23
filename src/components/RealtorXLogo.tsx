@@ -1,42 +1,6 @@
+// The RealtorX logo (unchanged artwork; transparent padding trimmed so it sits correctly in the header).
 import React from 'react';
 
-interface RealtorXLogoProps {
-  className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'full' | 'mark' | 'horizontal';
-  showSubtitle?: boolean;
+export function RealtorXLogo({ height = 34, className = '' }: { height?: number; className?: string }) {
+  return <img src="/images/realtorx-logo-480.png" alt="RealtorX" style={{ height, width: 'auto' }} className={`block select-none ${className}`} draggable={false} />;
 }
-
-const ERPNEXT_URL = import.meta.env.VITE_ERPNEXT_URL || '/api/erp';
-const API_BASE = import.meta.env.PROD ? '/api/erp' : `${ERPNEXT_URL}/api`;
-
-export const RealtorXLogo: React.FC<RealtorXLogoProps> = ({
-  className = '',
-  size = 'md',
-  showSubtitle = false,
-}) => {
-  const sizeMap = {
-    sm: { height: 40 },
-    md: { height: 55 },
-    lg: { height: 75 },
-    xl: { height: 100 },
-  };
-
-  const currentSize = sizeMap[size];
-  const logoUrl = '/images/realtorx-logo.png';
-  return (
-    <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      <img
-        src={logoUrl}
-        alt="Realtor X"
-        style={{
-          height: `${currentSize.height}px`,
-          width: 'auto',
-          maxWidth: '100%',
-          objectFit: 'contain',
-        }}
-        className="block"
-      />
-    </div>
-  );
-};

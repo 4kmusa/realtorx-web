@@ -1,16 +1,10 @@
 import { useEffect } from 'react';
-import { PageId, Property } from '../types';
-import { applyPageSEO, PageSEOMetadata } from '../utils/seo';
+import { PageId } from '../types';
+import { applyPageSEO } from '../utils/seo';
 
-interface SEOProps {
-  pageId: PageId;
-  property?: Property;
-}
-
-export const SEO: React.FC<SEOProps> = ({ pageId, property }) => {
+export const SEO: React.FC<{ pageId: PageId }> = ({ pageId }) => {
   useEffect(() => {
-    applyPageSEO(pageId, property);
-  }, [pageId, property]);
-
+    applyPageSEO(pageId);
+  }, [pageId]);
   return null;
 };
