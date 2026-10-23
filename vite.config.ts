@@ -2,14 +2,32 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { Plugin, defineConfig, loadEnv } from 'vite';
+
+// The Agent and Developer dashboards are separate apps (own HTML entry, own login) next to the website.
+const DASHBOARDS = ['agent', 'developer'];
+
+/** Dev server: /agent/<anything> and /developer/<anything> load their own app (SPA fallback per app). */
+function dashboardFallback(): Plugin {
+  return {
+    name: 'realtorx-dashboard-fallback',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const url = req.url || '';
+        const match = url.match(/^\/(agent|developer)(\/[^?.]*)?(\?.*)?$/);
+        if (match) req.url = `/${match[1]}/index.html`;
+        next();
+      });
+    },
+  };
+}
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   // Local Frappe dev server; override with ERPNEXT_PROXY_TARGET in .env.local.
   const erpTarget = env.ERPNEXT_PROXY_TARGET || 'http://127.0.0.1:8000';
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), dashboardFallback()],
 
     resolve: {
       alias: {
@@ -20,6 +38,10 @@ export default defineConfig(({ mode }) => {
     build: {
       chunkSizeWarningLimit: 600,
       rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          ...Object.fromEntries(DASHBOARDS.map((d) => [d, path.resolve(__dirname, d, 'index.html')])),
+        },
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],

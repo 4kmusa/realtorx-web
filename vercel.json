@@ -7,8 +7,70 @@
     }
   },
   "rewrites": [
-    { "source": "/api/erp/:path*", "destination": "/api/erp/[...path]" },
-    { "source": "/((?!api).*)", "destination": "/index.html" }
+    {
+      "source": "/api/erp/:path*",
+      "destination": "/api/erp/[...path]"
+    },
+    {
+      "source": "/agent/:path*",
+      "destination": "/agent/index.html"
+    },
+    {
+      "source": "/developer/:path*",
+      "destination": "/developer/index.html"
+    },
+    {
+      "source": "/((?!api|agent|developer).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(self), microphone=(self), geolocation=(), payment=(), usb=()"
+        }
+      ]
+    },
+    {
+      "source": "/statement/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/(agent|developer)/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
   ]
 }
-

@@ -1,429 +1,100 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { PageId, Language } from '../types';
-import { useAuth } from '../context/AuthContext';
+// Site header: logo, five sections, "Become an agent" and "Sign in" (or "My account" for a signed-in buyer). Transparent over the home hero, solid after scrolling.
+import React, { useEffect, useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { PageId } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
-import {
-  Globe,
-  UserPlus,
-  Menu,
-  X,
-  ChevronDown,
-  LogIn,
-  LogOut,
-  User,
-  Briefcase,
-} from 'lucide-react';
+import { Button } from './site/ui';
+import { useBuyer } from '../features/buyer/session';
 
-interface NavbarProps {
-  currentPage: PageId;
-  onNavigate: (page: PageId, extraId?: string) => void;
-  language: Language;
-  onToggleLanguage: () => void;
-}
+const NAV: { id: PageId; label: string }[] = [
+  { id: 'properties', label: 'Properties' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'developer-program', label: 'Developers' },
+  { id: 'solutions', label: 'Client services' },
+  { id: 'about', label: 'About' },
+];
 
-export const Navbar: React.FC<NavbarProps> = ({
-  currentPage,
-  onNavigate,
-  language,
-  onToggleLanguage,
-}) => {
-  const { user, isAuthenticated, logout } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+export function Navbar({ currentPage, onNavigate }: { currentPage: PageId; onNavigate: (page: PageId, id?: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const { buyer } = useBuyer();
   const [scrolled, setScrolled] = useState(false);
-  const userRef = useRef<HTMLDivElement>(null);
+  const overHero = currentPage === 'home' && !scrolled;
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (userRef.current && !userRef.current.contains(event.target as Node)) {
-        setUserDropdownOpen(false);
-      }
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [open]);
 
-  useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileMenuOpen]);
-
-  const handleNav = (id: PageId) => {
+  const go = (id: PageId) => {
+    setOpen(false);
     onNavigate(id);
-    setMobileMenuOpen(false);
-    setUserDropdownOpen(false);
   };
-
-  const handleLogout = async () => {
-    await logout();
-    setUserDropdownOpen(false);
-    setMobileMenuOpen(false);
-    onNavigate('home');
-  };
-
-  const navItems: { id: PageId; label: string }[] = [
-    { id: 'properties', label: 'Marketplace' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'solutions', label: 'Solution Desk' },
-    { id: 'hub', label: 'Hub' },
-    { id: 'members', label: 'Members' },
-    { id: 'about', label: 'About' },
-  ];
-  const member = user?.member;
-
-  const isActive = (id: PageId) => {
-    if (id === 'properties') return currentPage === 'properties' || currentPage === 'property-detail';
-    if (id === 'projects') return currentPage === 'projects' || currentPage === 'project-details';
-    return currentPage === id;
-  };
+  const active = (id: PageId) =>
+    id === 'properties' ? ['properties', 'property-detail'].includes(currentPage)
+      : id === 'projects' ? ['projects', 'project-details', 'project-3d'].includes(currentPage)
+      : currentPage === id;
 
   return (
     <>
-      <header className="sticky top-0 z-50">
-        <div
-          className={`transition-all duration-500 ${
-            scrolled
-              ? 'bg-[#0B1A30]/85 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/20'
-              : 'bg-transparent border-b border-transparent'
-          }`}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className={`flex items-center justify-between transition-all duration-500 ${
-                scrolled ? 'h-[68px]' : 'h-20'
-              }`}
-            >
-              {/* Logo */}
+      <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ${overHero ? 'border-b border-transparent bg-transparent' : 'border-b border-line bg-ink/85 backdrop-blur-xl'}`}>
+        <span id="rx-progress" className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-px bg-gradient-to-r from-blue to-flame" aria-hidden="true" />
+        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-5 sm:px-8">
+          <button onClick={() => go('home')} aria-label="RealtorX home" className="shrink-0">
+            <RealtorXLogo height={36} />
+          </button>
+          <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+            {NAV.map((item) => (
               <button
-                onClick={() => handleNav('home')}
-                className="flex items-center text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                key={item.id}
+                onClick={() => go(item.id)}
+                aria-current={active(item.id) ? 'page' : undefined}
+                className={`relative rounded-full px-4 py-2 text-[14px] transition-colors ${active(item.id) ? 'text-fg' : 'text-fg-2 hover:text-fg'}`}
               >
-                <RealtorXLogo size="xl" showSubtitle={false} />
+                {item.label}
+                {active(item.id) && <span className="absolute inset-x-4 -bottom-[3px] h-px bg-gradient-to-r from-blue to-flame" />}
               </button>
-
-              {/* Desktop Nav */}
-              <nav className="hidden lg:flex items-center gap-0.5 text-sm font-medium text-slate-300">
-                {navItems.slice(0, 5).map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNav(item.id)}
-                    className={`relative px-3.5 py-2 rounded-xl transition-all duration-300 ${
-                      isActive(item.id)
-                        ? 'text-white'
-                        : 'hover:text-white hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <span className="relative z-10">{item.label}</span>
-                    {isActive(item.id) && (
-                      <span className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#F5A623] to-transparent" />
-                    )}
-                  </button>
-                ))}
-
-                {/* Community Team link (staff) and membership CTA */}
-                {user?.is_staff && (
-                  <button
-                    onClick={() => handleNav('admin')}
-                    className="text-xs font-medium text-[#F5A623] hover:text-white mr-2"
-                  >
-                    Community Team
-                  </button>
-                )}
-                <button
-                  onClick={() => handleNav(member ? 'member' : 'join')}
-                  className={`ml-3 relative transition-all duration-300 py-2 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-[13px] overflow-hidden group ${
-                    currentPage === 'join' || currentPage === 'member'
-                      ? 'bg-[#F5A623] text-slate-950 shadow-lg shadow-[#F5A623]/20'
-                      : 'text-[#F5A623] bg-[#F5A623]/[0.08] border border-[#F5A623]/30 hover:bg-[#F5A623]/15 hover:border-[#F5A623]/50 hover:shadow-lg hover:shadow-[#F5A623]/10'
-                  }`}
-                >
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                  <Briefcase className="w-3.5 h-3.5 relative z-10" />
-                  <span className="relative z-10">{member ? 'My membership' : 'Join RealtorX'}</span>
-                </button>
-                <button
-                  onClick={() => handleNav('post-listing')}
-                  className="ml-2 py-2 px-3 rounded-xl text-[13px] font-semibold text-white border border-white/15 hover:bg-white/[0.06]"
-                >
-                  + Post property
-                </button>
-
-                {navItems.slice(5).map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNav(item.id)}
-                    className={`relative px-3.5 py-2 rounded-xl transition-all duration-300 ${
-                      isActive(item.id)
-                        ? 'text-white'
-                        : 'hover:text-white hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <span className="relative z-10">{item.label}</span>
-                    {isActive(item.id) && (
-                      <span className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#F5A623] to-transparent" />
-                    )}
-                  </button>
-                ))}
-              </nav>
-
-              {/* Right Actions */}
-              <div className="flex items-center gap-2.5">
-                {/* Language */}
-                <button
-                  onClick={onToggleLanguage}
-                  className="hidden sm:flex items-center gap-1.5 text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-3 py-2 rounded-xl border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 group"
-                  title="Toggle language"
-                >
-                  <Globe className="w-3.5 h-3.5 text-[#F5A623] group-hover:rotate-12 transition-transform duration-500" />
-                  <span className="text-xs font-medium">
-                    {language === 'en' ? 'EN' : 'اردو'}
-                  </span>
-                </button>
-
-                {!isAuthenticated && (
-                  <>
-                    <button
-                      onClick={() => handleNav('login')}
-                      className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#94A3B8] border border-[#94A3B8]/30 hover:border-[#F5A623]/60 hover:bg-[#E59615]/10 rounded-xl transition-all duration-300 whitespace-nowrap"
-                    >
-                      <LogIn className="w-3.5 h-3.5" />
-                      <span>Login</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleNav('signup')}
-                      className="relative px-4 py-2 text-xs font-bold text-slate-950 bg-[#F5A623] hover:bg-[#E59615] rounded-xl shadow-lg shadow-[#F5A623]/20 hover:shadow-[#F5A623]/20 transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap overflow-hidden group active:scale-[0.97]"
-                    >
-                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                      <UserPlus className="w-4 h-4 relative z-10" />
-                      <span className="relative z-10">Sign Up</span>
-                    </button>
-                  </>
-                )}
-
-                {isAuthenticated && user && (
-                  <div className="relative" ref={userRef}>
-                    <button
-                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-300 ${
-                        userDropdownOpen
-                          ? 'bg-[#94A3B8]/10 border-[#94A3B8]/40'
-                          : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.06] hover:border-white/[0.12]'
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#94A3B8]/30 to-[#94A3B8]/10 border border-[#94A3B8]/40 flex items-center justify-center text-[#94A3B8] text-xs font-bold">
-                        {user.full_name?.charAt(0).toUpperCase() || 'U'}
-                      </div>
-                      <span className="hidden sm:inline text-xs font-medium text-white truncate max-w-[100px]">
-                        {user.first_name}
-                      </span>
-                      <ChevronDown
-                        className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ${
-                          userDropdownOpen ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </button>
-
-                    {userDropdownOpen && (
-                      <div className="absolute top-full right-0 mt-3 w-64 bg-[#0B1A30]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 p-2 z-50 space-y-1 animate-scale-in">
-                        <div className="px-3 py-3 border-b border-white/[0.06]">
-                          <div className="text-sm font-semibold text-white truncate">
-                            {user.full_name}
-                          </div>
-                          <div className="text-[11px] text-slate-400 truncate mt-0.5">
-                            {user.email}
-                          </div>
-                        </div>
-
-                        {member && (
-                          <button
-                            onClick={() => handleNav('member')}
-                            className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
-                          >
-                            <Briefcase className="w-4 h-4 text-[#F5A623]" />
-                            <span>Member portal{member.member_id ? ` · ${member.member_id}` : ''}</span>
-                          </button>
-                        )}
-
-                        <button
-                          onClick={() => handleNav('my-listings')}
-                          className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-slate-300 hover:bg-white/[0.06] hover:text-white transition-colors"
-                        >
-                          <User className="w-4 h-4 text-[#94A3B8]" />
-                          <span>My listings</span>
-                        </button>
-
-                        <div className="h-[1px] bg-white/[0.06] my-1" />
-
-                        <button
-                          onClick={handleLogout}
-                          className="w-full text-left p-2.5 rounded-xl text-xs flex items-center gap-2.5 text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-colors"
-                        >
-                          <LogOut className="w-4 h-4 text-red-400" />
-                          <span>Logout</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="lg:hidden p-2 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all duration-300"
-                  aria-label="Toggle menu"
-                >
-                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
+            ))}
+          </nav>
+          <div className="hidden items-center gap-2 lg:flex">
+            <Button variant="ghost" size="sm" onClick={() => go(buyer ? 'account' : 'login')}>{buyer ? 'My account' : 'Sign in'}</Button>
+            <Button variant="secondary" size="sm" onClick={() => go('become-agent')}>Become an agent</Button>
           </div>
+          <button onClick={() => setOpen(true)} className="-mr-2 rounded-full p-2 text-fg lg:hidden" aria-label="Open menu" aria-expanded={open}>
+            <Menu className="h-6 w-6" strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm animate-fade-in"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Mobile Menu Panel */}
-      <div
-        className={`lg:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-[#0B1A30] border-l border-white/[0.06] shadow-2xl z-50 transform transition-transform duration-500 ease-out-expo ${
-          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between h-20 px-5 border-b border-white/[0.06]">
-          <RealtorXLogo size="lg" showSubtitle={false} />
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            className="p-2 text-slate-400 hover:text-white rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-all"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="overflow-y-auto h-[calc(100vh-5rem)] px-5 py-6 space-y-1">
-          {navItems.slice(0, 5).map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleNav(item.id)}
-              className={`w-full text-left py-3 px-4 rounded-xl text-base font-medium transition-all duration-300 ${
-                isActive(item.id)
-                  ? 'bg-[#94A3B8]/10 text-[#94A3B8]'
-                  : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
-              }`}
-            >
-              {item.label}
+      {open && (
+        <div className="fixed inset-0 z-[60] flex flex-col bg-ink animate-fade lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+          <div className="flex h-[72px] items-center justify-between px-5">
+            <RealtorXLogo height={34} />
+            <button onClick={() => setOpen(false)} className="-mr-2 rounded-full p-2 text-fg" aria-label="Close menu">
+              <X className="h-6 w-6" strokeWidth={1.5} />
             </button>
-          ))}
-
-          <button
-            onClick={() => handleNav(member ? 'member' : 'join')}
-            className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-[#F5A623] flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20 mt-3"
-          >
-            <Briefcase className="w-4 h-4" />
-            <span>{member ? 'My membership' : 'Join RealtorX'}</span>
-          </button>
-          <button
-            onClick={() => handleNav('post-listing')}
-            className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white border border-white/15 mt-2"
-          >
-            + Post property
-          </button>
-          {isAuthenticated && (
-            <button
-              onClick={() => handleNav('my-listings')}
-              className="w-full text-left py-3 px-4 rounded-xl text-base font-medium text-slate-300 hover:bg-white/[0.04] hover:text-white"
-            >
-              My listings
-            </button>
-          )}
-
-          {navItems.slice(5).map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleNav(item.id)}
-              className={`w-full text-left py-3 px-4 rounded-xl text-base font-medium transition-all duration-300 ${
-                isActive(item.id)
-                  ? 'bg-[#94A3B8]/10 text-[#94A3B8]'
-                  : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-
-          <button
-            onClick={onToggleLanguage}
-            className="w-full flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/[0.04] border border-white/[0.06] mt-3"
-          >
-            <Globe className="w-4 h-4 text-[#F5A623]" />
-            <span>Language: {language === 'en' ? 'English' : 'اردو'}</span>
-          </button>
-
-          <div className="pt-4 mt-4 border-t border-white/[0.06] flex flex-col gap-2.5">
-            {!isAuthenticated && (
-              <>
-                <button
-                  onClick={() => handleNav('login')}
-                  className="w-full py-3 px-4 text-sm font-semibold text-[#94A3B8] border border-[#94A3B8]/30 rounded-xl text-center flex items-center justify-center gap-2 hover:bg-[#E59615]/10 transition-colors"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span>Login</span>
-                </button>
-                <button
-                  onClick={() => handleNav('signup')}
-                  className="w-full py-3 px-4 text-sm font-bold text-slate-950 bg-[#F5A623] rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  <span>Sign Up</span>
-                </button>
-              </>
-            )}
-
-            {isAuthenticated && user && (
-              <>
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#94A3B8]/30 to-[#94A3B8]/10 border border-[#94A3B8]/40 flex items-center justify-center text-[#94A3B8] text-sm font-bold">
-                    {user.full_name?.charAt(0).toUpperCase() || 'U'}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-semibold text-white truncate">
-                      {user.full_name}
-                    </div>
-                    <div className="text-[11px] text-slate-400 truncate">{user.email}</div>
-                  </div>
-                </div>
-                {user.is_staff && (
-                  <button
-                    onClick={() => handleNav('admin')}
-                    className="w-full py-3 px-4 text-sm font-semibold text-white bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-left flex items-center gap-2 transition-colors"
-                  >
-                    <User className="w-4 h-4 text-[#94A3B8]" />
-                    <span>Community Team back office</span>
-                  </button>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-3 px-4 text-sm font-medium text-red-300 bg-red-500/10 hover:bg-red-500/15 rounded-xl text-left flex items-center gap-2 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
-                </button>
-              </>
-            )}
+          </div>
+          <nav aria-label="Main" className="flex-1 px-5 pt-6">
+            {[{ id: 'home' as PageId, label: 'Home' }, ...NAV, { id: 'contact' as PageId, label: 'Contact' }].map((item, i) => (
+              <button key={item.id} onClick={() => go(item.id)} style={{ animationDelay: `${i * 40}ms` }}
+                className={`flex w-full animate-rise items-center justify-between border-b border-line py-4 text-left text-2xl tracking-[-0.02em] ${active(item.id) ? 'text-fg' : 'text-fg-2'}`}>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div className="grid gap-3 px-5 pb-8">
+            <Button size="lg" onClick={() => go('become-agent')}>Become an agent</Button>
+            <Button size="lg" variant="secondary" onClick={() => go(buyer ? 'account' : 'login')}>{buyer ? 'My account' : 'Sign in'}</Button>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
-};
+}

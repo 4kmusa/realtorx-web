@@ -1,121 +1,107 @@
 import React from 'react';
 import { PageId } from '../types';
+import { Button, Container, Eyebrow } from '../components/site/ui';
 
-// FAQ, privacy notice, terms and 404. Content only describes what the system actually
-// does today; commercial and legal commitments are left to the owner (see
-// the decision log in the private realtorx-erp-backend repo) and the policy pages are marked as drafts.
+// FAQ and 404. The policies (terms, privacy, cookies, bookings, agent and developer terms, disclaimer, complaints)
+// are in LegalPages.tsx.
 
 type Nav = (page: PageId, id?: string) => void;
 
-const CONTACT_EMAIL = 'info@realtorx.co';
-
-function Shell({ title, intro, children }: { title: string; intro?: React.ReactNode; children: React.ReactNode }) {
+function Shell({ eyebrow, title, intro, children }: { eyebrow: string; title: React.ReactNode; intro?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-bold text-white">{title}</h1>
-      {intro && <div className="mt-3 text-sm text-slate-400">{intro}</div>}
-      <div className="mt-8 space-y-8 text-sm leading-relaxed text-slate-300">{children}</div>
+    <div className="bg-ink pb-24">
+      <Container narrow className="pt-16 md:pt-24">
+        <Eyebrow className="mb-6">{eyebrow}</Eyebrow>
+        <h1 className="text-balance text-[40px] font-medium leading-[1.04] tracking-[-0.035em] text-fg md:text-6xl">{title}</h1>
+        {intro && <div className="mt-6">{intro}</div>}
+        <div className="prose-rx mt-12">{children}</div>
+      </Container>
     </div>
   );
 }
 
-function DraftNotice() {
-  return (
-    <div role="note" className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300">
-      Draft pending legal review. This page describes how the website currently handles information and is not yet a
-      final legal document.
-    </div>
-  );
-}
-
-function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <h2 className="mb-2 text-lg font-semibold text-white">{heading}</h2>
-      <div className="space-y-2">{children}</div>
-    </section>
-  );
-}
-
-const linkClass = 'text-[#F5A623] hover:underline';
+const linkClass = 'text-fg underline underline-offset-4 hover:text-blue-2';
 
 export function FaqPage({ onNavigate }: { onNavigate: Nav }) {
   const faqs: { q: string; a: React.ReactNode }[] = [
     {
       q: 'What is RealtorX?',
-      a: 'A real estate community: a verified marketplace, a membership of oath-bound professionals, a Solution Desk for problems and the RealtorX Hub where the community meets.',
+      a: 'A real estate sales company. RealtorX signs contracts with developers, lists their checked inventory and sells it through identity-verified RealtorX Agents.',
+    },
+    {
+      q: 'Do I need an account?',
+      a: 'Not to browse. To send an enquiry, book a site visit or request a booking, sign in or create a free account with your email and mobile number. Your details go with every request, and you can follow each one in My account.',
     },
     {
       q: 'Why are there no phone numbers on listings?',
       a: (
         <>
-          Every listing is handled by a RealtorX member realtor. Press <em>I&apos;m interested</em> on a property and the realtor
-          calls you. This protects owners and buyers from spam and keeps every conversation accountable.
+          Every listing is sold by RealtorX. Press <em>Enquire</em> or book a site visit and the RealtorX team calls you back. This
+          protects buyers and developers from spam and keeps every conversation accountable.
         </>
       ),
     },
     {
-      q: 'How do I post my property?',
+      q: 'How do I become a RealtorX Agent?',
       a: (
         <>
-          <button className={linkClass} onClick={() => onNavigate('post-listing')}>Post a property</button> after signing in. RealtorX
-          checks the documents, owner identity, price, photos and location before the listing goes live, and you are told the reason if
-          changes are needed.
+          See <button className={linkClass} onClick={() => onNavigate('become-agent')}>Become an Agent</button>. You apply online with
+          your details, verify your email, upload your ID and record a short video identity check. Follow your application on My application
+          with the email and password you chose. After approval RealtorX gives you your Agent dashboard password and explains the commission terms.
         </>
       ),
     },
     {
-      q: 'Who handles my listing?',
-      a: 'A RealtorX member realtor: one you choose from the member list, or the best available realtor in your area ("Best for me").',
-    },
-    {
-      q: 'How do I become a member?',
+      q: 'I am a developer. How do I list my project?',
       a: (
         <>
-          <button className={linkClass} onClick={() => onNavigate('join')}>Apply online</button>: choose your member type, complete your
-          profile, read the Manifesto, accept the Code and take the Oath. After verification you attend an orientation at the Hub, then
-          you receive your Member ID and digital card.
+          <button className={linkClass} onClick={() => onNavigate('developer-program')}>Partner with RealtorX</button>. After the contract
+          is signed, RealtorX loads your inventory and gives you a Developer dashboard.
         </>
       ),
     },
     {
-      q: 'What is the Solution Desk?',
+      q: 'I already own a property and have a problem. Can RealtorX help?',
       a: (
         <>
-          A team that works on real estate problems: stuck investments, delayed projects, mergers, legal and documentation issues.{' '}
-          <button className={linkClass} onClick={() => onNavigate('solutions')}>Submit a problem</button> and follow its progress online.
+          Yes. <button className={linkClass} onClick={() => onNavigate('solutions')}>Client Services</button> helps when a property is not
+          selling, needs maintenance, your investment is stuck in a project, or paperwork is pending.
         </>
       ),
-    },
-    {
-      q: 'Can I book a meeting room at the Hub?',
-      a: 'Approved members can request meeting rooms, desks and developer pods from their member page. The Hub team confirms each request.',
     },
     {
       q: 'Are payments taken on the website?',
-      a: 'No. Membership subscriptions and developer packages are arranged with the RealtorX Community Team.',
+      a: 'No. Buyers pay into the developer’s account according to the payment plan in their booking, and RealtorX records and verifies every payment.',
+    },
+    {
+      q: 'Can I see what I have paid and what is still due?',
+      a: 'Yes. RealtorX or your agent sends you a private statement link. It shows your schedule, the payments we have checked, and lets you download your statement and allotment letter as PDF. No account is needed.',
+    },
+    {
+      q: 'What happens if I cancel a booking?',
+      a: 'Your agent and RealtorX explain the cancellation terms of the developer before you book. If a refund is due, RealtorX records it, the deduction (if any) and the payment, and you see it on your statement.',
     },
     {
       q: 'How is my information used?',
       a: (
         <>
-          See our <button className={linkClass} onClick={() => onNavigate('privacy')}>privacy notice</button>.
+          See our <button className={linkClass} onClick={() => onNavigate('privacy')}>Privacy Policy</button>. All our policies are on the <button className={linkClass} onClick={() => onNavigate('legal')}>policies page</button>.
         </>
       ),
     },
   ];
   return (
-    <Shell title="Frequently asked questions">
-      <div className="divide-y divide-white/10 rounded-2xl border border-white/10 bg-[#0B1A30]">
+    <Shell eyebrow="Questions" title={<>Questions, <span className="em">answered</span>.</>}>
+      <div className="not-prose border-t border-line">
         {faqs.map((f) => (
-          <details key={f.q} className="group p-5">
-            <summary className="cursor-pointer list-none font-medium text-white marker:hidden">
-              <span className="flex items-center justify-between gap-4">
+          <details key={f.q} className="group border-b border-line py-6">
+            <summary className="cursor-pointer list-none text-lg text-fg marker:hidden [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center justify-between gap-6">
                 {f.q}
-                <span className="text-slate-500 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                <span className="text-2xl font-light text-fg-3 transition-transform duration-300 group-open:rotate-45" aria-hidden="true">+</span>
               </span>
             </summary>
-            <div className="mt-3 text-slate-400">{f.a}</div>
+            <div className="mt-4 max-w-2xl text-[15px] leading-relaxed text-fg-2">{f.a}</div>
           </details>
         ))}
       </div>
@@ -123,106 +109,17 @@ export function FaqPage({ onNavigate }: { onNavigate: Nav }) {
   );
 }
 
-export function PrivacyPage() {
-  return (
-    <Shell title="Privacy notice" intro={<DraftNotice />}>
-      <Section heading="What we collect">
-        <p>
-          <b>Accounts:</b> name, email, mobile number and password (stored in hashed form).
-        </p>
-        <p>
-          <b>Membership applications:</b> member type, company, city, CNIC, experience, areas served, specialization, profile text, the
-          date you accepted the Manifesto, Code and Oath, and the verification documents you upload (CNIC copies and business documents,
-          stored privately).
-        </p>
-        <p>
-          <b>Listings:</b> the property details, photos and videos you submit, your contact details and the owner&apos;s details that our
-          team records during verification.
-        </p>
-        <p>
-          <b>Requests:</b> when you press &quot;I&apos;m interested&quot;, contact us, submit a Solution Desk case or register for an event, we
-          store your name, mobile number, optional email, your message, whether you agreed to be contacted, and the page and campaign link
-          (UTM parameters) that brought you to us.
-        </p>
-      </Section>
-      <Section heading="Why we use it">
-        <p>
-          To verify members and listings, connect buyers with the realtor handling a property, work on Solution Desk cases, run the Hub and
-          events, and understand which campaigns bring people to RealtorX. We do not sell your information.
-        </p>
-      </Section>
-      <Section heading="Who can see it">
-        <p>
-          Phone numbers and emails are never published. RealtorX staff see what they need for their role. When you are interested in a
-          property, your details go to the RealtorX realtor handling it. The member directory shows only professional profile information.
-          Verification documents and owner details are visible to RealtorX staff only.
-        </p>
-      </Section>
-      <Section heading="Cookies">
-        <p>
-          We use a session cookie to keep you signed in and to protect forms against cross-site requests. Map previews and videos are loaded
-          from Google Maps and YouTube when you open a listing that has them.
-        </p>
-      </Section>
-      <Section heading="Your choices">
-        <p>
-          To access, correct or delete your information, email{' '}
-          <a className={linkClass} href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Records needed for legal obligations may have to be
-          kept.
-        </p>
-      </Section>
-    </Shell>
-  );
-}
-
-export function TermsPage({ onNavigate }: { onNavigate: Nav }) {
-  return (
-    <Shell title="Terms of use" intro={<DraftNotice />}>
-      <Section heading="Listings">
-        <p>
-          Listings must be accurate and be for property you own or are authorised to list. RealtorX may decline, edit the status of or
-          remove any listing and will tell you why. Information, images and prices are for guidance; nothing on this website is an offer or
-          a binding agreement.
-        </p>
-      </Section>
-      <Section heading="Membership">
-        <p>
-          Membership is granted after verification, orientation and the RealtorX Oath, and may be suspended for breaches of the RealtorX
-          Code. Members must not use RealtorX to bypass the realtor handling a listing.
-        </p>
-      </Section>
-      <Section heading="Solution Desk and Hub">
-        <p>
-          The Solution Desk works on a best-effort basis and does not give legal or financial advice. Hub bookings are requests until the Hub
-          team confirms them.
-        </p>
-      </Section>
-      <Section heading="Accounts">
-        <p>Keep your password private. You are responsible for activity under your account.</p>
-      </Section>
-      <Section heading="Questions">
-        <p>
-          <button className={linkClass} onClick={() => onNavigate('contact')}>Contact us</button> with any questions about these terms.
-        </p>
-      </Section>
-    </Shell>
-  );
-}
-
 export function NotFoundPage({ onNavigate }: { onNavigate: Nav }) {
   return (
-    <div className="mx-auto max-w-lg px-4 py-24 text-center">
-      <p className="text-sm font-semibold text-[#F5A623]">404</p>
-      <h1 className="mt-2 text-3xl font-bold text-white">Page not found</h1>
-      <p className="mt-3 text-sm text-slate-400">The page you are looking for does not exist or has moved.</p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <button onClick={() => onNavigate('home')} className="rounded-lg bg-[#F5A623] px-5 py-2.5 font-semibold text-black hover:bg-[#d98c15]">
-          Go home
-        </button>
-        <button onClick={() => onNavigate('properties')} className="rounded-lg border border-white/15 px-5 py-2.5 text-white hover:bg-white/5">
-          Browse properties
-        </button>
-      </div>
+    <div className="bg-ink">
+      <Container className="flex min-h-[70vh] flex-col items-start justify-center py-24">
+        <p className="font-serif text-[120px] italic leading-none text-fg-3 md:text-[180px]">404</p>
+        <h1 className="mt-6 text-3xl font-medium tracking-[-0.03em] text-fg md:text-5xl">This page has <span className="em">moved</span> or never existed.</h1>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <Button onClick={() => onNavigate('home')}>Go home</Button>
+          <Button variant="secondary" onClick={() => onNavigate('properties')}>Browse properties</Button>
+        </div>
+      </Container>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { PageId } from '../types';
 
 // Clean URL routing (History API). Every PageId has one canonical path; pages that take an id
-// use "/<base>/<id>"; portal pages keep a multi-segment section ("/member/leads/LD-1").
-// Old links from the former sales model are redirected to their new homes.
+// use "/<base>/<id>". Buyers sign in on the website (/sign-in, My account at /account); agents and developers
+// sign in to their own dashboards (/agent/, /developer/). Old links from earlier models are redirected to their new homes.
 
 const PATHS: Record<PageId, string> = {
   home: '/',
@@ -11,24 +11,26 @@ const PATHS: Record<PageId, string> = {
   projects: '/projects',
   'project-details': '/projects',
   'project-3d': '/projects',
-  'post-listing': '/post-listing',
-  'my-listings': '/my-listings',
-  join: '/join',
-  member: '/member',
-  members: '/members',
-  solutions: '/solutions',
-  hub: '/hub',
-  'developer-program': '/developer-program',
+  'virtual-tour': '/properties',
+  'become-agent': '/become-an-agent',
+  'my-application': '/my-application',
+  account: '/account',
+  solutions: '/client-services',
+  'developer-program': '/for-developers',
   about: '/about',
-  manifesto: '/manifesto',
-  code: '/code',
   contact: '/contact',
-  admin: '/admin',
-  signup: '/signup',
-  login: '/login',
+  login: '/sign-in',
   faq: '/faq',
   privacy: '/privacy',
   terms: '/terms',
+  legal: '/legal',
+  cookies: '/cookies',
+  'booking-policy': '/booking-policy',
+  'agent-terms': '/agent-terms',
+  'developer-terms': '/developer-terms',
+  disclaimer: '/disclaimer',
+  complaints: '/complaints',
+  'buyer-statement': '/statement',
   'not-found': '/404',
 };
 
@@ -36,23 +38,35 @@ const PATHS: Record<PageId, string> = {
 const ID_PAGES: Record<string, PageId> = {
   properties: 'property-detail',
   projects: 'project-details',
-  'post-listing': 'post-listing',
-  'my-listings': 'my-listings',
-  members: 'members',
+  statement: 'buyer-statement',
 };
 
 /** Pages that only exist with an id and share their base path with a list page. */
-const DETAIL_ONLY: PageId[] = ['property-detail', 'project-details', 'project-3d'];
-const NESTED_PAGES: PageId[] = ['member'];
+const DETAIL_ONLY: PageId[] = ['property-detail', 'project-details', 'project-3d', 'virtual-tour', 'buyer-statement'];
 
-/** Old paths (former sales model and earlier names) -> new page. */
+/** Old paths (earlier models and names) -> new page. */
 const REDIRECTS: Record<string, PageId> = {
-  'become-a-dealer': 'join',
-  oath: 'join',
-  dealer: 'member',
-  customer: 'member',
-  profile: 'member',
-  community: 'members',
+  // RealtorX OS v0.1 (community model, archived 2026-10-20)
+  join: 'become-agent',
+  oath: 'become-agent',
+  member: 'login',
+  members: 'about',
+  hub: 'about',
+  manifesto: 'about',
+  code: 'about',
+  community: 'about',
+  'post-listing': 'properties',
+  'my-listings': 'properties',
+  signup: 'become-agent',
+  login: 'login',
+  admin: 'login',
+  solutions: 'solutions',
+  'developer-program': 'developer-program',
+  // 2025 sales model and older names
+  'become-a-dealer': 'become-agent',
+  dealer: 'login',
+  customer: 'login',
+  profile: 'login',
   developers: 'developer-program',
   services: 'solutions',
   'site-visit': 'properties',
@@ -65,10 +79,17 @@ export interface Route {
 
 export function pathFor(page: PageId, id?: string | null): string {
   const base = PATHS[page] ?? '/';
-  if (page === 'project-3d' && id) return `/projects/${encodeURIComponent(id)}/3d`;
+  if (page === 'project-3d' && id) {
+    const [project, query] = id.split('?'); // "<project>?unit=<property>&inside=1" opens on that unit
+    return `/projects/${encodeURIComponent(project)}/3d${query ? `?${query}` : ''}`;
+  }
+  if (page === 'virtual-tour' && id) {
+    // id = "property/<id>" or "project/<id>"
+    const [kind, ...rest] = id.split('/');
+    return `/${kind === 'project' ? 'projects' : 'properties'}/${encodeURIComponent(rest.join('/'))}/tour`;
+  }
   if (!id) return base;
-  const tail = NESTED_PAGES.includes(page) ? id.split('/').map(encodeURIComponent).join('/') : encodeURIComponent(id);
-  return `${base.replace(/\/$/, '')}/${tail}`;
+  return `${base.replace(/\/$/, '')}/${encodeURIComponent(id)}`;
 }
 
 const BY_PATH: Record<string, PageId> = Object.fromEntries(
@@ -81,11 +102,10 @@ export function parsePath(pathname: string): Route {
   const clean = pathname.replace(/\/+$/, '') || '/';
   if (BY_PATH[clean]) return { page: BY_PATH[clean], id: null };
   const [, base, id, ...rest] = clean.split('/');
-  if (base === 'member') {
-    const nested = [id, ...rest].filter(Boolean).map(decodeURIComponent).join('/') || null;
-    return { page: 'member', id: nested };
-  }
   if (base === 'projects' && id && rest.length === 1 && rest[0] === '3d') return { page: 'project-3d', id: decodeURIComponent(id) };
+  if ((base === 'projects' || base === 'properties') && id && rest.length === 1 && rest[0] === 'tour') {
+    return { page: 'virtual-tour', id: `${base === 'projects' ? 'project' : 'property'}/${decodeURIComponent(id)}` };
+  }
   if (REDIRECTS[base]) return { page: REDIRECTS[base], id: null };
   if (id && !rest.length && ID_PAGES[base]) return { page: ID_PAGES[base], id: decodeURIComponent(id) };
   return { page: 'not-found', id: null };

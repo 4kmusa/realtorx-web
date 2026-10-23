@@ -1,5 +1,5 @@
 // Marketplace data: public search (guest) and the signed-in user's own listings.
-import { callGet, callPost, uploadFile } from '../../services/api/client';
+import { callGet } from '../../services/api/client';
 
 export interface PublicListing {
   name: string;
@@ -21,6 +21,8 @@ export interface PublicListing {
   bathrooms: number | null;
   is_studio: number;
   installment_available: number;
+  /** In Featured Listings: the label RealtorX gave it (e.g. "New launch"), or null. */
+  featured_badge?: string | null;
   ready_for_possession: number;
   latitude: number | null;
   longitude: number | null;
@@ -28,9 +30,21 @@ export interface PublicListing {
   listing_type: string | null;
   images: string[];
   cover_image: string | null;
-  realtor: { id: string; name: string | null; member_id: string | null; firm_name: string | null } | null;
   videos?: string[];
   amenities?: string[];
+  has_tour?: boolean;
+  /** The unit is on its project's live 3D model (interior: it also has a 3D apartment to explore). */
+  unit_3d?: { project: string; interior: boolean } | null;
+  /** The unit's project: its unit type and that type's floor plan, a project card, nearby places and location. */
+  project_context?: {
+    type: string;
+    floor_plan?: { title: string; image: string } | null;
+    project: { name: string; project_name: string; city?: string | null; status?: string | null; completion?: string | null; cover_image?: string | null;
+      developer?: string | null; developer_logo?: string | null; units: number; available: number; type_units: number; type_available: number };
+    nearby: { place: string; kind: string; distance?: string | null }[];
+    location: { latitude?: number | null; longitude?: number | null; map_link?: string | null; address?: string | null; city?: string | null };
+  } | null;
+  payment_plan?: PaymentPlan | null;
   creation: string;
 }
 
@@ -61,110 +75,43 @@ export interface SearchFilters {
   project?: string;
 }
 
+export interface PaymentPlanLine {
+  label: string;
+  percent: number;
+  kind: 'One-time' | 'Installments';
+  installments: number;
+  every_months: number;
+  due_after_days: number;
+  on_possession: number;
+}
+
+export interface PaymentPlan {
+  name: string;
+  summary: string;
+  lines: PaymentPlanLine[];
+}
+
+/** Amount of one plan line for a price (installments: the amount of each installment). */
+export function planLineAmount(price: number | null | undefined, line: PaymentPlanLine): number | null {
+  if (!price) return null;
+  const total = (price * line.percent) / 100;
+  return line.kind === 'Installments' && line.installments ? total / line.installments : total;
+}
+
 export interface FormOptions {
   purposes: string[];
   category_groups: Record<string, string[]>;
   area_units: string[];
   amenities: Record<string, string[]>;
   cities: string[];
-  max_images: number;
-  max_upload_mb: number;
-  listing_as: string | null;
-  is_realtor: boolean;
-  developer_projects: { name: string; project_name: string }[];
 }
 
-export interface RealtorChoice {
-  member: string;
-  member_id: string | null;
-  full_name: string;
-  firm_name: string | null;
-  member_type: string;
-  city: string | null;
-  areas_served: string | null;
-  experience_years: number | null;
-}
-
-export interface ListingImage {
-  name: string;
-  image: string;
-  is_cover: number;
-}
-
-export interface MyListing {
-  name: string;
-  listing_status: string;
-  decline_reason: string | null;
-  status: string;
-  purpose: string;
-  category: string;
-  city: string;
-  location_area: string;
-  address_line: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  map_link: string | null;
-  size: number;
-  size_unit: string;
-  price: number;
-  installment_available: number;
-  ready_for_possession: number;
-  is_studio: number;
-  bedrooms: number;
-  bathrooms: number;
-  title: string;
-  description: string;
-  amenities: string[];
-  videos: string[];
-  images: ListingImage[];
-  contact_email: string | null;
-  contact_mobile: string | null;
-  contact_landline: string | null;
-  realtor_preference: string;
-  requested_realtor: string | null;
-  tagged_realtor_name: string | null;
-  project: string | null;
-  interest_count: number | null;
-}
-
-export interface MyListingRow {
-  name: string;
-  property_title: string;
-  listing_status: string;
-  decline_reason: string | null;
-  purpose: string;
-  custom_property_category: string;
-  city: string;
-  location_area: string;
-  list_price: number;
-  size: number;
-  size_unit: string;
-  status: string;
-  interest_count: number | null;
-  cover_image: string | null;
-  creation: string;
-}
-
+export const getFormOptions = () => callGet<FormOptions>('realtor_x.api.v1.get_search_options');
 export const searchListings = (filters: SearchFilters) =>
   callGet<SearchResult>('realtor_x.api.v1.get_public_properties', { page_length: 24, ...filters });
+export const getFeatured = () => callGet<PublicListing[]>('realtor_x.api.v1.get_featured_properties').then((r) => r || []);
 export const getListing = (id: string) =>
   callGet<PublicListing>('realtor_x.api.v1.get_public_property_details', { property_id: id });
-export const getFormOptions = () => callGet<FormOptions>('realtor_x.api.listings.get_listing_form_options');
-export const getRealtorChoices = (city?: string, search?: string) =>
-  callGet<RealtorChoice[]>('realtor_x.api.listings.get_realtor_choices', { city, search });
-export const getMyListings = () => callGet<MyListingRow[]>('realtor_x.api.listings.get_my_listings');
-export const getMyListing = (name: string) => callGet<MyListing>('realtor_x.api.listings.get_my_listing', { name });
-export const saveListing = (data: Record<string, unknown>, name?: string | null) =>
-  callPost<{ name: string; listing_status: string }>('realtor_x.api.listings.save_listing', { ...data, name: name || undefined });
-export const submitListing = (name: string) => callPost<{ listing_status: string }>('realtor_x.api.listings.submit_listing', { name });
-export const withdrawListing = (name: string) => callPost('realtor_x.api.listings.withdraw_listing', { name });
-export const markListingSold = (name: string) => callPost('realtor_x.api.listings.mark_listing_sold', { name });
-export const uploadListingImage = (name: string, file: File) =>
-  uploadFile<{ images: ListingImage[] }>('realtor_x.api.listings.upload_listing_image', file, { name });
-export const removeListingImage = (name: string, row: string) =>
-  callPost<{ images: ListingImage[] }>('realtor_x.api.listings.remove_listing_image', { name, row });
-export const setListingCover = (name: string, row: string) =>
-  callPost<{ images: ListingImage[] }>('realtor_x.api.listings.set_listing_cover', { name, row });
 
 // ── Formatting ───────────────────────────────────────────────────────────
 

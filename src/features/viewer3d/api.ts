@@ -12,6 +12,7 @@ export interface Asset3D {
   size_mb: number | null;
   url: string;
   illustrative: boolean;
+  credit?: string | null;
   version: number;
   status: string;
 }
@@ -36,6 +37,8 @@ export interface Building3D {
   name: string;
   code: string | null;
   status: string;
+  /** How the viewer opens: Model, Day or Night. */
+  view?: 'Model' | 'Day' | 'Night';
   exterior: Asset3D | null;
   floors: Floor3D[];
   units: UnitMapping[];
@@ -47,6 +50,8 @@ export interface Unit3D {
   status: UnitStatus;
   bookable: boolean;
   listed: boolean;
+  /** Block / tower name, for grouping the unit list. */
+  group?: string | null;
   title?: string;
   category?: string | null;
   purpose?: string;

@@ -1,54 +1,55 @@
-// Home (/): the RealtorX community at a glance. Every number shown comes from the live system.
-import React, { useEffect, useState } from 'react';
-import {
-  ArrowRight, BadgeCheck, Building2, CalendarDays, ClipboardCheck, CreditCard, Handshake, LifeBuoy, MapPin, Search, ShieldCheck, UserPlus, Users,
-} from 'lucide-react';
+// Home (/): what RealtorX is, live inventory, how a deal runs from booking to the keys, and who we work with.
+// Everything listed comes from the live system; nothing is shown when there is nothing to show.
+import React, { useEffect, useRef, useState } from 'react';
+import { MapPin, Search } from 'lucide-react';
 import { PageId, Language } from '../types';
-import { useAuth } from '../context/AuthContext';
-import { callGet } from '../services/api/client';
 import InquiryModal from '../components/InquiryModal';
-import { ListingCard } from '../features/marketplace/MarketplacePage';
-import { PublicListing, searchListings } from '../features/marketplace/api';
-import { HubEvent, formatWhen } from '../features/community/HubPage';
-import { PHILOSOPHY } from '../features/membership/content';
+import { ListingCard } from '../features/marketplace/ListingCard';
+import { PublicListing, getFeatured, searchListings } from '../features/marketplace/api';
+import { ProjectCard } from '../features/projects/ProjectCard';
+import { PublicProject, getProjects } from '../features/projects/api';
+import { Button, ButtonLink, Container, Eyebrow, Section, SectionHeader, TextLink, XMark, useReveal } from '../components/site/ui';
+import { SITE, whatsappUrl } from '../config/site';
+import { Words, useScrollProgress } from '../components/site/motion';
 
 type Nav = (page: PageId, id?: string) => void;
 
-const PILLARS: { icon: React.ElementType; title: string; text: string; page: PageId; cta: string }[] = [
-  { icon: Building2, title: 'Marketplace', text: 'Verified listings for sale and rent. No phone numbers on show: every buyer is handled by a RealtorX member realtor.', page: 'properties', cta: 'Browse properties' },
-  { icon: Users, title: 'Membership', text: 'Realtors, agencies, developers, investors and solution partners, verified and bound by the RealtorX Oath.', page: 'join', cta: 'Become a member' },
-  { icon: LifeBuoy, title: 'Solution Desk', text: 'Stuck investment, delayed project, merger or legal problem? A case manager takes it from submission to resolution.', page: 'solutions', cta: 'Submit a problem' },
-  { icon: CalendarDays, title: 'RealtorX Hub', text: 'Meeting rooms, desks and developer pods for members, plus orientations, trainings and networking events.', page: 'hub', cta: 'See the Hub' },
+const JOURNEY: { stage: string; text: string }[] = [
+  { stage: 'Reserved', text: 'Your unit is held for you while the booking is prepared.' },
+  { stage: 'Booked', text: 'Booking form signed, first payment received and checked.' },
+  { stage: 'Down payment', text: 'Paid to the developer’s account and verified by RealtorX.' },
+  { stage: 'Allotment', text: 'Your allotment letter is issued for the exact unit.' },
+  { stage: 'Installments', text: 'A clear schedule, reminders, and a receipt for every payment.' },
+  { stage: 'Possession', text: 'Handover checked with you, unit by unit.' },
+  { stage: 'Transferred', text: 'Ownership transferred into your name. Deal closed.' },
 ];
 
-const JOURNEY: { icon: React.ElementType; title: string; text: string }[] = [
-  { icon: UserPlus, title: 'Apply', text: 'Tell us who you are: realtor, agency, developer, investor or partner.' },
-  { icon: ClipboardCheck, title: 'Verification', text: 'The Community Team checks your identity and profile.' },
-  { icon: Users, title: 'Orientation', text: 'Attend an orientation at the RealtorX Hub.' },
-  { icon: ShieldCheck, title: 'The Oath', text: 'Read the Manifesto, accept the Code and take the Oath.' },
-  { icon: CreditCard, title: 'Member ID', text: 'Receive your digital member card and community access.' },
+const PROMISES: { title: string; text: string }[] = [
+  { title: 'Only contracted developers', text: 'We list a project only after the developer has signed with RealtorX. Prices, plans and availability come straight from them, unit by unit.' },
+  { title: 'Every rupee accounted for', text: 'Buyers pay into the developer’s account. RealtorX checks each payment against the schedule and gives you a statement you can open any time.' },
+  { title: 'Clear at every stage', text: 'Every deal moves through the same stages, from reservation to transfer, and you can see where yours stands at any time.' },
 ];
 
 export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language }) {
-  const { user } = useAuth();
   const [purpose, setPurpose] = useState('Sell');
   const [location, setLocation] = useState('');
-  const [latest, setLatest] = useState<PublicListing[]>([]);
-  const [totals, setTotals] = useState<{ listings: number | null; members: number | null }>({ listings: null, members: null });
-  const [events, setEvents] = useState<HubEvent[]>([]);
+  const [listings, setListings] = useState<PublicListing[] | null>(null);
+  const [projects, setProjects] = useState<PublicProject[] | null>(null);
   const [interest, setInterest] = useState<PublicListing | null>(null);
+  useReveal([listings, projects]);
+  const journey = useRef<HTMLOListElement>(null);
+  useScrollProgress(journey, (p) => {
+    const el = journey.current;
+    if (!el) return;
+    el.style.setProperty('--p', String(p));
+    el.querySelectorAll<HTMLElement>('.rx-stage').forEach((li, i) => li.classList.toggle('is-lit', p >= (i + 0.35) / JOURNEY.length));
+  });
 
   useEffect(() => {
-    searchListings({ sort: 'newest' })
-      .then((r) => {
-        setLatest(r.items.slice(0, 6));
-        setTotals((t) => ({ ...t, listings: r.total }));
-      })
-      .catch(() => setLatest([]));
-    callGet<unknown[]>('realtor_x.api.v1.get_public_members')
-      .then((rows) => setTotals((t) => ({ ...t, members: rows?.length ?? 0 })))
-      .catch(() => undefined);
-    callGet<HubEvent[]>('realtor_x.api.community.get_events').then((e) => setEvents((e || []).slice(0, 3))).catch(() => setEvents([]));
+    // RealtorX's Featured Listings first, topped up from the mixed (recommended) order.
+    Promise.all([getFeatured().catch(() => []), searchListings({ sort: 'recommended' }).then((r) => r.items).catch(() => [])])
+      .then(([top, more]) => setListings([...top, ...more.filter((m) => !top.some((t) => t.name === m.name))].slice(0, 6)));
+    getProjects().then(setProjects).catch(() => setProjects([]));
   }, []);
 
   const search = (e: React.FormEvent) => {
@@ -60,191 +61,197 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
   };
 
   return (
-    <div className="bg-[#0B1A30]">
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <img src="/images/realtorx_hub_atrium_1790597209570.webp" alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B1A30]/60 via-[#0B1A30]/80 to-[#0B1A30]" aria-hidden="true" />
-        <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-20 sm:px-6 lg:px-8 lg:pt-28">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F5A623]">RealtorX · Connect. Collaborate. Grow.</p>
-          <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-            The real estate community built on trust.
+    <div className="bg-ink">
+      {/* ── Hero ── */}
+      <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+        <img src="/images/apartment_bahria_heights_1790600970754.webp" alt="" className="rx-kenburns absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/35 to-ink" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/20 to-transparent" aria-hidden="true" />
+        <Container className="relative pb-14 pt-36 md:pb-20">
+          <Eyebrow className="mb-7 animate-fade text-fg-2">Verified developer homes · Pakistan</Eyebrow>
+          <h1 className="max-w-4xl text-balance text-[46px] font-medium leading-[0.98] tracking-[-0.04em] text-fg sm:text-7xl lg:text-[96px]">
+            <Words delay={60}>Property, <span className="em">properly</span> handled.</Words>
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300">
-            A verified marketplace, a community of oath-bound professionals, a desk that solves problems and a Hub where it all meets.
+          <p className="mt-7 max-w-xl animate-rise text-pretty text-base leading-relaxed text-fg-2 md:text-lg" style={{ animationDelay: '200ms' }}>
+            RealtorX sells homes from developers under contract with us. Every unit checked, every payment verified, and one team running your deal from booking to the keys.
           </p>
 
-          <form onSubmit={search} className="mt-8 max-w-3xl rounded-2xl border border-white/10 bg-[#081221]/90 p-3 shadow-2xl backdrop-blur">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <div className="flex shrink-0 rounded-xl bg-white/5 p-1" role="tablist" aria-label="Purpose">
-                {[['Sell', 'Buy'], ['Rent', 'Rent']].map(([value, label]) => (
-                  <button key={value} type="button" role="tab" aria-selected={purpose === value} onClick={() => setPurpose(value)}
-                    className={`rounded-lg px-4 py-2 text-sm font-semibold ${purpose === value ? 'bg-[#F5A623] text-slate-950' : 'text-slate-300'}`}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <div className="relative flex-1">
-                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                <label htmlFor="home-location" className="sr-only">Location</label>
-                <input id="home-location" value={location} onChange={(e) => setLocation(e.target.value)} maxLength={140}
-                  placeholder="City, area or project"
-                  className="w-full rounded-xl border border-white/10 bg-[#0B1A30] py-3 pl-9 pr-3 text-sm text-white placeholder-slate-500 focus:border-[#F5A623]/60 focus:outline-none" />
-              </div>
-              <button type="submit" className="flex items-center justify-center gap-2 rounded-xl bg-[#F5A623] px-6 py-3 text-sm font-bold text-slate-950 hover:brightness-110">
-                <Search className="h-4 w-4" /> Search
-              </button>
+          <form onSubmit={search} className="mt-10 flex max-w-2xl animate-rise flex-col gap-2 rounded-[22px] border border-line-2 bg-ink/70 p-2 backdrop-blur-xl sm:flex-row sm:items-center sm:rounded-full" style={{ animationDelay: '300ms' }}>
+            <div className="flex shrink-0 rounded-full bg-white/[0.05] p-1" role="tablist" aria-label="Buy or rent">
+              {[['Sell', 'Buy'], ['Rent', 'Rent']].map(([value, label]) => (
+                <button key={value} type="button" role="tab" aria-selected={purpose === value} onClick={() => setPurpose(value)}
+                  className={`h-9 flex-1 rounded-full px-5 text-sm transition-colors sm:flex-none ${purpose === value ? 'bg-fg text-ink' : 'text-fg-2 hover:text-fg'}`}>
+                  {label}
+                </button>
+              ))}
             </div>
+            <label className="flex min-w-0 flex-1 items-center gap-2 px-3">
+              <MapPin className="h-4 w-4 shrink-0 text-fg-3" strokeWidth={1.5} />
+              <span className="sr-only">City, area or project</span>
+              <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={140} placeholder="City, area or project"
+                className="h-11 w-full bg-transparent text-[15px] text-fg placeholder:text-fg-3 outline-none" />
+            </label>
+            <Button type="submit" className="magnetic h-11 px-6"><Search className="h-4 w-4" strokeWidth={1.75} /> Search</Button>
           </form>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button onClick={() => onNavigate(user?.member ? 'member' : 'join')} className="flex items-center gap-2 rounded-xl border border-[#F5A623]/50 bg-[#F5A623]/10 px-5 py-3 text-sm font-semibold text-[#F5A623] hover:bg-[#F5A623]/20">
-              {user?.member ? 'My membership' : 'Join RealtorX'} <ArrowRight className="h-4 w-4" />
-            </button>
-            <button onClick={() => onNavigate('post-listing')} className="rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/5">
-              Post your property
-            </button>
-          </div>
-
-          {(totals.listings !== null || totals.members !== null) && (
-            <dl className="mt-12 grid max-w-xl grid-cols-2 gap-6">
-              {totals.listings !== null && (
-                <div><dt className="text-xs uppercase tracking-wider text-slate-400">Verified listings</dt><dd className="mt-1 text-3xl font-bold text-white">{totals.listings}</dd></div>
-              )}
-              {totals.members !== null && (
-                <div><dt className="text-xs uppercase tracking-wider text-slate-400">Oath-bound members</dt><dd className="mt-1 text-3xl font-bold text-white">{totals.members}</dd></div>
-              )}
-            </dl>
-          )}
-        </div>
-      </section>
-
-      {/* Pillars */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-white sm:text-3xl">One platform for the whole real estate ecosystem</h2>
-        <p className="mt-2 max-w-2xl text-sm text-slate-400">RealtorX is not just a listing website. It is a community with its own marketplace, solutions and home.</p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {PILLARS.map(({ icon: Icon, title, text, page, cta }) => (
-            <button key={title} onClick={() => onNavigate(page)} className="group flex flex-col rounded-2xl border border-white/10 bg-[#081221] p-6 text-left transition-colors hover:border-[#F5A623]/40">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F5A623]/10 text-[#F5A623]"><Icon className="h-5 w-5" /></span>
-              <span className="mt-4 text-lg font-semibold text-white">{title}</span>
-              <span className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{text}</span>
-              <span className="mt-5 flex items-center gap-1 text-sm font-semibold text-[#F5A623]">{cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Latest listings */}
-      <section className="border-y border-white/[0.06] bg-[#081221]">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-white sm:text-3xl">Latest verified listings</h2>
-              <p className="mt-2 text-sm text-slate-400">Checked by RealtorX before going live. Press &quot;I&apos;m interested&quot; and the realtor calls you.</p>
-            </div>
-            <button onClick={() => onNavigate('properties')} className="flex items-center gap-1 text-sm font-semibold text-[#F5A623] hover:underline">
-              View all <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-          {latest.length ? (
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {latest.map((item) => (
-                <ListingCard key={item.name} item={item} onOpen={() => onNavigate('property-detail', item.name)} onInterest={() => setInterest(item)} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-8 rounded-2xl border border-dashed border-white/15 p-10 text-center">
-              <p className="text-sm text-slate-400">New listings appear here as soon as RealtorX approves them.</p>
-              <button onClick={() => onNavigate('post-listing')} className="mt-4 rounded-xl bg-[#F5A623] px-5 py-2.5 text-sm font-bold text-slate-950">Post the first property</button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* How the marketplace works */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-bold text-white sm:text-3xl">A marketplace with a realtor behind every listing</h2>
-            <ol className="mt-6 space-y-4">
-              {[
-                ['Post', 'Owners, members and developers post with photos, videos and a map location.'],
-                ['Verify', 'RealtorX checks documents, owner identity, price and photos before approval.'],
-                ['Tag', 'Each listing is tagged to a RealtorX member realtor, chosen by the owner or by RealtorX.'],
-                ['Connect', 'Buyers press "I\'m interested". Numbers stay private; the realtor calls back.'],
-              ].map(([title, text], i) => (
-                <li key={title} className="flex gap-4">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5A623] text-sm font-bold text-slate-950">{i + 1}</span>
-                  <span><span className="block font-semibold text-white">{title}</span><span className="text-sm text-slate-400">{text}</span></span>
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white sm:text-3xl">The membership journey</h2>
-            <ol className="mt-6 space-y-3">
-              {JOURNEY.map(({ icon: Icon, title, text }) => (
-                <li key={title} className="flex items-start gap-4 rounded-xl border border-white/10 bg-[#081221] p-4">
-                  <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[#F5A623]" />
-                  <span><span className="block font-semibold text-white">{title}</span><span className="text-sm text-slate-400">{text}</span></span>
-                </li>
-              ))}
-            </ol>
-            <button onClick={() => onNavigate('join')} className="mt-5 rounded-xl bg-[#F5A623] px-5 py-3 text-sm font-bold text-slate-950 hover:brightness-110">Start your application</button>
-          </div>
-        </div>
-      </section>
-
-      {/* Developers + Solution Desk */}
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-16 sm:px-6 lg:grid-cols-2 lg:px-8">
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#13294a] to-[#081221] p-8">
-          <Handshake className="h-8 w-8 text-[#F5A623]" />
-          <h3 className="mt-4 text-xl font-bold text-white">Developer Program</h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-300">Showcase projects and brochures, get assigned RealtorX realtors, a dedicated desk at the Hub and live buyer-interest numbers.</p>
-          <button onClick={() => onNavigate('developer-program')} className="mt-5 flex items-center gap-1 text-sm font-semibold text-[#F5A623] hover:underline">Learn more <ArrowRight className="h-4 w-4" /></button>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#13294a] to-[#081221] p-8">
-          <LifeBuoy className="h-8 w-8 text-[#F5A623]" />
-          <h3 className="mt-4 text-xl font-bold text-white">Problems deserve solutions</h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-300">Allottees, investors and developers bring stuck files, delayed projects and disputes to the Solution Desk. A case manager follows each one to resolution.</p>
-          <button onClick={() => onNavigate('solutions')} className="mt-5 flex items-center gap-1 text-sm font-semibold text-[#F5A623] hover:underline">Submit a problem <ArrowRight className="h-4 w-4" /></button>
-        </div>
-      </section>
-
-      {/* Events */}
-      {events.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-bold text-white">Upcoming at the Hub</h2>
-            <button onClick={() => onNavigate('hub')} className="text-sm font-semibold text-[#F5A623] hover:underline">All events</button>
-          </div>
-          <ul className="mt-6 grid gap-4 md:grid-cols-3">
-            {events.map((e) => (
-              <li key={e.name} className="rounded-2xl border border-white/10 bg-[#081221] p-5">
-                <span className="rounded bg-[#F5A623]/15 px-2 py-0.5 text-xs font-semibold text-[#F5A623]">{e.event_type}</span>
-                <p className="mt-3 font-semibold text-white">{e.title}</p>
-                <p className="mt-1 text-sm text-slate-400">{formatWhen(e.starts_on)}</p>
-              </li>
+          <ul className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-[13px] text-fg-2">
+            {['Contracted developers only', 'Identity-checked agents', 'Payments verified by RealtorX'].map((t, i) => (
+              <li key={t} className="flex animate-fade items-center gap-2.5" style={{ animationDelay: `${400 + i * 100}ms` }}><XMark draw delay={450 + i * 100} className="h-2.5 w-2.5" /> {t}</li>
             ))}
           </ul>
-        </section>
-      )}
-
-      {/* Philosophy */}
-      <section className="relative overflow-hidden border-t border-white/[0.06]">
-        <img src="/images/realtorx_engraved_wall_1790597184603.webp" alt="" className="absolute inset-0 h-full w-full object-cover opacity-15" />
-        <div className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
-          <BadgeCheck className="mx-auto h-8 w-8 text-[#F5A623]" />
-          <blockquote className="mt-6 text-2xl font-semibold leading-snug text-white sm:text-3xl">&ldquo;{PHILOSOPHY}&rdquo;</blockquote>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <button onClick={() => onNavigate('manifesto')} className="rounded-xl border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/5">Read the Manifesto</button>
-            <button onClick={() => onNavigate('code')} className="rounded-xl border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/5">The RealtorX Code</button>
-          </div>
-        </div>
+        </Container>
       </section>
 
-      {interest && <InquiryModal propertyId={interest.name} propertyTitle={interest.property_title} realtorName={interest.realtor?.name} onClose={() => setInterest(null)} />}
+      {/* ── Statement ── */}
+      <Section>
+        <Container>
+          <div className="reveal grid gap-10 md:grid-cols-[1fr_2fr]">
+            <Eyebrow>Why RealtorX</Eyebrow>
+            <div>
+              <p className="text-balance text-[28px] font-medium leading-[1.2] tracking-[-0.025em] text-fg md:text-[42px]">
+                <Words onScroll>Buying from a developer should not feel like a <span className="em">gamble</span>. We sign the developer, check the inventory and stay with you until the keys are in your hand.</Words>
+              </p>
+              <TextLink className="mt-8" onClick={() => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' })}>See how a deal works</TextLink>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* ── Available now ── */}
+      {!!listings?.length && (
+        <Section tone="ink-2">
+          <Container>
+            <SectionHeader eyebrow="Available now" title={<>Homes and plots, <span className="em">checked</span> before they go live.</>}
+              action={<TextLink onClick={() => onNavigate('properties')}>All properties</TextLink>} />
+            <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+              {listings.map((item, i) => (
+                <div key={item.name} className="reveal" style={{ transitionDelay: `${(i % 3) * 80}ms` }}>
+                  <ListingCard item={item} featured={item.featured_badge !== undefined} onOpen={() => onNavigate('property-detail', item.name)} onInterest={() => setInterest(item)} />
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
+
+      {/* ── Journey ── */}
+      <Section id="journey">
+        <Container>
+          <SectionHeader eyebrow="How a deal works" title={<>From booking to the keys, with <span className="em">one</span> accountable partner.</>}
+            intro="Every RealtorX deal moves through the same seven stages. Nothing moves forward until the documents and payments for that stage are in and checked." />
+          <ol ref={journey} className="relative grid gap-0 md:grid-cols-7">
+            <span className="absolute left-[7px] top-2 h-[calc(100%-1rem)] w-px bg-line-2 md:left-0 md:top-[7px] md:h-px md:w-full" aria-hidden="true">
+              <span className="rx-journey-fill absolute inset-0 bg-gradient-to-b from-blue to-flame md:bg-gradient-to-r" />
+            </span>
+            {JOURNEY.map((s, i) => (
+              <li key={s.stage} className="rx-stage relative pb-10 pl-10 md:pb-0 md:pl-0 md:pr-6 md:pt-12">
+                <span className="rx-dot absolute left-0 top-1 h-[15px] w-[15px] rounded-full border border-line-2 bg-ink md:top-0" aria-hidden="true">
+                  <span className="rx-dot-core absolute inset-[4px] rounded-full" style={{ background: i < 3 ? 'var(--color-blue)' : i > 4 ? 'var(--color-flame)' : '#9b7cff' }} />
+                </span>
+                <p data-step className="text-[11px] font-medium tabular-nums tracking-[0.2em] text-fg-3">0{i + 1}</p>
+                <div className="rx-stage-text">
+                  <p className="mt-2 text-lg font-medium tracking-[-0.01em] text-fg">{s.stage}</p>
+                  <p className="mt-2 text-[14px] leading-relaxed text-fg-2">{s.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Container>
+      </Section>
+
+      {/* ── Projects ── */}
+      {!!projects?.length && (
+        <Section tone="ink-2">
+          <Container>
+            <SectionHeader eyebrow="Projects" title={<>Developments we <span className="em">sell</span> for our partners.</>}
+              action={<TextLink onClick={() => onNavigate('projects')}>All projects</TextLink>} />
+            <div className="grid gap-6 md:grid-cols-2">
+              {projects.slice(0, 4).map((p, i) => (
+                <div key={p.name} className={`reveal ${projects.length === 1 || (i === 0 && projects.length % 2 === 1) ? 'md:col-span-2' : ''}`}>
+                  <ProjectCard project={p} large={projects.length === 1 || (i === 0 && projects.length % 2 === 1)} onOpen={() => onNavigate('project-details', p.name)} />
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
+
+      {/* ── Promises ── */}
+      <Section>
+        <Container>
+          <SectionHeader eyebrow="What we promise" title={<>Three things we will <span className="em">never</span> compromise on.</>} />
+          <div className="grid gap-12 md:grid-cols-3 md:gap-10">
+            {PROMISES.map((p, i) => (
+              <div key={p.title} className="reveal spotlight rounded-2xl border-t border-line px-1 pb-4 pt-8" style={{ transitionDelay: `${i * 90}ms` }}>
+                <p className="font-serif text-5xl italic text-fg-3">0{i + 1}</p>
+                <h3 className="mt-6 text-xl font-medium tracking-[-0.015em] text-fg">{p.title}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-fg-2">{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* ── Agents and developers ── */}
+      <Section tone="ink-2" className="!py-0">
+        <div className="grid md:grid-cols-2">
+          {[
+            { img: '/images/realtorx_hub_atrium_1790597209570.webp', eyebrow: 'For agents', title: <>Sell verified inventory with RealtorX <span className="em">behind</span> you.</>,
+              text: 'Apply online with your ID and a short video. Once approved you get your own Agent ID, share links, a buyer pipeline and a clear record of every deal.', cta: 'Become an agent', page: 'become-agent' as PageId },
+            { img: '/images/plot_precinct_bahria_1790600998798.webp', eyebrow: 'For developers', title: <>A sales force that <span className="em">answers</span> to you.</>,
+              text: 'Sign with RealtorX and your units reach identity-checked agents across the city. You see every reservation, payment and handover in your own dashboard.', cta: 'Partner with RealtorX', page: 'developer-program' as PageId },
+          ].map((b) => (
+            <div key={b.eyebrow} className="group relative flex min-h-[560px] items-end overflow-hidden">
+              <img src={b.img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.03]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/10" />
+              <div className="relative p-8 md:p-12 lg:p-16">
+                <Eyebrow className="mb-5 text-fg-2">{b.eyebrow}</Eyebrow>
+                <h3 className="max-w-md text-balance text-3xl font-medium leading-[1.1] tracking-[-0.03em] text-fg md:text-[40px]">{b.title}</h3>
+                <p className="mt-4 max-w-md text-[15px] leading-relaxed text-fg-2">{b.text}</p>
+                <Button className="mt-8" arrow onClick={() => onNavigate(b.page)}>{b.cta}</Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── Client services ── */}
+      <Section>
+        <Container>
+          <div className="reveal grid items-end gap-10 border-y border-line py-14 md:grid-cols-[2fr_1fr]">
+            <div>
+              <Eyebrow className="mb-5">Client services</Eyebrow>
+              <p className="max-w-2xl text-balance text-[26px] font-medium leading-[1.2] tracking-[-0.025em] text-fg md:text-4xl">
+                Already own property? We help with resale, transfers, maintenance and investments that are <span className="em">stuck</span>.
+              </p>
+            </div>
+            <div className="md:justify-self-end">
+              <Button variant="secondary" arrow onClick={() => onNavigate('solutions')}>Ask for help</Button>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* ── Talk to us ── */}
+      <Section className="!pt-0">
+        <Container>
+          <div className="reveal spotlight relative overflow-hidden rounded-3xl border border-line bg-panel px-8 py-14 md:px-16 md:py-20">
+            <div className="x-rule absolute inset-x-0 top-0" />
+            <div className="grid items-end gap-10 md:grid-cols-[1.4fr_1fr]">
+              <div>
+                <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] text-fg md:text-[56px]"><Words onScroll>Talk to a RealtorX <span className="em">advisor</span>.</Words></h2>
+                <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-fg-2">Tell us what you are looking for and your budget. We will come back with units that fit, the payment plan, and a time to visit.</p>
+              </div>
+              <div className="flex flex-wrap gap-3 md:justify-end">
+                <ButtonLink href={whatsappUrl()} target="_blank" rel="noreferrer" arrow>WhatsApp us</ButtonLink>
+                <ButtonLink href={`tel:${SITE.phoneTel}`} variant="secondary">{SITE.phoneDisplay}</ButtonLink>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {interest && <InquiryModal propertyId={interest.name} propertyTitle={interest.property_title} onClose={() => setInterest(null)} />}
     </div>
   );
 }

@@ -2,12 +2,19 @@
 //
 // - Always same-origin through the /api/erp proxy, with the session cookie.
 // - Never sends API keys: identity comes only from the Frappe session.
-// - Adds the CSRF token (obtained from realtor_x.api.session.get_session_info) on writes.
+// - Adds the CSRF token on writes (from the dashboard session, or fetched once after a CSRF error).
 // - Converts Frappe error payloads into short, user-safe messages (no tracebacks).
 
 export const API_BASE = '/api/erp';
 
 let csrfToken: string | null = null;
+
+/** Same-origin URL of a GET method that returns a file (e.g. a PDF), for links and downloads. */
+export function methodUrl(method: string, params?: Record<string, string | number | null | undefined>): string {
+  const query = new URLSearchParams();
+  Object.entries(params || {}).forEach(([k, v]) => v != null && v !== '' && query.set(k, String(v)));
+  return `${API_BASE}/method/${method}${query.toString() ? `?${query}` : ''}`;
+}
 
 export function setCsrfToken(token: string | null | undefined) {
   csrfToken = token || null;
@@ -91,6 +98,23 @@ export async function callGet<T = any>(method: string, params?: Record<string, u
   return (payload.message ?? null) as T;
 }
 
+/** POST with the CSRF token. A signed-in visitor (agent, applicant) whose token this page does not know yet gets
+ * a CSRF error once: the token of the current session is fetched and the request is sent again. */
+async function post<T>(method: string, makeBody: () => BodyInit, contentType?: string): Promise<T> {
+  const send = () => {
+    const headers: Record<string, string> = contentType ? { 'Content-Type': contentType } : {};
+    if (csrfToken) headers['X-Frappe-CSRF-Token'] = csrfToken;
+    return request<{ message?: T }>(`/method/${method}`, { method: 'POST', headers, body: makeBody() });
+  };
+  try {
+    return ((await send()).message ?? null) as T;
+  } catch (err) {
+    if (!(err instanceof ApiError) || err.type !== 'CSRFTokenError') throw err;
+    setCsrfToken(await callGet<string | null>('realtor_x.api.account.csrf_token'));
+    return ((await send()).message ?? null) as T;
+  }
+}
+
 /** POST to a whitelisted method (form-encoded, with CSRF) and return its `message`. */
 export async function callPost<T = any>(method: string, data?: Record<string, unknown>): Promise<T> {
   const body = new URLSearchParams();
@@ -98,51 +122,15 @@ export async function callPost<T = any>(method: string, data?: Record<string, un
     if (value === undefined || value === null) continue;
     body.append(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
   }
-  const headers: Record<string, string> = { 'Content-Type': 'application/x-www-form-urlencoded' };
-  if (csrfToken) headers['X-Frappe-CSRF-Token'] = csrfToken;
-  const payload = await request<{ message?: T }>(`/method/${method}`, { method: 'POST', headers, body: body.toString() });
-  return (payload.message ?? null) as T;
+  return post<T>(method, () => body.toString(), 'application/x-www-form-urlencoded');
 }
 
 /** POST a single file (multipart field "file") plus extra fields to a whitelisted method. */
 export async function uploadFile<T = any>(method: string, file: File, data?: Record<string, string>): Promise<T> {
-  const body = new FormData();
-  for (const [key, value] of Object.entries(data || {})) body.append(key, value);
-  body.append('file', file, file.name);
-  const headers: Record<string, string> = {};
-  if (csrfToken) headers['X-Frappe-CSRF-Token'] = csrfToken;
-  const payload = await request<{ message?: T }>(`/method/${method}`, { method: 'POST', headers, body });
-  return (payload.message ?? null) as T;
-}
-
-/** Insert a document through the standard REST API (permissions enforced server-side). */
-export async function createDoc<T = any>(doctype: string, doc: Record<string, unknown>): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (csrfToken) headers['X-Frappe-CSRF-Token'] = csrfToken;
-  const payload = await request<{ data: T }>(`/resource/${encodeURIComponent(doctype)}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(doc),
+  return post<T>(method, () => {
+    const body = new FormData();
+    for (const [key, value] of Object.entries(data || {})) body.append(key, value);
+    body.append('file', file, file.name);
+    return body;
   });
-  return payload.data;
-}
-
-/** Frappe's login endpoint (sets the session cookie). */
-export async function login(usr: string, pwd: string): Promise<void> {
-  const body = new URLSearchParams({ usr, pwd });
-  await request('/method/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
-}
-
-export async function logout(): Promise<void> {
-  try {
-    const headers: Record<string, string> = {};
-    if (csrfToken) headers['X-Frappe-CSRF-Token'] = csrfToken;
-    await request('/method/logout', { method: 'POST', headers });
-  } finally {
-    setCsrfToken(null);
-  }
 }

@@ -2,9 +2,12 @@
 // status under a lock and returns a reference. A booking request holds the unit while RealtorX reviews
 // it; it is not a confirmed booking.
 import React, { useEffect, useRef, useState } from 'react';
-import { CalendarDays, CheckCircle2, Loader2, X } from 'lucide-react';
+import { Modal, Sent } from '../../components/site/Modal';
+import { Alert, Button, Checkbox, Field, inputClass, textareaClass } from '../../components/site/ui';
 import { callPost } from '../../services/api/client';
-import { useAuth } from '../../context/AuthContext';
+import { agentRef } from '../../utils/agentRef';
+import AuthForms from '../buyer/AuthForms';
+import { useBuyer } from '../buyer/session';
 
 export type RequestMode = 'visit' | 'booking';
 
@@ -18,7 +21,6 @@ interface Props {
 }
 
 const SLOTS = ['Morning', 'Afternoon', 'Evening'];
-const input = 'w-full rounded-lg border border-white/10 bg-[#081221] px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#F5A623]/60 focus:outline-none';
 
 function utm(): Record<string, string> {
   const out: Record<string, string> = {};
@@ -31,25 +33,21 @@ function utm(): Record<string, string> {
 }
 
 export default function RequestModal({ mode, unitId, projectId, title, onClose, onDone }: Props) {
-  const { user } = useAuth();
-  const [form, setForm] = useState({ name: user?.full_name || '', phone: user?.phone || '', email: user?.email || '', visit_date: '', visit_slot: 'Morning', message: '', consent: false });
+  const { buyer, loading: sessionLoading } = useBuyer();
+  const [form, setForm] = useState({ visit_date: '', visit_slot: 'Morning', message: '', consent: false });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ reference: string; hours?: number } | null>(null);
-  const first = useRef<HTMLInputElement>(null);
+  const first = useRef<HTMLTextAreaElement>(null);
   const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
 
   useEffect(() => {
     first.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [buyer]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!/^(\+92|0)?3\d{9}$/.test(form.phone.replace(/[\s-]/g, ''))) return setError('Please enter a valid Pakistani mobile number, e.g. 03001234567.');
     if (!form.consent) return setError('Please agree that RealtorX may contact you about this request.');
     if (mode === 'visit' && !form.visit_date) return setError('Please choose a preferred visit date.');
     setBusy(true);
@@ -57,14 +55,12 @@ export default function RequestModal({ mode, unitId, projectId, title, onClose, 
       const payload = {
         property_id: unitId || undefined,
         project_id: projectId || undefined,
-        name: form.name.trim(),
-        phone: form.phone.replace(/[\s-]/g, ''),
-        email: form.email.trim() || undefined,
         message: form.message.trim() || undefined,
         consent: 1,
         landing_page: window.location.pathname.slice(0, 500),
         ...(mode === 'visit' ? { visit_date: form.visit_date, visit_slot: form.visit_slot } : {}),
         ...utm(),
+        agent_ref: agentRef(),
       };
       const res = await callPost<{ reference: string; hold_hours?: number }>(
         mode === 'visit' ? 'realtor_x.api.v1.request_visit' : 'realtor_x.api.v1.request_booking',
@@ -79,62 +75,46 @@ export default function RequestModal({ mode, unitId, projectId, title, onClose, 
     }
   };
 
+  const visit = mode === 'visit';
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 p-4" role="dialog" aria-modal="true" aria-labelledby="req-title" onClick={onClose}>
-      <div className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl border border-white/10 bg-[#0B1A30] p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 id="req-title" className="text-lg font-semibold text-white">{mode === 'visit' ? 'Request a visit' : 'Request booking'}</h2>
-            <p className="text-xs text-slate-400">{title}</p>
-          </div>
-          <button onClick={onClose} aria-label="Close" className="rounded p-1 text-slate-400 hover:text-white"><X className="h-5 w-5" /></button>
-        </div>
-
-        {done ? (
-          <div className="mt-6 text-center" role="status">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400" />
-            <p className="mt-3 font-semibold text-white">Request received</p>
-            <p className="mt-1 text-sm text-slate-300">Reference <span className="font-mono text-[#F5A623]">{done.reference}</span></p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">
-              {mode === 'visit'
-                ? 'The RealtorX realtor for this property will call you to confirm the appointment.'
-                : `The unit is held for you for up to ${done.hours || 48} hours while RealtorX reviews your request. This is a request, not a confirmed booking; we will call you about the next steps.`}
-            </p>
-            <button onClick={onClose} className="mt-6 w-full rounded-xl bg-[#F5A623] py-3 text-sm font-bold text-slate-950">Close</button>
-          </div>
-        ) : (
-          <form onSubmit={submit} className="mt-5 space-y-3">
-            {error && <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-200" role="alert">{error}</p>}
-            <label className="block text-sm text-slate-200">Full name *<input ref={first} className={`${input} mt-1`} required minLength={2} maxLength={140} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
-            <label className="block text-sm text-slate-200">Mobile *<input className={`${input} mt-1`} required inputMode="tel" maxLength={16} placeholder="03XX XXXXXXX" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></label>
-            <label className="block text-sm text-slate-200">Email<input type="email" className={`${input} mt-1`} maxLength={140} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
-            {mode === 'visit' && (
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block text-sm text-slate-200">Preferred date *<input type="date" className={`${input} mt-1`} min={tomorrow} required value={form.visit_date} onChange={(e) => setForm({ ...form, visit_date: e.target.value })} /></label>
-                <label className="block text-sm text-slate-200">Time
-                  <select className={`${input} mt-1`} value={form.visit_slot} onChange={(e) => setForm({ ...form, visit_slot: e.target.value })}>
-                    {SLOTS.map((s) => <option key={s}>{s}</option>)}
-                  </select>
-                </label>
-              </div>
-            )}
-            <label className="block text-sm text-slate-200">Message<textarea rows={3} className={`${input} mt-1`} maxLength={2000} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></label>
-            {mode === 'booking' && (
-              <p className="flex items-start gap-2 rounded-lg bg-amber-500/10 p-3 text-xs text-amber-200">
-                <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" /> The unit will be held for you while RealtorX reviews the request (up to 48 hours). Price and availability are confirmed by RealtorX.
-              </p>
-            )}
-            <label className="flex items-start gap-2 text-xs text-slate-300">
-              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[#F5A623]" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} />
-              I agree that RealtorX may contact me by phone, WhatsApp or email about this request.
-            </label>
-            <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F5A623] py-3 text-sm font-bold text-slate-950 disabled:opacity-50">
-              {busy && <Loader2 className="h-4 w-4 animate-spin" />} {mode === 'visit' ? 'Send visit request' : 'Send booking request'}
-            </button>
-            <p className="text-[11px] text-slate-500">Your details are used only for this request. Phone numbers are never shown publicly.</p>
-          </form>
-        )}
-      </div>
-    </div>
+    <Modal title={visit ? 'Book a site visit' : 'Request a booking'} subtitle={title} onClose={onClose} labelId="request-title">
+      {done ? (
+        <Sent title={visit ? 'Your visit request is in' : 'The unit is held for you'} reference={done.reference} onClose={onClose}>
+          {visit
+            ? 'A RealtorX advisor will call to confirm the time. Please bring your CNIC to the site office.'
+            : `RealtorX holds this unit for you${done.hours ? ` for ${done.hours} hours` : ''} while our team reviews the request and calls you with the booking steps. It is not a confirmed booking yet.`}
+        </Sent>
+      ) : !buyer ? (
+        sessionLoading ? <p className="py-6 text-sm text-fg-3">Loading…</p> : (
+          <AuthForms compact intro={visit ? 'Sign in or create a free account to book your site visit. You can follow it in My account.'
+            : 'Sign in or create a free account to request this booking. You can follow it in My account.'} />
+        )
+      ) : (
+        <form onSubmit={submit} className="space-y-5">
+          {!visit && <Alert tone="info">A booking request holds the unit while RealtorX checks it with the developer. We call you before anything is paid. See the <a href="/booking-policy" target="_blank" rel="noreferrer" className="underline underline-offset-4">Booking Policy</a>.</Alert>}
+          <p className="rounded-xl bg-white/[0.03] px-4 py-3 text-[13px] text-fg-2">Requesting as <b className="text-fg">{buyer.full_name}</b> · {buyer.phone || buyer.email}. Change your details in My account.</p>
+          {visit && (
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Preferred date" htmlFor="rq-date">
+                <input id="rq-date" type="date" min={tomorrow} required className={inputClass} value={form.visit_date} onChange={(e) => setForm({ ...form, visit_date: e.target.value })} />
+              </Field>
+              <Field label="Time of day" htmlFor="rq-slot">
+                <select id="rq-slot" className={inputClass} value={form.visit_slot} onChange={(e) => setForm({ ...form, visit_slot: e.target.value })}>
+                  {SLOTS.map((s) => <option key={s}>{s}</option>)}
+                </select>
+              </Field>
+            </div>
+          )}
+          <Field label="Message (optional)" htmlFor="rq-msg">
+            <textarea id="rq-msg" ref={first} rows={3} className={textareaClass} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+          </Field>
+          <Checkbox id="rq-consent" checked={form.consent} onChange={(v) => setForm({ ...form, consent: v })}>
+            RealtorX may contact me by phone, WhatsApp or email about this request.
+          </Checkbox>
+          {error && <Alert>{error}</Alert>}
+          <Button type="submit" size="lg" busy={busy} className="w-full">{visit ? 'Request the visit' : 'Request the booking'}</Button>
+        </form>
+      )}
+    </Modal>
   );
 }
