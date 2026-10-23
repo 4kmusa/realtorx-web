@@ -78,13 +78,11 @@ export default function BuyerStatementPage({ dealId }: { dealId: string }) {
       </p>
       <p className="mt-6 text-[15px] leading-relaxed text-fg-2">Dear {data.buyer}, this page shows your payment schedule and the payments RealtorX has received and checked.</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        {(['statement', ...(['Allotment', 'Installments', 'Possession', 'Transferred'].includes(data.stage) ? ['allotment_letter'] : [])] as string[]).map((kind) => (
-          <a key={kind} target="_blank" rel="noreferrer"
-            href={methodUrl('realtor_x.api.v1.buyer_document', { deal: data.deal, key: new URLSearchParams(window.location.search).get('k'), kind })}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-line-2 px-4 text-[13px] text-fg hover:bg-white/[0.04]">
-            <FileDown className="h-3.5 w-3.5" strokeWidth={1.5} /> {kind === 'statement' ? 'Download statement (PDF)' : 'Allotment letter (PDF)'}
-          </a>
-        ))}
+        <a target="_blank" rel="noreferrer"
+          href={methodUrl('realtor_x.api.v1.buyer_document', { deal: data.deal, key: new URLSearchParams(window.location.search).get('k'), kind: 'statement' })}
+          className="inline-flex h-9 items-center gap-2 rounded-full border border-line-2 px-4 text-[13px] text-fg hover:bg-white/[0.04]">
+          <FileDown className="h-3.5 w-3.5" strokeWidth={1.5} /> Download statement (PDF)
+        </a>
       </div>
 
       {data.stage === 'Cancelled' ? (

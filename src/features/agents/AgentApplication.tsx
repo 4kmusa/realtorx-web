@@ -261,7 +261,8 @@ function VideoStep({ phrase, done, busy, onUpload }: { phrase: string; done: boo
   const record = () => {
     if (!stream) return;
     const type = ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
-    const rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+    // About 1.6 Mbit/s: 15 seconds stay near 3 MB, quick to upload on mobile data.
+    const rec = new MediaRecorder(stream, { ...(type ? { mimeType: type } : {}), videoBitsPerSecond: 1_500_000, audioBitsPerSecond: 64_000 });
     const chunks: Blob[] = [];
     rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     rec.onstop = () => {

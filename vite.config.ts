@@ -89,6 +89,7 @@ export default defineConfig(({ mode }) => {
               /^\/api\/method\/frappe\.apps\./,
               /^\/api\/method\/frappe\.utils\./,
               /^\/api\/method\/run_doc_method/,
+              /^\/api\/method\/login(\?|$)/, // the dashboards and website sign in through realtor_x.api.portal.login
             ];
             proxy.on('proxyReq', (proxyReq, req, res) => {
               proxyReq.removeHeader('expect');

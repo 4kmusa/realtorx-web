@@ -1,16 +1,7 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@5.0.0"
-    }
-  },
   "rewrites": [
-    {
-      "source": "/api/erp/:path*",
-      "destination": "/api/erp/[...path]"
-    },
     {
       "source": "/agent/:path*",
       "destination": "/agent/index.html"
@@ -20,7 +11,7 @@
       "destination": "/developer/index.html"
     },
     {
-      "source": "/((?!api|agent|developer).*)",
+      "source": "/((?!api/|files/|private/|agent/|agent$|developer/|developer$|assets/).*)",
       "destination": "/index.html"
     }
   ],
