@@ -2,6 +2,8 @@
 
 export const SITE = {
   name: 'RealtorX',
+  /** Public address used for canonical links and share previews (the same site is also served on vercel.app). */
+  url: 'https://www.realtorxglobal.com',
   phoneDisplay: '+92 304 9383785',
   phoneTel: '+923049383785',
   whatsapp: '923049383785',
