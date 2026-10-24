@@ -88,7 +88,7 @@ export default function VirtualTourPage({ routeId, onNavigate }: { routeId: stri
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
             {tour.preview && <span className="rounded-full bg-sky-500/15 px-3 py-1 font-semibold text-sky-300">Staff preview{tour.status !== 'Published' ? ` · ${tour.status}` : ''}</span>}
-            {tour.illustrative && <span className="flex items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 font-semibold text-amber-300"><AlertTriangle className="h-3.5 w-3.5" /> Illustrative images, not real photos</span>}
+            <span className="flex items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 font-semibold text-amber-300"><AlertTriangle className="h-3.5 w-3.5" /> {tour.illustrative ? 'Illustrative images, not real photos' : 'Photos for orientation; finishes and furniture may differ'}</span>
           </div>
         </div>
 

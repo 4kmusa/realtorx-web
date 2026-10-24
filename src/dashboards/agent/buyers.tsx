@@ -100,7 +100,7 @@ function LeadPanel({ name, onBack }: { name: string; onBack: () => void }) {
                   <p className="mt-1 text-sm text-fg-2">{l.status} · {l.agent_source} · since {formatDate(l.creation)}</p>
                   <a href={`tel:${l.phone}`} className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-200"><Phone className="h-4 w-4" /> {l.phone}</a>
                   {l.email && <p className="mt-2 text-sm text-fg-2">{l.email}</p>}
-                  {l.property_title && <p className="mt-3 text-sm text-fg-2">Interested in: <b className="text-fg">{l.property_title}</b></p>}
+                  {l.property_title && <p className="mt-3 text-sm text-fg-2">{t('Interested in:')} <b className="text-fg">{l.property_title}</b></p>}
                   {l.inquiry_message && <p className="mt-2 text-sm text-fg-2">“{l.inquiry_message}”</p>}
                   {l.deals.length > 0 && <p className="mt-3 text-sm text-fg-2">Deals: {l.deals.map((d) => `${d.name} (${d.stage})`).join(', ')}</p>}
                 </div>
@@ -127,7 +127,7 @@ function LeadPanel({ name, onBack }: { name: string; onBack: () => void }) {
                   </form>
                   <form className="space-y-3 rounded-xl border border-line bg-panel p-5" onSubmit={(e) => { e.preventDefault(); act(async () => { const r = await callPost<{ reference: string; hold_hours: number }>('realtor_x.api.portal.agent_request_booking', { lead: name, unit: unit || l.property_reference }); return `Booking request ${r.reference} sent. The unit is held for ${r.hold_hours} hours while RealtorX reviews it.`; }); }}>
                     <p className="font-semibold text-fg">{t("Ready to book?")}</p>
-                    <p className="text-sm text-fg-2">RealtorX holds the unit while the team confirms the booking and opens the deal.</p>
+                    <p className="text-sm text-fg-2">{t('RealtorX holds the unit while the team confirms the booking and opens the deal.')}</p>
                     <Field label="Unit ID" htmlFor="ld-unit" hint="The listing ID from the unit's link, e.g. PROP-2026-00008.">
                       <input id="ld-unit" placeholder={l.property_reference || 'PROP-…'} value={unit} onChange={(e) => setUnit(e.target.value.trim())} className={inputClass} />
                     </Field>
@@ -208,7 +208,7 @@ export function DealsSection() {
           <ul className="space-y-3">
             {rows.map((d) => (
               <li key={d.name} className="rounded-xl border border-line bg-panel p-4">
-                <button onClick={() => setOpen(open === d.name ? null : d.name)} className="flex w-full flex-wrap items-center justify-between gap-2 text-left" aria-expanded={open === d.name}>
+                <button onClick={() => setOpen(open === d.name ? null : d.name)} className="flex w-full flex-wrap items-center justify-between gap-2 text-start" aria-expanded={open === d.name}>
                   <span className="font-semibold text-fg">{d.unit_title} <span className="text-xs font-normal text-fg-2">· {d.project_name} · {d.name}</span></span>
                   <span className="flex items-center gap-2"><span className="rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-semibold text-sky-200">{d.stage}</span>{open === d.name ? <ChevronUp className="h-4 w-4 text-fg-2" /> : <ChevronDown className="h-4 w-4 text-fg-2" />}</span>
                 </button>

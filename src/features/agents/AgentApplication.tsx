@@ -55,10 +55,16 @@ export default function AgentApplication() {
       else if (!st.documents.id_front || !st.documents.id_back) setStep(3);
       else if (!st.documents.selfie_video) setStep(4);
       else setStep(5);
-    } catch {
-      store(null);
-      setSaved(null);
-      setStep(0);
+    } catch (e: any) {
+      // Forget the saved application only when the server says it is gone or the key is wrong; a network error or a
+      // server hiccup keeps it, so the applicant can try again without starting over.
+      if (e?.status === 404 || e?.status === 403 || e?.status === 401 || e?.type === 'DoesNotExistError') {
+        store(null);
+        setSaved(null);
+        setStep(0);
+      } else {
+        setError(e?.message || 'Cannot reach RealtorX. Check your connection and try again.');
+      }
     }
   };
 
@@ -248,6 +254,11 @@ function VideoStep({ phrase, done, busy, onUpload }: { phrase: string; done: boo
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => () => stream?.getTracks().forEach((t) => t.stop()), [stream]);
+  // The live preview is a new <video> each time it shows (also after "Record again"): give it the camera again.
+  useEffect(() => {
+    if (!clip && stream && live.current) live.current.srcObject = stream;
+  }, [clip, stream]);
+  useEffect(() => () => { if (clip) URL.revokeObjectURL(clip.url); }, [clip]);
   const open = async () => {
     setCamError(null);
     try {

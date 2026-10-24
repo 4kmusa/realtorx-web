@@ -5,6 +5,7 @@ export interface PublicListing {
   name: string;
   property_title: string;
   purpose: 'Sell' | 'Rent' | null;
+  currency?: string | null;
   custom_property_category: string | null;
   category_group: 'Home' | 'Plots' | 'Commercial' | null;
   property_type: string | null;
@@ -115,10 +116,12 @@ export const getListing = (id: string) =>
 
 // ── Formatting ───────────────────────────────────────────────────────────
 
-export function formatPrice(price: number | null | undefined, purpose?: string | null): string {
+/** Price in the listing's currency: PKR in Lakh / Crore, other currencies (e.g. AED) as plain numbers. */
+export function formatPrice(price: number | null | undefined, purpose?: string | null, currency?: string | null): string {
   if (!price) return 'Price on request';
   let text: string;
-  if (price >= 10_000_000) text = `PKR ${(price / 10_000_000).toFixed(2).replace(/\.?0+$/, '')} Crore`;
+  if (currency && currency !== 'PKR') text = `${currency} ${Math.round(price).toLocaleString('en-US')}`;
+  else if (price >= 10_000_000) text = `PKR ${(price / 10_000_000).toFixed(2).replace(/\.?0+$/, '')} Crore`;
   else if (price >= 100_000) text = `PKR ${(price / 100_000).toFixed(2).replace(/\.?0+$/, '')} Lakh`;
   else text = `PKR ${Math.round(price).toLocaleString('en-PK')}`;
   return purpose === 'Rent' ? `${text} / month` : text;

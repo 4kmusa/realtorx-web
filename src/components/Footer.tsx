@@ -5,6 +5,7 @@ import { PageId } from '../types';
 import { SITE, whatsappUrl } from '../config/site';
 import { RealtorXLogo } from './RealtorXLogo';
 import { Button, Container, XMark, inputClass } from './site/ui';
+import { PageLink } from './site/PageLink';
 
 type Nav = (page: PageId) => void;
 
@@ -74,7 +75,7 @@ export function Footer({ onNavigate }: { onNavigate: Nav }) {
               <ul className="space-y-3">
                 {col.links.map(([id, label]) => (
                   <li key={id}>
-                    <button onClick={() => onNavigate(id)} className="text-[14px] text-fg-2 transition-colors hover:text-fg">{label}</button>
+                    <PageLink page={id} onNavigate={onNavigate} className="text-[14px] text-fg-2 transition-colors hover:text-fg">{label}</PageLink>
                   </li>
                 ))}
               </ul>
@@ -85,10 +86,10 @@ export function Footer({ onNavigate }: { onNavigate: Nav }) {
         <div className="flex flex-col gap-4 border-t border-line py-8 text-[12px] text-fg-3 md:flex-row md:items-center md:justify-between">
           <p className="flex items-center gap-2"><XMark className="h-2.5 w-2.5" /> © {new Date().getFullYear()} RealtorX. {SITE.address}</p>
           <div className="flex gap-6">
-            <button onClick={() => onNavigate('terms')} className="hover:text-fg">Terms</button>
-            <button onClick={() => onNavigate('privacy')} className="hover:text-fg">Privacy</button>
-            <button onClick={() => onNavigate('cookies')} className="hover:text-fg">Cookies</button>
-            <button onClick={() => onNavigate('legal')} className="hover:text-fg">All policies</button>
+            <PageLink page="terms" onNavigate={onNavigate} className="hover:text-fg">Terms</PageLink>
+            <PageLink page="privacy" onNavigate={onNavigate} className="hover:text-fg">Privacy</PageLink>
+            <PageLink page="cookies" onNavigate={onNavigate} className="hover:text-fg">Cookies</PageLink>
+            <PageLink page="legal" onNavigate={onNavigate} className="hover:text-fg">All policies</PageLink>
           </div>
         </div>
       </Container>

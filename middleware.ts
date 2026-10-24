@@ -1,5 +1,5 @@
-// Vercel Routing Middleware: the website's API (/api/erp/*) and the backend's files (/files/*, /private/files/*) are
-// rewritten at Vercel's edge straight to the Frappe site in ERPNEXT_URL (no trailing slash).
+// Vercel Routing Middleware: the website's API (/api/erp/*), the backend's files (/files/*, /private/files/*) and
+// /sitemap.xml are rewritten at Vercel's edge straight to the Frappe site in ERPNEXT_URL (no trailing slash).
 //
 // - Same origin for the browser, so the Frappe session cookie stays first-party (no CORS, no third-party cookies).
 // - The request is passed through untouched: uploads (ID photos, the identity-check video, payment proofs,
@@ -8,7 +8,7 @@
 //   in depth for Desk APIs the website never uses; the backend is the authority.
 // Local development uses the same routes through the Vite dev proxy (vite.config.ts).
 
-export const config = { matcher: ['/api/erp/:path*', '/files/:path*', '/private/files/:path*'] };
+export const config = { matcher: ['/api/erp/:path*', '/files/:path*', '/private/files/:path*', '/sitemap.xml'] };
 
 const BLOCKED_PATTERNS = [
   /^\/resource\/User(\?|$)/,
@@ -32,7 +32,8 @@ export default function middleware(request: Request): Response {
 
   const url = new URL(request.url);
   let path = url.pathname;
-  if (path.startsWith('/api/erp/')) {
+  if (path === '/sitemap.xml') path = '/api/method/realtor_x.api.v1.sitemap'; // built by the backend from the live listings
+  else if (path.startsWith('/api/erp/')) {
     const rest = path.slice('/api/erp'.length); // "/method/…" or "/resource/…"
     let probe = rest + url.search;
     try {
@@ -46,5 +47,29 @@ export default function middleware(request: Request): Response {
     path = `/api${rest}`;
   }
   const target = new URL(path + url.search, base.replace(/\/+$/, '') + '/');
-  return new Response(null, { headers: { 'x-middleware-rewrite': target.toString() } });
+  return new Response(null, { headers: rewriteHeaders(target.toString(), request) });
+}
+
+/** With RX_EDGE_KEY set (here and in the gate): the rewrite also carries the visitor's IP (for the backend's rate
+ * limits), country and the key, so the gate trusts that IP only on requests that came through Vercel; a request sent to
+ * the backend address directly cannot fake it. Without the key: a plain rewrite, as before.
+ * (Request-header override: the same headers @vercel/functions' rewrite() sets; Host is left to Vercel.) */
+function rewriteHeaders(target: string, request: Request): Headers {
+  const env = (globalThis as any).process?.env || {};
+  if (!env.RX_EDGE_KEY) return new Headers({ 'x-middleware-rewrite': target });
+  const forwarded = new Headers(request.headers);
+  forwarded.delete('host');
+  const visitor = request.headers.get('x-real-ip') || (request.headers.get('x-forwarded-for') || '').split(',')[0].trim();
+  if (visitor) forwarded.set('x-rx-visitor-ip', visitor);
+  const country = request.headers.get('x-vercel-ip-country');
+  if (country) forwarded.set('x-vercel-ip-country', country);
+  forwarded.set('x-rx-edge-key', String(env.RX_EDGE_KEY));
+  const headers = new Headers({ 'x-middleware-rewrite': target });
+  const keys: string[] = [];
+  forwarded.forEach((value, key) => {
+    headers.set(`x-middleware-request-${key}`, value);
+    keys.push(key);
+  });
+  headers.set('x-middleware-override-headers', keys.join(','));
+  return headers;
 }

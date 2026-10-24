@@ -3,3 +3,5 @@ Disallow: /agent/
 Disallow: /developer/
 Disallow: /statement/
 Disallow: /api/
+
+Sitemap: https://www.realtorxglobal.com/sitemap.xml

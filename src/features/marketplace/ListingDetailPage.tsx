@@ -14,6 +14,7 @@ import { Button, Container, Eyebrow, Tag, XMark } from '../../components/site/ui
 import { FEATURES } from '../../config/site';
 import { PublicListing, formatArea, formatPrice, getListing, imageUrl, mapEmbedUrl, planLineAmount, searchListings, youtubeId } from './api';
 import { ListingCard } from './ListingCard';
+import { markNotFound } from '../../utils/seo';
 
 type Nav = (page: PageId, id?: string) => void;
 
@@ -43,7 +44,11 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
           (s) => !cancelled && setSimilar(s.items.filter((x) => x.name !== r.name).slice(0, 3))
         );
       })
-      .catch((e) => !cancelled && setError(e?.status === 404 ? 'This property is not available any more.' : e?.message || 'Could not load the property.'));
+      .catch((e) => {
+        if (cancelled) return;
+        if (e?.status === 404) markNotFound();
+        setError(e?.status === 404 ? 'This property is not available any more.' : e?.message || 'Could not load the property.');
+      });
     return () => {
       cancelled = true;
     };
@@ -111,7 +116,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
             <Eyebrow className="mb-4">{[item.purpose === 'Rent' ? 'For rent' : 'For sale', place].filter(Boolean).join('  ·  ')}</Eyebrow>
             <h1 className="text-balance text-[34px] font-medium leading-[1.05] tracking-[-0.03em] text-fg md:text-[52px]">{item.property_title}</h1>
           </div>
-          <p className="text-3xl font-medium tracking-[-0.02em] text-fg md:text-4xl">{formatPrice(item.list_price, item.purpose)}</p>
+          <p className="text-3xl font-medium tracking-[-0.02em] text-fg md:text-4xl">{formatPrice(item.list_price, item.purpose, item.currency)}</p>
         </div>
 
         {/* Gallery */}
@@ -241,7 +246,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
                             <td className="py-4 pr-4">{l.label}<span className="mt-1 block text-[12px] text-fg-3 sm:hidden">{when}</span></td>
                             <td className="hidden py-4 pr-4 text-fg-2 sm:table-cell">{when}</td>
                             <td className="py-4 pr-4 text-right tabular-nums text-fg-2">{l.percent}%</td>
-                            <td className="py-4 text-right tabular-nums">{amount ? `${formatPrice(Math.round(amount))}${l.kind === 'Installments' ? ' each' : ''}` : '—'}</td>
+                            <td className="py-4 text-right tabular-nums">{amount ? `${formatPrice(Math.round(amount), null, item.currency)}${l.kind === 'Installments' ? ' each' : ''}` : '—'}</td>
                           </tr>
                         );
                       })}
@@ -306,7 +311,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
           <aside className="h-fit lg:sticky lg:top-28">
             <div className="rounded-2xl border border-line bg-panel p-7">
               <p className="text-[13px] text-fg-3">{item.purpose === 'Rent' ? 'Monthly rent' : 'Price'}</p>
-              <p className="mt-1 text-3xl font-medium tracking-[-0.02em] text-fg">{formatPrice(item.list_price, item.purpose)}</p>
+              <p className="mt-1 text-3xl font-medium tracking-[-0.02em] text-fg">{formatPrice(item.list_price, item.purpose, item.currency)}</p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {item.installment_available ? <Tag tone="blue">Installments available</Tag> : null}
                 {item.ready_for_possession ? <Tag tone="good">Ready for possession</Tag> : null}

@@ -1,5 +1,5 @@
 {
-  "name": "react-example",
+  "name": "realtorx-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,7 +14,6 @@
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
-    "@google/genai": "^2.24.0",
     "lucide-react": "^0.417.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

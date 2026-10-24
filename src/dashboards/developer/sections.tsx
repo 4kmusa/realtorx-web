@@ -198,9 +198,9 @@ function InventoryUpload({ project, onDone }: { project: string; onDone: () => v
   return (
     <div className="mt-6 rounded-xl border border-line bg-panel p-4">
       <p className="font-semibold text-fg">{t("Send an inventory update")}</p>
-      <p className="mt-1 text-sm text-fg-2">Add units or change sizes, prices or availability with a CSV or Excel file. RealtorX reviews it before anything changes on the website. Reserved and booked units are managed by RealtorX.</p>
+      <p className="mt-1 text-sm text-fg-2">{t('Add units or change sizes, prices or availability with a CSV or Excel file. RealtorX reviews it before anything changes on the website. Reserved and booked units are managed by RealtorX.')}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button onClick={template} className="inline-flex items-center gap-2 rounded-lg border border-line-2 px-4 py-2.5 text-sm text-fg hover:bg-white/5"><Download className="h-4 w-4" /> Template</button>
+        <button onClick={template} className="inline-flex items-center gap-2 rounded-lg border border-line-2 px-4 py-2.5 text-sm text-fg hover:bg-white/5"><Download className="h-4 w-4" /> {t('Template')}</button>
         <PrimaryButton busy={busy} onClick={() => input.current?.click()}><Upload className="h-4 w-4" /> Upload file</PrimaryButton>
         <input ref={input} type="file" accept=".csv,.xlsx" className="hidden" onChange={(e) => e.target.files?.[0] && send(e.target.files[0])} aria-label="Inventory file" />
       </div>
@@ -260,11 +260,15 @@ export function PaymentsSection() {
   const invoices = useApi<CommissionRow[]>('realtor_x.api.portal.developer_commissions');
   const refunds = useApi<RefundRow[]>('realtor_x.api.portal.developer_refunds');
   const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const confirm = async (name: string) => {
     setBusy(name);
+    setError(null);
     try {
       await callPost('realtor_x.api.portal.developer_confirm_payment', { name });
       setTick((t) => t + 1);
+    } catch (err: any) {
+      setError(err?.message || t('Could not confirm the payment. Please try again.'));
     } finally {
       setBusy(null);
     }
@@ -272,6 +276,7 @@ export function PaymentsSection() {
   return (
     <>
       <SectionHeader title="Buyer payments" description="Payments buyers made for your units. Confirm the ones that reached your account; RealtorX Accounts then verifies them." />
+      {error && <div className="mb-4"><Notice tone="error">{error}</Notice></div>}
       <DataView state={payments} isEmpty={(r) => r.length === 0} empty={{ icon: Building2, title: 'No buyer payments yet' }}>
         {(rows) => (
           <DataTable

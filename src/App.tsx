@@ -97,7 +97,7 @@ function AppContent() {
       case 'projects':
         return <ProjectsPage onNavigate={navigate} />;
       case 'project-details':
-        return <ProjectDetailPage projectId={id || ''} onNavigate={navigate} />;
+        return <ProjectDetailPage key={id || ''} projectId={id || ''} onNavigate={navigate} />; // key: a new project starts empty, never shows the last one
       case 'project-3d':
         return <Project3DPage key={id || ''} projectId={id || ''} onNavigate={navigate} />;
       case 'virtual-tour':

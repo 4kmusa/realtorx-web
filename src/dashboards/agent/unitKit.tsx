@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Check, Copy, FileDown, QrCode, Share2 } from 'lucide-react';
 import { methodUrl } from '../../services/api/client';
-import { BackLink, DataView, Field, SectionHeader, formatDate, formatMoney, inputClass, useApi } from '../kit/kit';
+import { BackLink, DataView, Field, SectionHeader, copyText, formatDate, formatMoney, inputClass, useApi } from '../kit/kit';
 import { imageUrl } from '../../features/marketplace/api';
 import { t } from '../i18n';
 import { localDate } from '../../utils/date';
@@ -45,7 +45,8 @@ export function UnitKitPanel({ unit, onBack }: { unit: string; onBack: () => voi
   const [copied, setCopied] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const copy = (key: string, text: string) =>
-    navigator.clipboard?.writeText(text).then(() => {
+    copyText(text).then((ok) => {
+      if (!ok) return;
       setCopied(key);
       setTimeout(() => setCopied(null), 1500);
     });

@@ -99,13 +99,13 @@ function NewCase({ types, onDone, onCancel }: { types: string[]; onDone: (name: 
       <form onSubmit={submit} className="max-w-lg space-y-3 rounded-xl border border-line bg-panel p-5">
         <Field label="What does the client need?" htmlFor="nc-type">
           <select id="nc-type" required value={form.case_type} onChange={set('case_type')} className={inputClass}>
-            <option value="">Choose…</option>
+            <option value="">{t('Choose…')}</option>
             {types.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </Field>
         <Field label="Deal (optional)" htmlFor="nc-deal" hint="Link the case to one of your deals so RealtorX knows the unit.">
           <select id="nc-deal" value={form.deal} onChange={pickDeal} className={inputClass}>
-            <option value="">No deal</option>
+            <option value="">{t('No deal')}</option>
             {(deals.data || []).map((d) => <option key={d.name} value={d.name}>{d.name} · {d.buyer_name} · {d.unit_title || ''}</option>)}
           </select>
         </Field>
@@ -155,7 +155,7 @@ function CasePanel({ name, onBack }: { name: string; onBack: () => void }) {
             </div>
             <ul className="space-y-2">
               {c.updates.map((u, i) => (
-                <li key={i} className={`rounded-lg p-3 text-sm ${u.from_you ? 'ml-8 bg-white/[0.06] text-amber-100' : 'mr-8 bg-white/5 text-fg'}`}>
+                <li key={i} className={`rounded-lg p-3 text-sm ${u.from_you ? 'ms-8 bg-white/[0.06] text-amber-100' : 'me-8 bg-white/5 text-fg'}`}>
                   <p className="whitespace-pre-line">{u.text}</p>
                   <p className="mt-1 text-[11px] text-fg-3">{u.from_you ? 'You' : 'RealtorX'} · {formatDate(u.posted_on)}</p>
                 </li>
@@ -163,7 +163,7 @@ function CasePanel({ name, onBack }: { name: string; onBack: () => void }) {
             </ul>
             {!CLOSED.includes(c.status) && (
               <form onSubmit={send} className="space-y-2">
-                <textarea aria-label="Message to RealtorX" required rows={3} value={text} onChange={(e) => setText(e.target.value)} className={inputClass} placeholder="Write to RealtorX Client Services…" />
+                <textarea aria-label={t('Message to RealtorX')} required rows={3} value={text} onChange={(e) => setText(e.target.value)} className={inputClass} placeholder="Write to RealtorX Client Services…" />
                 {error && <Notice tone="error">{error}</Notice>}
                 <PrimaryButton type="submit" busy={busy}>Send</PrimaryButton>
               </form>

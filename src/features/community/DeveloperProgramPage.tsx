@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { PageId } from '../../types';
 import { callGet, callPost } from '../../services/api/client';
 import { imageUrl } from '../marketplace/api';
-import { Alert, Button, Container, Eyebrow, Field, Section, SectionHeader, inputClass, useReveal } from '../../components/site/ui';
+import { Alert, Button, Checkbox, Container, Eyebrow, Field, Section, SectionHeader, inputClass, useReveal } from '../../components/site/ui';
 import PhoneInput from '../../components/site/PhoneInput';
 
 type Nav = (page: PageId, id?: string) => void;
@@ -33,6 +33,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
 
   useReveal([developers]);
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!consent) return setError('Please confirm that RealtorX may contact you about this enquiry.');
     setBusy(true);
     setError(null);
     try {
@@ -145,6 +147,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
                   <Field label="Mobile" htmlFor="dv-phone"><PhoneInput id="dv-phone" required value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} /></Field>
                   <Field label="Email" htmlFor="dv-email" className="sm:col-span-2"><input id="dv-email" type="email" className={inputClass} autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
                   <Field label="Project name and city" htmlFor="dv-project" className="sm:col-span-2"><input id="dv-project" className={inputClass} value={form.project} onChange={(e) => setForm({ ...form, project: e.target.value })} /></Field>
+                  <div className="sm:col-span-2"><Checkbox id="dp-consent" checked={consent} onChange={setConsent}>RealtorX may contact me by phone, WhatsApp or email about this enquiry.</Checkbox></div>
                   {error && <div className="sm:col-span-2"><Alert>{error}</Alert></div>}
                   <div className="sm:col-span-2">
                     <Button type="submit" size="lg" busy={busy} className="w-full">Request a call</Button>

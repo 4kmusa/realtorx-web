@@ -78,7 +78,7 @@ export interface Route {
 }
 
 export function pathFor(page: PageId, id?: string | null): string {
-  const base = PATHS[page] ?? '/';
+  const base = Object.prototype.hasOwnProperty.call(PATHS, page) ? PATHS[page] : '/';
   if (page === 'project-3d' && id) {
     const [project, query] = id.split('?'); // "<project>?unit=<property>&inside=1" opens on that unit
     return `/projects/${encodeURIComponent(project)}/3d${query ? `?${query}` : ''}`;
@@ -101,14 +101,16 @@ const BY_PATH: Record<string, PageId> = Object.fromEntries(
 
 export function parsePath(pathname: string): Route {
   const clean = pathname.replace(/\/+$/, '') || '/';
-  if (BY_PATH[clean]) return { page: BY_PATH[clean], id: null };
+  // Own keys only: "/constructor" or "/toString" must not match Object.prototype and render as a page.
+  const own = (map: object, key: string) => Object.prototype.hasOwnProperty.call(map, key);
+  if (own(BY_PATH, clean)) return { page: BY_PATH[clean], id: null };
   const [, base, id, ...rest] = clean.split('/');
   if (base === 'projects' && id && rest.length === 1 && rest[0] === '3d') return { page: 'project-3d', id: decodeURIComponent(id) };
   if ((base === 'projects' || base === 'properties') && id && rest.length === 1 && rest[0] === 'tour') {
     return { page: 'virtual-tour', id: `${base === 'projects' ? 'project' : 'property'}/${decodeURIComponent(id)}` };
   }
-  if (REDIRECTS[base]) return { page: REDIRECTS[base], id: null };
-  if (id && !rest.length && ID_PAGES[base]) return { page: ID_PAGES[base], id: decodeURIComponent(id) };
+  if (own(REDIRECTS, base)) return { page: REDIRECTS[base], id: null };
+  if (id && !rest.length && own(ID_PAGES, base)) return { page: ID_PAGES[base], id: decodeURIComponent(id) };
   return { page: 'not-found', id: null };
 }
 
@@ -118,8 +120,8 @@ export function parseLegacyHash(hash: string): Route | null {
   if (!raw) return null;
   const [page, id] = raw.split('/');
   if (!page) return null;
-  if (REDIRECTS[page]) return { page: REDIRECTS[page], id: null };
+  if (Object.prototype.hasOwnProperty.call(REDIRECTS, page)) return { page: REDIRECTS[page], id: null };
   if (page === 'property-details') return { page: 'property-detail', id: id ? decodeURIComponent(id) : null };
-  if (!(page in PATHS)) return null;
+  if (!Object.prototype.hasOwnProperty.call(PATHS, page)) return null;
   return { page: page as PageId, id: id ? decodeURIComponent(id) : null };
 }

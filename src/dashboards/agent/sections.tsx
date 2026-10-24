@@ -2,7 +2,7 @@
 // share link carrying the Agent ID, so buyers who come through it are attributed to the agent).
 import React, { useState } from 'react';
 import { Building2, Calculator, Check, ChevronLeft, ChevronRight, Copy, ExternalLink, Search, UserRound } from 'lucide-react';
-import { DataView, SectionHeader, StatCard, formatMoney, useApi } from '../kit/kit';
+import { DataView, SectionHeader, StatCard, copyText, formatMoney, useApi } from '../kit/kit';
 import { formatArea, formatPrice, imageUrl } from '../../features/marketplace/api';
 import { t } from '../i18n';
 import { UnitKitPanel } from './unitKit';
@@ -46,7 +46,7 @@ export function ProfileSection({ state }: { state: ReturnType<typeof useApi<Agen
               {p.payout_account?.iban_masked ? (
                 <p className="mt-2 text-fg-2">{p.payout_account.bank_name} · {p.payout_account.account_title} · {p.payout_account.iban_masked}</p>
               ) : (
-                <p className="mt-2 text-fg-2">Not added yet. RealtorX will ask for your bank account before your first commission payout.</p>
+                <p className="mt-2 text-fg-2">{t('Not added yet. RealtorX will ask for your bank account before your first commission payout.')}</p>
               )}
             </div>
           </div>
@@ -63,6 +63,7 @@ interface InventoryRow {
   city: string | null;
   location_area: string | null;
   purpose: string;
+  currency?: string | null;
   custom_property_category: string | null;
   size: number | null;
   size_unit: string | null;
@@ -85,7 +86,8 @@ export function InventorySection() {
   const [kit, setKit] = useState<string | null>(null);
   const copy = (row: InventoryRow) => {
     const url = row.share_link.startsWith('http') ? row.share_link : `${window.location.origin}${row.share_link}`;
-    navigator.clipboard?.writeText(url).then(() => {
+    copyText(url).then((ok) => {
+      if (!ok) return;
       setCopied(row.name);
       setTimeout(() => setCopied(null), 1500);
     });
@@ -96,17 +98,17 @@ export function InventorySection() {
     <>
       <SectionHeader title="Inventory to sell" description="Live units from RealtorX. Share a unit's link: buyers who enquire through it are recorded as yours." />
       <form onSubmit={(e) => { e.preventDefault(); setFilters(draft); setPage(1); }} className="mb-4 flex flex-wrap gap-2">
-        <input placeholder="Area, project or city" value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} className={inputCls} aria-label="Location" />
+        <input placeholder={t('Area, project or city')} value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} className={inputCls} aria-label="Location" />
         <select value={draft.purpose} onChange={(e) => setDraft({ ...draft, purpose: e.target.value })} className={inputCls} aria-label="Purpose">
-          <option value="">Sale or rent</option><option value="Sell">For sale</option><option value="Rent">For rent</option>
+          <option value="">{t('Sale or rent')}</option><option value="Sell">{t('For sale')}</option><option value="Rent">{t('For rent')}</option>
         </select>
-        <input type="number" placeholder="Max price" value={draft.max_price} onChange={(e) => setDraft({ ...draft, max_price: e.target.value })} className={`${inputCls} w-36`} aria-label="Maximum price" />
-        <button className="flex items-center gap-1.5 rounded-full bg-fg text-ink px-4 py-2 text-sm font-bold"><Search className="h-4 w-4" /> Search</button>
+        <input type="number" placeholder={t('Max price')} value={draft.max_price} onChange={(e) => setDraft({ ...draft, max_price: e.target.value })} className={`${inputCls} w-36`} aria-label="Maximum price" />
+        <button className="flex items-center gap-1.5 rounded-full bg-fg text-ink px-4 py-2 text-sm font-bold"><Search className="h-4 w-4" /> {t('Search')}</button>
       </form>
       <DataView state={state} isEmpty={(r) => r.items.length === 0} empty={{ icon: Building2, title: 'No units match', description: 'Try other filters.' }}>
         {(r) => (
           <>
-            <p className="mb-3 text-xs text-fg-2">{r.total} unit{r.total === 1 ? '' : 's'}</p>
+            <p className="mb-3 text-xs text-fg-2">{t(r.total === 1 ? '{0} unit' : '{0} units').replace('{0}', String(r.total))}</p>
             <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {r.items.map((u) => (
                 <li key={u.name} className="overflow-hidden rounded-xl border border-line bg-panel">
@@ -115,20 +117,20 @@ export function InventorySection() {
                     <p className="font-semibold text-fg">{u.property_title}</p>
                     <p className="text-xs text-fg-2">{[u.project_name, u.location_area, u.city].filter(Boolean).join(' · ')}</p>
                     <p className="text-sm text-fg-2">{[u.custom_property_category, formatArea(u.size, u.size_unit), u.bedrooms ? `${u.bedrooms} bed` : null].filter(Boolean).join(' · ')}</p>
-                    <p className="text-lg font-bold text-fg">{formatPrice(u.list_price, u.purpose)}</p>
+                    <p className="text-lg font-bold text-fg">{formatPrice(u.list_price, u.purpose, u.currency)}</p>
                     {u.commission && (u.commission.under_contract ? (
                       <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
                         Your commission ≈ <b>{formatMoney(u.commission.agent_amount, u.commission.currency)}</b> ({u.commission.agent_share}% of {u.commission.rate}%)
                       </p>
                     ) : (
-                      <p className="rounded-lg bg-white/5 px-3 py-2 text-xs text-fg-2">Commission not agreed yet for this project</p>
+                      <p className="rounded-lg bg-white/5 px-3 py-2 text-xs text-fg-2">{t('Commission not agreed yet for this project')}</p>
                     ))}
                     <button onClick={() => setKit(u.name)} className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-fg px-3 py-2 text-xs font-medium text-ink hover:bg-white">
                       <Calculator className="h-3.5 w-3.5" /> {t('Payment plan & share kit')}
                     </button>
                     <div className="flex gap-2">
                       <button onClick={() => copy(u)} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-line-2 px-3 py-2 text-xs text-fg hover:bg-white/5">
-                        {copied === u.name ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} {copied === u.name ? 'Copied' : 'Copy share link'}
+                        {copied === u.name ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} {t(copied === u.name ? 'Copied' : 'Copy share link')}
                       </button>
                       <a href={u.share_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center rounded-lg border border-line-2 px-3 py-2 text-xs text-fg hover:bg-white/5" aria-label="Open listing"><ExternalLink className="h-3.5 w-3.5" /></a>
                     </div>

@@ -57,7 +57,9 @@ export function applyPageSEO(pageId: PageId) {
   const meta = PAGES[pageId] || PAGES.home;
   if (typeof document === 'undefined') return meta;
   document.title = meta.title;
-  const url = `${SITE.url}${pageId.endsWith('detail') || pageId.endsWith('details') || pageId === 'project-3d' || pageId === 'virtual-tour' ? window.location.pathname : meta.path}`;
+  // Detail pages and the not-found page point at their own address (a 404 must never claim to be the home page).
+  const own = pageId.endsWith('detail') || pageId.endsWith('details') || pageId === 'project-3d' || pageId === 'virtual-tour' || pageId === 'not-found';
+  const url = `${SITE.url}${own ? window.location.pathname : meta.path}`;
   setMeta('name', 'robots', meta.noindex ? 'noindex, nofollow' : 'index, follow');
   setMeta('name', 'description', meta.description);
   setMeta('property', 'og:type', 'website');
@@ -77,4 +79,11 @@ export function applyPageSEO(pageId: PageId) {
   }
   canonical.setAttribute('href', url);
   return meta;
+}
+
+/** A detail page whose record is gone or hidden: keep it out of search results (the server cannot send a 404 for it). */
+export function markNotFound() {
+  if (typeof document === 'undefined') return;
+  setMeta('name', 'robots', 'noindex, nofollow');
+  document.title = 'Not found | RealtorX';
 }

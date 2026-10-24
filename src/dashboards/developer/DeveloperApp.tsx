@@ -121,10 +121,10 @@ function DeveloperDashboard({ session, logout }: { session: DashboardSession; lo
                   </div>
                   {d.kpis && (
                     <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                      <button type="button" className="h-full text-left" onClick={() => go('sales')}><StatCard label="Sales by RealtorX" value={formatMoneyList(d.kpis.sales_value)} hint={`${tf('{0} open', d.kpis.deals_open)} · ${tf('{0} transferred', d.kpis.deals_transferred)}`} /></button>
-                      <button type="button" className="h-full text-left" onClick={() => go('sales')}><StatCard label="Collected (verified)" value={formatMoneyList(d.kpis.collected)} tone="good" hint={tf('Balance {0}', formatMoneyList(d.kpis.balance))} /></button>
-                      <button type="button" className="h-full text-left" onClick={() => go('sales')}><StatCard label="Buyer payments overdue" value={formatMoneyList(d.kpis.overdue)} tone={d.kpis.overdue_deals ? 'warn' : 'default'} hint={`${tn(d.kpis.overdue_deals, '{0} deal', '{0} deals')} · ${t('RealtorX follows up')}`} /></button>
-                      <button type="button" className="h-full text-left" onClick={() => go('payments')}><StatCard label="To confirm / invoices due" value={d.kpis.payments_to_confirm} tone={d.kpis.payments_to_confirm ? 'warn' : 'default'} hint={tf('Commission invoices due {0}', formatMoneyList(d.kpis.commission_due))} /></button>
+                      <button type="button" className="h-full text-start" onClick={() => go('sales')}><StatCard label="Sales by RealtorX" value={formatMoneyList(d.kpis.sales_value)} hint={`${tf('{0} open', d.kpis.deals_open)} · ${tf('{0} transferred', d.kpis.deals_transferred)}`} /></button>
+                      <button type="button" className="h-full text-start" onClick={() => go('sales')}><StatCard label="Collected (verified)" value={formatMoneyList(d.kpis.collected)} tone="good" hint={tf('Balance {0}', formatMoneyList(d.kpis.balance))} /></button>
+                      <button type="button" className="h-full text-start" onClick={() => go('sales')}><StatCard label="Buyer payments overdue" value={formatMoneyList(d.kpis.overdue)} tone={d.kpis.overdue_deals ? 'warn' : 'default'} hint={`${tn(d.kpis.overdue_deals, '{0} deal', '{0} deals')} · ${t('RealtorX follows up')}`} /></button>
+                      <button type="button" className="h-full text-start" onClick={() => go('payments')}><StatCard label="To confirm / invoices due" value={d.kpis.payments_to_confirm} tone={d.kpis.payments_to_confirm ? 'warn' : 'default'} hint={tf('Commission invoices due {0}', formatMoneyList(d.kpis.commission_due))} /></button>
                     </div>
                   )}
                   <div className="mt-6"><Projects rows={d.projects} onOpen={open} /></div>

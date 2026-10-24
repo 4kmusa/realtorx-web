@@ -1,5 +1,5 @@
 // Interactive 3D project page (/projects/<id>/3d[?preview=1]). The 3D library is loaded only here.
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, ArrowLeft, Bath, BedDouble, Box, Eye, Layers, Ruler, X } from 'lucide-react';
 import { PageId } from '../../types';
 import InquiryModal from '../../components/InquiryModal';
@@ -29,6 +29,8 @@ function StatusPill({ status }: { status: UnitStatus }) {
 export default function Project3DPage({ projectId, onNavigate }: { projectId: string; onNavigate: Nav }) {
   const preview = new URLSearchParams(window.location.search).get('preview') === '1';
   const [data, setData] = useState<Project3D | null>(null);
+  const loaded = useRef(false);
+  loaded.current = !!data;
   const [error, setError] = useState<string | null>(null);
   const [buildingId, setBuildingId] = useState<string | null>(null);
   const [floor, setFloor] = useState<string | null>(null);
@@ -53,7 +55,13 @@ export default function Project3DPage({ projectId, onNavigate }: { projectId: st
         setBuildingId((b) => b || d.buildings[0]?.id || null);
         document.title = `${d.project.name} in 3D | RealtorX`;
       })
-      .catch((e) => !cancelled && setError(e?.status === 404 ? 'This project is not available.' : e?.message || 'Could not load the 3D view.'));
+      .catch((e) => {
+        if (cancelled) return;
+        // The minute-by-minute refresh failing (e.g. a short network drop) keeps the model on screen with the last
+        // known statuses; only a first load that fails, or a project that is gone, shows the error page.
+        if (loaded.current && e?.status !== 404) return;
+        setError(e?.status === 404 ? 'This project is not available.' : e?.message || 'Could not load the 3D view.');
+      });
     return () => {
       cancelled = true;
     };
@@ -136,9 +144,10 @@ export default function Project3DPage({ projectId, onNavigate }: { projectId: st
               <button onClick={() => setRequest({ mode: 'visit', unit: null })} className="rounded-full border border-line-2 px-4 py-1.5 text-xs font-medium text-fg hover:bg-white/5">Request a site visit</button>
             )}
             {data.preview && <span className="rounded-full bg-sky-500/15 px-3 py-1 text-xs font-semibold text-sky-300">Staff preview (not public)</span>}
-            {exterior?.illustrative && (
+            {exterior && (
+              // Every model gets a note: an illustrative one is not verified at all; even a checked one is for orientation.
               <span className="flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-300">
-                <AlertTriangle className="h-3.5 w-3.5" /> Illustrative model, not architecturally verified
+                <AlertTriangle className="h-3.5 w-3.5" /> {exterior.illustrative ? 'Illustrative model, not architecturally verified' : '3D model for orientation; the approved plans are binding'}
               </span>
             )}
           </div>
@@ -336,7 +345,7 @@ export default function Project3DPage({ projectId, onNavigate }: { projectId: st
           <div className="flex items-center justify-between gap-3 bg-panel px-4 py-3">
             <div>
               <p className="text-sm font-medium text-fg">Interior · Unit {unit?.code}</p>
-              {tour.illustrative && <p className="text-xs text-amber-300">Illustrative visual; finishes and layout may differ.</p>}
+              <p className="text-xs text-amber-300">{tour.illustrative ? 'Illustrative visual; finishes and layout may differ.' : 'For orientation; finishes and furniture may differ.'}</p>
             </div>
             <button onClick={() => setTour(null)} className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/20">
               <ArrowLeft className="h-4 w-4" /> Back to building
