@@ -1,7 +1,7 @@
 // Agent dashboard sections: profile and the inventory an agent can sell (with commission estimate and a
 // share link carrying the Agent ID, so buyers who come through it are attributed to the agent).
 import React, { useState } from 'react';
-import { Building2, Calculator, Check, Copy, ExternalLink, Search, UserRound } from 'lucide-react';
+import { Building2, Calculator, Check, ChevronLeft, ChevronRight, Copy, ExternalLink, Search, UserRound } from 'lucide-react';
 import { DataView, SectionHeader, StatCard, formatMoney, useApi } from '../kit/kit';
 import { formatArea, formatPrice, imageUrl } from '../../features/marketplace/api';
 import { t } from '../i18n';
@@ -78,7 +78,9 @@ interface InventoryResult { items: InventoryRow[]; total: number; page: number; 
 export function InventorySection() {
   const [draft, setDraft] = useState({ location: '', purpose: '', max_price: '' });
   const [filters, setFilters] = useState(draft);
-  const state = useApi<InventoryResult>('realtor_x.api.portal.agent_inventory', filters, JSON.stringify(filters));
+  const [page, setPage] = useState(1);
+  const params = { ...filters, page };
+  const state = useApi<InventoryResult>('realtor_x.api.portal.agent_inventory', params, JSON.stringify(params));
   const [copied, setCopied] = useState<string | null>(null);
   const [kit, setKit] = useState<string | null>(null);
   const copy = (row: InventoryRow) => {
@@ -93,7 +95,7 @@ export function InventorySection() {
   return (
     <>
       <SectionHeader title="Inventory to sell" description="Live units from RealtorX. Share a unit's link: buyers who enquire through it are recorded as yours." />
-      <form onSubmit={(e) => { e.preventDefault(); setFilters(draft); }} className="mb-4 flex flex-wrap gap-2">
+      <form onSubmit={(e) => { e.preventDefault(); setFilters(draft); setPage(1); }} className="mb-4 flex flex-wrap gap-2">
         <input placeholder="Area, project or city" value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} className={inputCls} aria-label="Location" />
         <select value={draft.purpose} onChange={(e) => setDraft({ ...draft, purpose: e.target.value })} className={inputCls} aria-label="Purpose">
           <option value="">Sale or rent</option><option value="Sell">For sale</option><option value="Rent">For rent</option>
@@ -134,10 +136,23 @@ export function InventorySection() {
                 </li>
               ))}
             </ul>
+            <Pager page={r.page} pages={Math.ceil(r.total / r.page_length)} loading={state.loading} onPage={(p) => { setPage(p); window.scrollTo({ top: 0 }); }} />
           </>
         )}
       </DataView>
     </>
+  );
+}
+
+function Pager({ page, pages, loading, onPage }: { page: number; pages: number; loading: boolean; onPage: (page: number) => void }) {
+  if (pages <= 1) return null;
+  const btn = 'flex items-center gap-1 rounded-full border border-line-2 px-4 py-2 text-sm text-fg hover:bg-white/5 disabled:opacity-40';
+  return (
+    <nav className="mt-6 flex items-center justify-center gap-3" aria-label={t('Pages')}>
+      <button type="button" className={btn} disabled={loading || page <= 1} onClick={() => onPage(page - 1)}><ChevronLeft className="h-4 w-4 rtl:rotate-180" /> {t('Previous')}</button>
+      <span className="text-sm text-fg-2">{t('Page {0} of {1}').replace('{0}', String(page)).replace('{1}', String(pages))}</span>
+      <button type="button" className={btn} disabled={loading || page >= pages} onClick={() => onPage(page + 1)}>{t('Next')} <ChevronRight className="h-4 w-4 rtl:rotate-180" /></button>
+    </nav>
   );
 }
 

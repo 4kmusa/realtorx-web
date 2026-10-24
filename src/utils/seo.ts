@@ -1,4 +1,5 @@
 import { PageId } from '../types';
+import { SITE } from '../config/site';
 
 const TAGLINE = 'Verified developer inventory, sold by identity-checked RealtorX Agents.';
 
@@ -56,7 +57,7 @@ export function applyPageSEO(pageId: PageId) {
   const meta = PAGES[pageId] || PAGES.home;
   if (typeof document === 'undefined') return meta;
   document.title = meta.title;
-  const url = `${window.location.origin}${pageId.endsWith('detail') || pageId.endsWith('details') || pageId === 'project-3d' || pageId === 'virtual-tour' ? window.location.pathname : meta.path}`;
+  const url = `${SITE.url}${pageId.endsWith('detail') || pageId.endsWith('details') || pageId === 'project-3d' || pageId === 'virtual-tour' ? window.location.pathname : meta.path}`;
   setMeta('name', 'robots', meta.noindex ? 'noindex, nofollow' : 'index, follow');
   setMeta('name', 'description', meta.description);
   setMeta('property', 'og:type', 'website');
@@ -64,7 +65,7 @@ export function applyPageSEO(pageId: PageId) {
   setMeta('property', 'og:title', meta.title);
   setMeta('property', 'og:description', meta.description);
   setMeta('property', 'og:url', url);
-  setMeta('property', 'og:image', `${window.location.origin}${IMAGE}`);
+  setMeta('property', 'og:image', `${SITE.url}${IMAGE}`);
   setMeta('name', 'twitter:card', 'summary_large_image');
   setMeta('name', 'twitter:title', meta.title);
   setMeta('name', 'twitter:description', meta.description);

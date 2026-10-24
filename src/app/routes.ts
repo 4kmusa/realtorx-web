@@ -89,6 +89,7 @@ export function pathFor(page: PageId, id?: string | null): string {
     return `/${kind === 'project' ? 'projects' : 'properties'}/${encodeURIComponent(rest.join('/'))}/tour`;
   }
   if (!id) return base;
+  if (id.startsWith('?')) return `${base}${id}`; // a list page with its filters, e.g. /properties?purpose=Rent
   return `${base.replace(/\/$/, '')}/${encodeURIComponent(id)}`;
 }
 

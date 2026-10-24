@@ -6,7 +6,7 @@ import DashboardRoot from '../DashboardRoot';
 import { DashboardSession } from '../session';
 import { DataTable, DataView, NavItem, PortalShell, SectionHeader, StatCard, formatMoneyList, useApi, type MoneyAmount } from '../kit/kit';
 import { t, tf, tn } from '../i18n';
-import { NotificationsSection, SecuritySection, useUnreadCount } from '../kit/shared';
+import { NotificationRow, NotificationTarget, NotificationsSection, SecuritySection, useUnreadCount } from '../kit/shared';
 import { useSection } from '../useSection';
 import { ContractSection, PaymentsSection, ProjectDetail, SalesSection } from './sections';
 import { CashflowSection } from './insights';
@@ -50,6 +50,20 @@ const NAV: NavItem[] = [
   { section: 'security', label: 'Security', icon: Lock },
 ];
 
+
+/** The developer's notifications: a sale opens the deal, the rest their section. */
+function developerTarget(n: NotificationRow): NotificationTarget {
+  const name = encodeURIComponent(n.document_name || '');
+  switch (n.document_type) {
+    case 'RX Deal': return { section: 'sales', query: name ? `deal=${name}` : undefined };
+    case 'RX Refund': return { section: 'sales' };
+    case 'RX Buyer Payment': return { section: 'payments' };
+    case 'RX Inventory Import':
+    case 'Property': return { section: 'projects' };
+    case 'RX Developer Contract': return { section: 'contract' };
+    default: return null;
+  }
+}
 function Projects({ rows, onOpen }: { rows: ProjectRow[]; onOpen?: (name: string) => void }) {
   return (
     <DataTable
@@ -77,10 +91,10 @@ function DeveloperDashboard({ session, logout }: { session: DashboardSession; lo
   const companies = (session.developers || []).map((d) => d.company_owner_name).join(', ');
   const [openProject, setOpenProject] = useState<string | null>(null);
   const [visit, setVisit] = useState(0); // a menu click always opens the section's first screen
-  const select = (next: string) => {
+  const select = (next: string, query?: string) => {
     setVisit((v) => v + 1);
     setOpenProject(null);
-    go(next);
+    go(next, query);
   };
   const open = (name: string) => {
     setOpenProject(name);
@@ -136,7 +150,7 @@ function DeveloperDashboard({ session, logout }: { session: DashboardSession; lo
           {section === 'payments' && <PaymentsSection />}
           {section === 'cashflow' && <CashflowSection />}
         </React.Fragment>
-        {section === 'notifications' && <NotificationsSection openLink={() => undefined} />}
+        {section === 'notifications' && <NotificationsSection app="developer" targetFor={developerTarget} onOpen={select} />}
         {section === 'security' && <SecuritySection email={session.user || ''} />}
       </PortalShell>
     </div>

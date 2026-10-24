@@ -5,7 +5,7 @@ import { Bell, Briefcase, Building2, CalendarCheck, Home, LifeBuoy, Lock, UserRo
 import DashboardRoot from '../DashboardRoot';
 import { DashboardSession } from '../session';
 import { NavItem, PortalShell, useApi } from '../kit/kit';
-import { NotificationsSection, SecuritySection, useUnreadCount } from '../kit/shared';
+import { NotificationRow, NotificationTarget, NotificationsSection, SecuritySection, useUnreadCount } from '../kit/shared';
 import { useSection } from '../useSection';
 import { Welcome } from '../common';
 import { AgentProfile, AgentStats, InventorySection, ProfileSection } from './sections';
@@ -28,12 +28,28 @@ const NAV: NavItem[] = [
   { section: 'security', label: 'Security', icon: Lock },
 ];
 
+/** The agent's notifications: deals and buyers open the record, the rest their section. */
+function agentTarget(n: NotificationRow): NotificationTarget {
+  const name = encodeURIComponent(n.document_name || '');
+  switch (n.document_type) {
+    case 'RX Deal': return { section: 'deals', query: name ? `deal=${name}` : undefined };
+    case 'RX Lead': return { section: 'leads', query: name ? `lead=${name}` : undefined };
+    case 'RX Booking Request': return { section: 'leads' };
+    case 'RX Buyer Payment':
+    case 'RX Refund': return { section: 'deals' };
+    case 'RX Commission': return { section: 'commission' };
+    case 'RX Solution Case': return { section: 'cases' };
+    case 'RX Agent': return { section: 'profile' };
+    default: return null;
+  }
+}
+
 function AgentDashboard({ session, logout }: { session: DashboardSession; logout: () => void }) {
   const [section, go] = useSection('agent', 'overview', NAV.map((n) => n.section));
   const [visit, setVisit] = useState(0); // a menu click always opens the section's first screen (e.g. the list, not an open record)
-  const select = (next: string) => {
+  const select = (next: string, query?: string) => {
     setVisit((v) => v + 1);
-    go(next);
+    go(next, query);
   };
   const unread = useUnreadCount(section);
   const profile = useApi<AgentProfile>('realtor_x.api.portal.agent_profile', undefined, ['profile', 'commission'].includes(section) ? section : 'o');
@@ -61,7 +77,7 @@ function AgentDashboard({ session, logout }: { session: DashboardSession; logout
         {section === 'deals' && <DealsSection />}
         {section === 'cases' && <CasesSection />}
         {section === 'commission' && <CommissionSection profile={profile.data} onProfile={profile.reload} />}
-        {section === 'notifications' && <NotificationsSection openLink={() => undefined} />}
+        {section === 'notifications' && <NotificationsSection app="agent" targetFor={agentTarget} onOpen={select} />}
         {section === 'security' && <SecuritySection email={session.user || ''} />}
         </React.Fragment>
       </PortalShell>

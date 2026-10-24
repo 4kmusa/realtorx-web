@@ -56,8 +56,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
     e.preventDefault();
     const params = new URLSearchParams({ purpose });
     if (location.trim()) params.set('location', location.trim());
-    window.history.pushState(null, '', `/properties?${params.toString()}`);
-    onNavigate('properties');
+    onNavigate('properties', `?${params.toString()}`);
   };
 
   return (
