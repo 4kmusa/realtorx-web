@@ -13,6 +13,7 @@ import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { Box, Footprints, Loader2, Map as MapIcon } from 'lucide-react';
 import { webglAvailable } from './webgl';
+import { disposeMaterial, releaseRenderer } from './webgl';
 
 interface Room {
   name: string;
@@ -277,7 +278,7 @@ export default function InteriorViewer({ url, onError }: { url: string; onError:
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
-        if (mesh.material) (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((m) => m.dispose());
+        disposeMaterial(mesh.material);
       });
       env.dispose();
       daySky.dispose();
@@ -285,8 +286,7 @@ export default function InteriorViewer({ url, onError }: { url: string; onError:
       gtao?.dispose();
       composer.dispose();
       target.dispose();
-      renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      releaseRenderer(renderer, mount);
     };
   }, [url]);
 

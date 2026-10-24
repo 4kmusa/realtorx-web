@@ -17,6 +17,7 @@ import { FEATURES, SITE, whatsappUrl } from '../config/site';
 import { ListingCard } from '../features/marketplace/ListingCard';
 import { PublicListing, formatArea, formatPrice, imageUrl, mapEmbedUrl, planLineAmount } from '../features/marketplace/api';
 import { ProjectPage, PublicProject, UnitType, getProject, getProjectUnits, projectStage } from '../features/projects/api';
+import { markNotFound } from '../utils/seo';
 
 type Nav = (page: PageId, id?: string) => void;
 type Project = PublicProject & ProjectPage;
@@ -77,7 +78,10 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
         setProject(p);
         document.title = `${p.project_name} | RealtorX`;
       })
-      .catch((e) => setError(e?.message || 'This project is not available.'));
+      .catch((e) => {
+        if (e?.status === 404) markNotFound();
+        setError(e?.message || 'This project is not available.');
+      });
     getProjectUnits(projectId).then(setUnits).catch(() => setUnits([]));
   }, [projectId]);
 

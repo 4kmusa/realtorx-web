@@ -5,11 +5,16 @@ import { callPost } from '../services/api/client';
 import { SITE, whatsappUrl } from '../config/site';
 import { Alert, Button, ButtonLink, Checkbox, Container, Field, PageIntro, inputClass, textareaClass } from '../components/site/ui';
 import PhoneInput from '../components/site/PhoneInput';
+import { useBuyer } from '../features/buyer/session';
 
 const SUBJECTS = ['Property enquiry', 'Site visit', 'Agent programme', 'Developer partnership', 'Help with my property', 'Something else'];
+// Enquiries about a property and site visits need a free buyer account (the server refuses them from guests).
+const SIGNED_IN_ONLY = ['Property enquiry', 'Site visit'];
 
-export function ContactPage(_props: { onNavigate: (page: PageId) => void }) {
-  const [form, setForm] = useState({ name: '', phone: '', email: '', subject: SUBJECTS[0], message: '' });
+export function ContactPage({ onNavigate }: { onNavigate: (page: PageId) => void }) {
+  const { buyer } = useBuyer();
+  const subjects = buyer ? SUBJECTS : SUBJECTS.filter((s) => !SIGNED_IN_ONLY.includes(s));
+  const [form, setForm] = useState({ name: '', phone: '', email: '', subject: SUBJECTS[2], message: '' });
   const [consent, setConsent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,9 +83,16 @@ export function ContactPage(_props: { onNavigate: (page: PageId) => void }) {
                 <Field label="Email (optional)" htmlFor="ct-email"><input id="ct-email" type="email" className={inputClass} autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
                 <Field label="About" htmlFor="ct-subject">
                   <select id="ct-subject" className={inputClass} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}>
-                    {SUBJECTS.map((s) => <option key={s}>{s}</option>)}
+                    {subjects.map((s) => <option key={s}>{s}</option>)}
                   </select>
                 </Field>
+                {!buyer && (
+                  <p className="text-[13px] leading-relaxed text-fg-3 sm:col-span-2">
+                    Asking about a property or a site visit?{' '}
+                    <button type="button" onClick={() => onNavigate('login')} className="text-fg underline underline-offset-4">Sign in or create a free account</button>
+                    , then use the buttons on the property page.
+                  </p>
+                )}
                 <Field label="Message" htmlFor="ct-msg" className="sm:col-span-2"><textarea id="ct-msg" rows={5} className={textareaClass} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></Field>
                 <div className="sm:col-span-2"><Checkbox id="ct-consent" checked={consent} onChange={setConsent}>RealtorX may contact me by phone, WhatsApp or email about this message.</Checkbox></div>
                 {error && <div className="sm:col-span-2"><Alert>{error}</Alert></div>}

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Loader2 } from 'lucide-react';
+import { disposeMaterial, releaseRenderer } from './webgl';
 
 export default function PanoramaViewer({ url, onError }: { url: string; onError: (message: string) => void }) {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -72,10 +73,8 @@ export default function PanoramaViewer({ url, onError }: { url: string; onError:
       renderer.domElement.removeEventListener('wheel', onWheel);
       controls.dispose();
       geometry.dispose();
-      material.map?.dispose();
-      material.dispose();
-      renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      disposeMaterial(material);
+      releaseRenderer(renderer, mount);
     };
   }, [url]);
 

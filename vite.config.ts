@@ -54,13 +54,9 @@ export default defineConfig(({ mode }) => {
     server: {
       host: '0.0.0.0',
 
-      allowedHosts: [
-        'localhost',
-        '127.0.0.1',
-        '192.168.83.85',
-        '192.168.52.241',
-        '.local',
-      ],
+      // Extra hosts for testing on a phone in the same network come from DEV_ALLOWED_HOSTS (comma-separated), not this
+      // public file.
+      allowedHosts: ['localhost', '127.0.0.1', '.local', ...(env.DEV_ALLOWED_HOSTS || '').split(',').map((h) => h.trim()).filter(Boolean)],
 
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},

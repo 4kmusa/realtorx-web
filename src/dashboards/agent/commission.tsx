@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Wallet } from 'lucide-react';
 import { callPost } from '../../services/api/client';
-import { DataTable, DataView, Field, Notice, PrimaryButton, SectionHeader, StatCard, formatDate, formatMoney, inputClass, useApi } from '../kit/kit';
+import { DataTable, DataView, Field, MoneyAmount, Notice, PrimaryButton, SectionHeader, StatCard, formatDate, formatMoney, formatMoneyList, inputClass, useApi } from '../kit/kit';
 import { AgentProfile } from './sections';
 import { t } from '../i18n';
 
@@ -21,7 +21,7 @@ interface Row {
   earned_date: string | null;
   paid_out_on: string | null;
 }
-interface Data { rows: Row[]; totals: { pending: number; earned: number; paid: number }; currency: string | null }
+interface Data { rows: Row[]; totals: { pending: MoneyAmount[]; earned: MoneyAmount[]; paid: MoneyAmount[] } } // one amount per currency
 
 const STATUS_TEXT: Record<string, string> = {
   Pending: 'Waiting for the buyer’s payment',
@@ -41,9 +41,9 @@ export function CommissionSection({ profile, onProfile }: { profile: AgentProfil
         {(d) => (
           <>
             <div className="mb-5 grid gap-3 sm:grid-cols-3">
-              <StatCard label="Pending (gross)" value={formatMoney(d.totals.pending, d.currency)} />
-              <StatCard label="Earned, to be paid (net)" value={formatMoney(d.totals.earned, d.currency)} tone="good" />
-              <StatCard label="Paid to you (net)" value={formatMoney(d.totals.paid, d.currency)} />
+              <StatCard label="Pending (net)" value={formatMoneyList(d.totals.pending)} />
+              <StatCard label="Earned, to be paid (net)" value={formatMoneyList(d.totals.earned)} tone="good" />
+              <StatCard label="Paid to you (net)" value={formatMoneyList(d.totals.paid)} />
             </div>
             <DataTable
               rows={d.rows}
@@ -51,7 +51,7 @@ export function CommissionSection({ profile, onProfile }: { profile: AgentProfil
               columns={[
                 { header: 'Deal', cell: (r) => <><span className="font-semibold text-fg">{r.unit_title || r.deal}</span><span className="block text-xs text-fg-3">{r.deal}</span></> },
                 { header: 'Value', cell: (r) => formatMoney(r.base_value, r.currency), align: 'right' },
-                { header: 'Your share', cell: (r) => `${r.agent_share}% of ${r.rate}%` },
+                { header: 'Your share', cell: (r) => (r.rate ? `${r.agent_share}% of ${r.rate}%` : t('Not agreed yet')) }, // 0% = no commission agreed for the project
                 { header: 'Net to you', cell: (r) => formatMoney(r.net_payout, r.currency), align: 'right' },
                 { header: 'Status', cell: (r) => STATUS_TEXT[r.status] || r.status },
                 { header: 'Paid on', cell: (r) => formatDate(r.paid_out_on) },

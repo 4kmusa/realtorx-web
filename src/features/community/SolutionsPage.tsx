@@ -19,14 +19,18 @@ const EXAMPLES: [string, string][] = [
 
 export default function SolutionsPage(_props: { onNavigate: Nav }) {
   const [types, setTypes] = useState<string[]>([]);
+  const [typesFailed, setTypesFailed] = useState(false);
+  const [typesTry, setTypesTry] = useState(0);
   const [form, setForm] = useState({ case_type: '', subject: '', description: '', contact_name: '', contact_phone: '', contact_email: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
 
   useEffect(() => {
-    callGet<string[]>('realtor_x.api.community.get_case_types').then(setTypes).catch(() => setTypes([]));
-  }, []);
+    // Without the list the form cannot be sent: say so and offer to try again instead of an empty choice.
+    setTypesFailed(false);
+    callGet<string[]>('realtor_x.api.community.get_case_types').then((t) => setTypes(t || [])).catch(() => setTypesFailed(true));
+  }, [typesTry]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +84,13 @@ export default function SolutionsPage(_props: { onNavigate: Nav }) {
                       <option value="">Choose…</option>
                       {types.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
+                    {typesFailed && (
+                      <span className="mt-2 block text-[13px] text-fg-3">
+                        The list could not be loaded.{' '}
+                        <button type="button" onClick={() => setTypesTry((n) => n + 1)} className="text-fg underline underline-offset-4">Try again</button>
+                        {' '}or call us.
+                      </span>
+                    )}
                   </Field>
                   <Field label="Subject" htmlFor="cs-subject" className="sm:col-span-2"><input id="cs-subject" required minLength={5} className={inputClass} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} /></Field>
                   <Field label="Describe the problem" htmlFor="cs-desc" className="sm:col-span-2"><textarea id="cs-desc" required minLength={20} rows={5} className={textareaClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field>

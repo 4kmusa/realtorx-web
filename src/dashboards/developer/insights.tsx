@@ -126,9 +126,8 @@ interface Cashflow { today: string; currencies: CashCurrency[] }
 const monthLabel = (m: string) => new Date(`${m}-01T00:00:00`).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
 
 function Bars({ c }: { c: CashCurrency }) {
-  const current = c.months[0]?.month;
   const bars = [
-    ...c.collected.filter((p) => p.month !== current).map((p) => ({ month: p.month, value: p.amount, kind: 'collected' as const })),
+    ...c.collected.map((p) => ({ month: p.month, value: p.amount, kind: 'collected' as const })), // the current month shows both: collected so far and still expected
     ...c.months.map((m) => ({ month: m.month, value: m.expected, kind: 'expected' as const })),
   ];
   const max = Math.max(1, ...bars.map((b) => b.value));

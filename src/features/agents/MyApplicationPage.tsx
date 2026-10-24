@@ -69,9 +69,11 @@ export default function MyApplicationPage({ onNavigate }: { onNavigate: (page: P
     if (!session) return;
     callGet<Profile>(`${API}.my_application`, { application: session.application, token: session.token })
       .then(setProfile)
-      .catch(() => {
-        saveJSON(PROFILE_STORE, null);
-        setSession(null);
+      .catch((e: any) => {
+        if (e?.status === 404 || e?.status === 403 || e?.status === 401 || e?.type === 'DoesNotExistError') {
+          saveJSON(PROFILE_STORE, null); // signed out or expired: sign in again
+          setSession(null);
+        } else setError(e?.message || 'Cannot reach RealtorX. Check your connection and try again.');
       });
   }, [session]);
 
@@ -112,7 +114,12 @@ export default function MyApplicationPage({ onNavigate }: { onNavigate: (page: P
               Sign in with the email and the password you chose when you applied to become a RealtorX Agent. Approved agents use the Agent dashboard with the password RealtorX gives them.
             </p>
             {session && !profile ? (
-              <p className="mt-10 text-sm text-fg-3">Loading…</p>
+              error ? (
+                <div className="mt-10 space-y-3">
+                  <p className="text-sm text-red-300">{error}</p>
+                  <button type="button" onClick={() => { setError(null); setSession({ ...session }); }} className="text-sm text-fg underline underline-offset-4">Try again</button>
+                </div>
+              ) : <p className="mt-10 text-sm text-fg-3">Loading…</p>
             ) : (
               <form onSubmit={signIn} className="mt-10 max-w-md space-y-4 rounded-3xl border border-line bg-panel p-6">
                 <Field label="Email" htmlFor="ma-email">

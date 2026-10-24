@@ -122,7 +122,7 @@ function LoginScreen({ app, notice, onSignedIn }: { app: DashboardApp; notice?: 
         setChallenge(null);
         setCode('');
       }
-      setError(!challenge && /invalid login|incorrect|credentials/i.test(message) ? t('Email or password is not correct.') : message || 'Could not sign in.');
+      setError(!challenge && /invalid login|incorrect|credentials|not correct/i.test(message) ? t('Email or password is not correct.') : message || 'Could not sign in.');
     } finally {
       setBusy(false);
     }

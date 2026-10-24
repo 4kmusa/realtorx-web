@@ -20,6 +20,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { Building, Eye, EyeOff, Home, Loader2, Moon, Sun } from 'lucide-react';
 import { STATUS_STYLE, UnitMapping, UnitStatus } from './api';
 import { webglAvailable } from './webgl';
+import { disposeMaterial, releaseRenderer } from './webgl';
 
 export type ViewMode = 'Model' | 'Day' | 'Night';
 
@@ -601,9 +602,9 @@ export default function BuildingViewer({ modelUrl, defaultView, mappings, status
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
-        if (mesh.material) (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((m) => m.dispose());
-        (mesh.userData?.clay as THREE.Material | undefined)?.dispose();
-        (mesh.userData?.own as THREE.Material | undefined)?.dispose();
+        disposeMaterial(mesh.material);
+        disposeMaterial(mesh.userData?.clay as THREE.Material | undefined);
+        disposeMaterial(mesh.userData?.own as THREE.Material | undefined);
       });
       envMap.dispose();
       studioEnv.dispose();
@@ -613,8 +614,7 @@ export default function BuildingViewer({ modelUrl, defaultView, mappings, status
       bloom?.dispose();
       composer.dispose();
       target.dispose();
-      renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      releaseRenderer(renderer, mount);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelUrl, mappings]);

@@ -1,20 +1,21 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# RealtorX website and dashboards
 
-# Run and deploy your AI Studio app
+The public website (www.realtorxglobal.com) and the Agent (`/agent/`) and Developer (`/developer/`) dashboards. React + Vite +
+Tailwind. All data comes from the RealtorX ERPNext backend (private repository) through `/api/erp`, as the visitor's own
+session; no API keys are used.
 
-This contains everything you need to run your app locally.
+## Run locally
 
-View your app in AI Studio: https://ai.studio/apps/3bc3e8c6-e347-4103-b52d-d054ffd4d965
+Needs Node.js and a running ERPNext site with the `realtor_x` app (`bench start`, port 8000).
 
-## Run Locally
+1. `npm install`
+2. Copy `.env.example` to `.env.local` (defaults work for a local bench).
+3. `npm run dev`, then open http://localhost:3000 (dashboards: `/agent/`, `/developer/`).
 
-**Prerequisites:**  Node.js
+`npm run typecheck` checks the code; `npm run build` makes the production files in `dist/`.
 
+## Deploy (Vercel)
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- Set `ERPNEXT_URL` to the public backend address (see `.env.example`). `middleware.ts` rewrites `/api/erp/*`, `/files/*`
+  and `/private/files/*` there; `vercel.json` sends every page to the single-page app.
+- Optional: `RX_EDGE_KEY` (same value in the backend gate) for trusted visitor IPs, and `VITE_ERP_DESK_URL` for a staff link.

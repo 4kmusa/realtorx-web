@@ -1,21 +1,21 @@
 // Dialog shell: a panel that slides in from the right on large screens and rises from the bottom on phones.
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useDialogFocus } from './useDialogFocus';
 
 export function Modal({ title, subtitle, onClose, children, labelId = 'modal-title' }: { title: string; subtitle?: string; onClose: () => void; children: React.ReactNode; labelId?: string }) {
+  const panel = useRef<HTMLDivElement>(null);
+  useDialogFocus(panel, onClose); // focus inside, Tab stays inside, Escape closes
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+  }, []);
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-fade sm:items-stretch sm:justify-end" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby={labelId}>
-      <div onClick={(e) => e.stopPropagation()}
+      <div ref={panel} onClick={(e) => e.stopPropagation()}
         className="relative flex max-h-[94svh] w-full flex-col overflow-hidden rounded-t-3xl border border-line bg-ink animate-rise sm:max-h-none sm:max-w-[480px] sm:rounded-none sm:border-y-0 sm:border-r-0">
         <div className="x-rule absolute inset-x-0 top-0" />
         <div className="flex items-start justify-between gap-6 px-7 pb-2 pt-8">

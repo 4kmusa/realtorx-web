@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { ChevronUp, Loader2 } from 'lucide-react';
 import { imageUrl } from '../marketplace/api';
 import { TourScene, VirtualTour } from './api';
+import { releaseRenderer } from '../viewer3d/webgl';
 
 const FOV = { min: 30, max: 95, start: 75 };
 const DEG = Math.PI / 180;
@@ -362,8 +363,7 @@ const TourViewer = React.forwardRef<TourViewerHandle, Props>(function TourViewer
       textures.forEach((p) => p.then((t) => t.dispose()).catch(() => undefined));
       [front, back].forEach((m) => (m.material as THREE.Material).dispose());
       geometry.dispose();
-      renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      releaseRenderer(renderer, mount);
     };
     // The viewer is rebuilt only for another tour; room changes go through goTo().
     // eslint-disable-next-line react-hooks/exhaustive-deps

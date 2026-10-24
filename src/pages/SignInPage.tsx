@@ -9,11 +9,12 @@ import { useBuyer } from '../features/buyer/session';
 
 type Nav = (page: PageId, id?: string) => void;
 
-/** Back office (ERPNext Desk) address: VITE_ERP_DESK_URL, or port 8000 on this host during development. */
-export function backOfficeUrl(): string {
+/** Back office (ERPNext Desk) address: VITE_ERP_DESK_URL, or port 8000 on this host during development. On the live
+ * website without it there is no link: Desk is not on the internet (only inside the RealtorX office). */
+export function backOfficeUrl(): string | null {
   const configured = import.meta.env.VITE_ERP_DESK_URL as string | undefined;
   if (configured) return configured;
-  return import.meta.env.DEV ? `${window.location.protocol}//${window.location.hostname}:8000/app` : '/app';
+  return import.meta.env.DEV ? `${window.location.protocol}//${window.location.hostname}:8000/app` : null;
 }
 
 export default function SignInPage({ onNavigate }: { onNavigate: Nav }) {
@@ -26,8 +27,9 @@ export default function SignInPage({ onNavigate }: { onNavigate: Nav }) {
     { title: 'RealtorX Agent', text: 'Inventory to sell, your buyers, deals, commission and client cases. Uses the password RealtorX gives you.', href: '/agent/' },
     { title: 'My application', text: 'Applied to become an agent? Follow your application with the password you chose when applying.', href: '/my-application' },
     { title: 'Developer', text: 'Your projects, inventory, reservations, collections and commission invoices.', href: '/developer/' },
-    { title: 'RealtorX team', text: 'The back office for RealtorX staff.', href: backOfficeUrl() },
   ];
+  const desk = backOfficeUrl();
+  if (desk) doors.push({ title: 'RealtorX team', text: 'The back office for RealtorX staff.', href: desk });
   return (
     <div className="bg-ink pb-24">
       <Container className="pt-16 md:pt-24">

@@ -36,6 +36,18 @@ export function formatMoneyList(list: MoneyAmount[] | null | undefined, empty = 
   return list.map((m) => formatMoney(m.amount, m.currency)).join(' + ');
 }
 
+/** Copies text; where the browser refuses (no permission, old phone), shows it in a box to copy by hand. */
+export async function copyText(text: string): Promise<boolean> {
+  try {
+    if (!navigator.clipboard) throw new Error('no clipboard');
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    window.prompt(t('Copy this text:'), text);
+    return false;
+  }
+}
+
 export function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
   const d = new Date(value.length <= 10 ? `${value}T00:00:00` : value.replace(' ', 'T'));

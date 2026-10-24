@@ -23,7 +23,7 @@ export function AgentKpiCards({ onOpen }: { onOpen: (section: string) => void })
   const k = state.data;
   if (!k) return null;
   const card = (section: string, el: React.ReactNode) => (
-    <button type="button" onClick={() => onOpen(section)} className="h-full text-left transition hover:opacity-90">{el}</button>
+    <button type="button" onClick={() => onOpen(section)} className="h-full text-start transition hover:opacity-90">{el}</button>
   );
   return (
     <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

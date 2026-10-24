@@ -3,11 +3,13 @@ import React from 'react';
 import { ArrowUpRight, Building2 } from 'lucide-react';
 import { imageUrl } from '../marketplace/api';
 import { PublicProject, projectStage } from './api';
+import { follow } from '../../components/site/PageLink';
+import { pathFor } from '../../app/routes';
 
 export function ProjectCard({ project, onOpen, large }: { project: PublicProject; onOpen: () => void; large?: boolean }) {
   const cover = imageUrl(project.cover_image);
   return (
-    <button onClick={onOpen} className={`zoom reveal-img group relative block w-full overflow-hidden rounded-2xl bg-panel text-left ${large ? 'aspect-[16/10] md:aspect-[21/10]' : 'aspect-[4/5] sm:aspect-[16/11]'}`}>
+    <a href={pathFor('project-details', project.name)} onClick={(e) => follow(e, onOpen)} className={`zoom reveal-img group relative block w-full overflow-hidden rounded-2xl bg-panel text-left ${large ? 'aspect-[16/10] md:aspect-[21/10]' : 'aspect-[4/5] sm:aspect-[16/11]'}`}>
       {cover ? <img src={cover} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" /> : (
         <div className="absolute inset-0 flex items-center justify-center text-fg-3"><Building2 className="h-12 w-12" strokeWidth={1} /></div>
       )}
@@ -24,6 +26,6 @@ export function ProjectCard({ project, onOpen, large }: { project: PublicProject
           <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} />
         </span>
       </div>
-    </button>
+    </a>
   );
 }

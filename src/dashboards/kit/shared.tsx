@@ -42,11 +42,15 @@ export function NotificationsSection({ app, targetFor, onOpen }: {
   };
   const state = useApi<NotificationRow[]>('realtor_x.api.account.my_notifications');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const markAll = async () => {
     setBusy(true);
+    setError(null);
     try {
       await callPost('realtor_x.api.account.mark_notifications_read');
       state.reload();
+    } catch (err: any) {
+      setError(err?.message || t('Something went wrong. Please try again.'));
     } finally {
       setBusy(false);
     }
@@ -59,6 +63,7 @@ export function NotificationsSection({ app, targetFor, onOpen }: {
         description="Updates about your account. Email and SMS delivery depend on configured providers."
         action={unread > 0 && <PrimaryButton busy={busy} onClick={markAll}>Mark all as read</PrimaryButton>}
       />
+      {error && <div className="mb-4"><Notice tone="error">{error}</Notice></div>}
       <DataView
         state={state}
         isEmpty={(rows) => rows.length === 0}
@@ -73,7 +78,7 @@ export function NotificationsSection({ app, targetFor, onOpen }: {
                     if (!n.read) await callPost('realtor_x.api.account.mark_notifications_read', { names: JSON.stringify([n.name]) }).catch(() => undefined);
                     if (!open(n)) state.reload();
                   }}
-                  className="flex w-full items-start gap-3 p-4 text-left hover:bg-white/[0.03]"
+                  className="flex w-full items-start gap-3 p-4 text-start hover:bg-white/[0.03]"
                 >
                   <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.read ? 'bg-transparent' : 'bg-fg text-ink'}`} aria-label={n.read ? 'Read' : 'Unread'} />
                   <span className="min-w-0">

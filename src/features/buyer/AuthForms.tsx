@@ -6,7 +6,7 @@ import { callPost } from '../../services/api/client';
 import { Buyer, useBuyer } from './session';
 import PhoneInput from '../../components/site/PhoneInput';
 
-type Step = 'signin' | 'signup' | 'signup-code' | 'reset' | 'reset-code';
+type Step = 'signin' | 'signin-code' | 'signup' | 'signup-code' | 'reset' | 'reset-code';
 
 export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?: (b: Buyer | null) => void; intro?: string; compact?: boolean }) {
   const { started, otherAccount, signOut } = useBuyer();
@@ -38,7 +38,20 @@ export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?:
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 'signin') {
-      return run(async () => finish(await callPost('realtor_x.api.portal.login', { app: 'buyer', usr: f.email.trim(), pwd: f.password })));
+      return run(async () => {
+        const r = await callPost<any>('realtor_x.api.portal.login', { app: 'buyer', usr: f.email.trim(), pwd: f.password });
+        if (r?.needs_code) {
+          // RealtorX asks for an emailed code on sign-in: show the code step instead of failing silently.
+          setToken(r.token);
+          go('signin-code');
+          setNote(`We emailed a 6-digit code to ${r.sent_to}. It expires in 10 minutes.`);
+          return;
+        }
+        await finish(r);
+      });
+    }
+    if (step === 'signin-code') {
+      return run(async () => finish(await callPost('realtor_x.api.portal.login_code', { app: 'buyer', token, code: f.code.trim() })));
     }
     if (step === 'signup') {
       if (f.password !== f.password2) return setError('The two passwords are not the same.');
@@ -81,7 +94,7 @@ export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?:
   }
 
   const tabs = step === 'signin' || step === 'signup';
-  const title = { signin: 'Sign in', signup: 'Create your free account', 'signup-code': 'Check your email', reset: 'Reset your password', 'reset-code': 'Choose a new password' }[step];
+  const title = { signin: 'Sign in', 'signin-code': 'Check your email', signup: 'Create your free account', 'signup-code': 'Check your email', reset: 'Reset your password', 'reset-code': 'Choose a new password' }[step];
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
       {intro && <p className="text-[15px] leading-relaxed text-fg-2">{intro}</p>}
@@ -114,7 +127,7 @@ export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?:
           <PhoneInput id="b-phone" required value={f.phone} onChange={(v) => set({ phone: v })} />
         </Field>
       )}
-      {(step === 'signup-code' || step === 'reset-code') && (
+      {(step === 'signin-code' || step === 'signup-code' || step === 'reset-code') && (
         <Field label="6-digit code" htmlFor="b-code">
           <input id="b-code" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} className={`${inputClass} tracking-[0.4em]`} value={f.code}
             onChange={(e) => set({ code: e.target.value.replace(/\D/g, '') })} />
@@ -138,12 +151,13 @@ export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?:
 
       {error && <Alert>{error}</Alert>}
       <Button type="submit" size="lg" busy={busy} className="w-full">
-        {{ signin: 'Sign in', signup: 'Create account', 'signup-code': 'Confirm and continue', reset: 'Email me a code', 'reset-code': 'Save and sign in' }[step]}
+        {{ signin: 'Sign in', 'signin-code': 'Verify and sign in', signup: 'Create account', 'signup-code': 'Confirm and continue', reset: 'Email me a code', 'reset-code': 'Save and sign in' }[step]}
       </Button>
 
       <div className="flex flex-wrap justify-between gap-2 text-[13px] text-fg-3">
         {step === 'signin' && <button type="button" onClick={() => go('reset')} className="hover:text-fg">Forgot your password?</button>}
         {(step === 'signup-code' || step === 'reset-code') && <button type="button" onClick={resend} className="hover:text-fg">Send a new code</button>}
+        {step === 'signin-code' && <button type="button" onClick={() => { set({ code: '' }); go('signin'); }} className="hover:text-fg">Send a new code</button>}
         {!tabs && <button type="button" onClick={() => go('signin')} className="hover:text-fg">Back to sign in</button>}
       </div>
     </form>
