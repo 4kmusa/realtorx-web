@@ -1,16 +1,18 @@
 // Home (/): what RealtorX is, live inventory, how a deal runs from booking to the keys, and who we work with.
 // Everything listed comes from the live system; nothing is shown when there is nothing to show.
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Search } from 'lucide-react';
+import { ArrowUpRight, MapPin, Search } from 'lucide-react';
 import { PageId, Language } from '../types';
 import InquiryModal from '../components/InquiryModal';
 import { ListingCard } from '../features/marketplace/ListingCard';
 import { PublicListing, getFeatured, searchListings } from '../features/marketplace/api';
-import { ProjectCard } from '../features/projects/ProjectCard';
-import { PublicProject, getProjects } from '../features/projects/api';
+import { PublicProject, getProjects, projectStage } from '../features/projects/api';
+import { imageUrl } from '../features/marketplace/api';
+import { callGet } from '../services/api/client';
+import { PageLink } from '../components/site/PageLink';
 import { Button, ButtonLink, Container, Eyebrow, Section, SectionHeader, TextLink, XMark, useReveal } from '../components/site/ui';
 import { SITE, whatsappUrl } from '../config/site';
-import { Words, useScrollProgress } from '../components/site/motion';
+import { CountUp, Words, useScrollProgress } from '../components/site/motion';
 
 type Nav = (page: PageId, id?: string) => void;
 
@@ -24,6 +26,17 @@ const JOURNEY: { stage: string; text: string }[] = [
   { stage: 'Transferred', text: 'Ownership transferred into your name. Deal closed.' },
 ];
 
+/** Live counts for the hero and the type / city tiles (realtor_x.api.v1.home_stats). */
+interface HomeStats { units: number; projects: number; types: Record<string, number>; cities: { city: string; units: number }[] }
+
+const TYPES: { key: string; title: string; img: string; query: string; unit: [string, string] }[] = [
+  { key: 'apartments', title: 'Apartments', img: '/images/tile-apartment.webp', query: '?category=Flat,Penthouse', unit: ['apartment', 'apartments'] },
+  { key: 'houses', title: 'Houses & villas', img: '/images/tile-villa.webp', query: '?category=House,Farm%20House', unit: ['home', 'homes'] },
+  { key: 'plots', title: 'Plots', img: '/images/tile-plot.webp', query: '?group=Plots', unit: ['plot', 'plots'] },
+  { key: 'commercial', title: 'Commercial', img: '/images/tile-commercial.webp', query: '?group=Commercial', unit: ['shop or office', 'shops & offices'] },
+];
+const CITY_CODES: Record<string, string> = { Karachi: 'KHI', Lahore: 'LHR', Islamabad: 'ISB', Rawalpindi: 'RWP', Peshawar: 'PEW', Multan: 'MUX', Faisalabad: 'LYP' };
+
 const PROMISES: { title: string; text: string }[] = [
   { title: 'Only contracted developers', text: 'We list a project only after the developer has signed with RealtorX. Prices, plans and availability come straight from them, unit by unit.' },
   { title: 'Every rupee accounted for', text: 'Buyers pay into the developer’s account. RealtorX checks each payment against the schedule and gives you a statement you can open any time.' },
@@ -36,7 +49,8 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
   const [listings, setListings] = useState<PublicListing[] | null>(null);
   const [projects, setProjects] = useState<PublicProject[] | null>(null);
   const [interest, setInterest] = useState<PublicListing | null>(null);
-  useReveal([listings, projects]);
+  const [stats, setStats] = useState<HomeStats | null>(null);
+  useReveal([listings, projects, stats]);
   const journey = useRef<HTMLOListElement>(null);
   useScrollProgress(journey, (p) => {
     const el = journey.current;
@@ -50,6 +64,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
     Promise.all([getFeatured().catch(() => []), searchListings({ sort: 'recommended' }).then((r) => r.items).catch(() => [])])
       .then(([top, more]) => setListings([...top, ...more.filter((m) => !top.some((t) => t.name === m.name))].slice(0, 6)));
     getProjects().then(setProjects).catch(() => setProjects([]));
+    callGet<HomeStats>('realtor_x.api.v1.home_stats').then(setStats).catch(() => setStats(null));
   }, []);
 
   const search = (e: React.FormEvent) => {
@@ -66,10 +81,11 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
         <img src="/images/apartment_bahria_heights_1790600970754.webp" alt="" className="rx-kenburns absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/35 to-ink" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/20 to-transparent" aria-hidden="true" />
+        <div className="rx-hero-glow absolute inset-0" aria-hidden="true" />
         <Container className="relative pb-14 pt-36 md:pb-20">
           <Eyebrow className="mb-7 animate-fade text-fg-2">Verified developer homes · Pakistan</Eyebrow>
           <h1 className="max-w-4xl text-balance text-[46px] font-medium leading-[0.98] tracking-[-0.04em] text-fg sm:text-7xl lg:text-[96px]">
-            <Words delay={60}>Property, <span className="em">properly</span> handled.</Words>
+            <Words delay={60}>Property, <span className="em rx-grad">properly</span> handled.</Words>
           </h1>
           <p className="mt-7 max-w-xl animate-rise text-pretty text-base leading-relaxed text-fg-2 md:text-lg" style={{ animationDelay: '200ms' }}>
             RealtorX sells homes from developers under contract with us. Every unit checked, every payment verified, and one team running your deal from booking to the keys.
@@ -90,10 +106,24 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
               <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={140} placeholder="City, area or project"
                 className="h-11 w-full bg-transparent text-[15px] text-fg placeholder:text-fg-3 outline-none" />
             </label>
-            <Button type="submit" className="magnetic h-11 px-6"><Search className="h-4 w-4" strokeWidth={1.75} /> Search</Button>
+            <Button type="submit" variant="gradient" className="magnetic h-11 px-6"><Search className="h-4 w-4" strokeWidth={1.75} /> Search</Button>
           </form>
 
-          <ul className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-[13px] text-fg-2">
+          {/* Live numbers from the system (nothing shown until they arrive). */}
+          {stats && stats.units > 0 && (
+            <dl className="mt-6 grid max-w-2xl animate-rise grid-cols-3 divide-x divide-line overflow-hidden rounded-2xl border border-line bg-panel/60 backdrop-blur-md" style={{ animationDelay: '420ms' }}>
+              {[[stats.units, stats.units === 1 ? 'verified unit live' : 'verified units live'], [stats.projects, stats.projects === 1 ? 'project under contract' : 'projects under contract'],
+                [stats.cities.length, stats.cities.length === 1 ? 'city' : 'cities']].map(([n, label]) => (
+                <div key={label as string} className="px-4 py-3.5 sm:px-5">
+                  <dt className="sr-only">{label}</dt>
+                  <dd className="text-2xl font-medium tracking-[-0.02em] text-fg sm:text-[28px]"><CountUp value={String(n)} /></dd>
+                  <p className="mt-0.5 text-[12px] leading-snug text-fg-2">{label}</p>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-[13px] text-fg-2">
             {['Contracted developers only', 'Identity-checked agents', 'Payments verified by RealtorX'].map((t, i) => (
               <li key={t} className="flex animate-fade items-center gap-2.5" style={{ animationDelay: `${400 + i * 100}ms` }}><XMark draw delay={450 + i * 100} className="h-2.5 w-2.5" /> {t}</li>
             ))}
@@ -101,18 +131,41 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
         </Container>
       </section>
 
-      {/* ── Statement ── */}
+      {/* ── Browse by type and city ── */}
       <Section>
         <Container>
-          <div className="reveal grid grid-cols-1 gap-10 md:grid-cols-[1fr_2fr]">
-            <Eyebrow>Why RealtorX</Eyebrow>
-            <div>
-              <p className="text-balance text-[28px] font-medium leading-[1.2] tracking-[-0.025em] text-fg md:text-[42px]">
-                <Words onScroll>Buying from a developer should not feel like a <span className="em">gamble</span>. We sign the developer, check the inventory and stay with you until the keys are in your hand.</Words>
-              </p>
-              <TextLink className="mt-8" onClick={() => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' })}>See how a deal works</TextLink>
-            </div>
+          <SectionHeader eyebrow="Browse" title={<>What are you <span className="em">looking</span> for?</>}
+            action={<TextLink onClick={() => onNavigate('properties')}>All properties</TextLink>} />
+          <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+            {TYPES.map((t, i) => {
+              const n = stats?.types[t.key];
+              return (
+                <PageLink key={t.key} page="properties" id={t.query} onNavigate={onNavigate}
+                  className="rx-tile reveal block aspect-[4/5] rounded-2xl bg-panel" style={{ transitionDelay: `${i * 70}ms` }}>
+                  <img src={t.img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                  <span className="absolute inset-0 bg-gradient-to-b from-transparent via-ink/20 to-ink/95" aria-hidden="true" />
+                  <span className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 md:inset-x-5 md:bottom-5">
+                    <span>
+                      <span className="block text-lg font-medium tracking-[-0.02em] text-fg md:text-2xl">{t.title}</span>
+                      {n != null && <span className="mt-0.5 block text-[13px] text-fg-2">{n} {n === 1 ? t.unit[0] : t.unit[1]}</span>}
+                    </span>
+                    <span className="rx-arrow hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-fg backdrop-blur sm:flex"><ArrowUpRight className="h-4 w-4" /></span>
+                  </span>
+                </PageLink>
+              );
+            })}
           </div>
+          {!!stats?.cities.length && (
+            <div className="reveal mt-5 flex flex-wrap gap-2.5">
+              {[...stats.cities].sort((a, b) => b.units - a.units).map((c) => (
+                <PageLink key={c.city} page="properties" id={`?city=${encodeURIComponent(c.city)}`} onNavigate={onNavigate}
+                  className="flex h-12 items-center gap-3 rounded-full border border-line bg-panel py-1.5 pl-1.5 pr-5 text-[14px] text-fg transition-colors hover:border-fg/30">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue to-flame text-[11px] font-semibold text-white">{CITY_CODES[c.city] || c.city.slice(0, 3).toUpperCase()}</span>
+                  {c.city} <span className="text-fg-3">{c.units}</span>
+                </PageLink>
+              ))}
+            </div>
+          )}
         </Container>
       </Section>
 
@@ -158,18 +211,35 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
         </Container>
       </Section>
 
-      {/* ── Projects ── */}
+      {/* ── Projects: one large and two smaller tiles (a simple grid when there are fewer) ── */}
       {!!projects?.length && (
-        <Section tone="ink-2">
+        <Section tone="ink-2" className="border-t border-line">
           <Container>
-            <SectionHeader eyebrow="Projects" title={<>Developments we <span className="em">sell</span> for our partners.</>}
+            <SectionHeader eyebrow="Projects" title={<>Projects <span className="em">now selling</span>.</>}
               action={<TextLink onClick={() => onNavigate('projects')}>All projects</TextLink>} />
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {projects.slice(0, 4).map((p, i) => (
-                <div key={p.name} className={`reveal ${projects.length === 1 || (i === 0 && projects.length % 2 === 1) ? 'md:col-span-2' : ''}`}>
-                  <ProjectCard project={p} large={projects.length === 1 || (i === 0 && projects.length % 2 === 1)} onOpen={() => onNavigate('project-details', p.name)} />
-                </div>
-              ))}
+            <div className={`grid grid-cols-1 gap-3 md:gap-4 ${projects.length >= 3 ? 'md:grid-cols-[1.4fr_1fr] md:grid-rows-[300px_300px]' : 'md:grid-cols-2'}`}>
+              {projects.slice(0, 3).map((p, i) => {
+                const big = i === 0 && projects.length >= 3;
+                return (
+                  <PageLink key={p.name} page="project-details" id={p.name} onNavigate={onNavigate}
+                    className={`rx-tile reveal block rounded-2xl bg-panel ${big ? 'aspect-[4/3] md:row-span-2 md:aspect-auto' : 'aspect-[16/10] md:aspect-auto md:min-h-[300px]'}`}>
+                    {p.cover_image && <img src={imageUrl(p.cover_image) || ''} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />}
+                    <span className="absolute inset-0 bg-gradient-to-b from-ink/10 via-ink/25 to-ink/95" aria-hidden="true" />
+                    <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full border border-white/15 bg-ink/70 px-3 py-1 text-[11px] text-fg backdrop-blur">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />{[projectStage(p.status), p.city].filter(Boolean).join(' · ')}
+                    </span>
+                    <span className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 md:inset-x-6 md:bottom-6">
+                      <span className="min-w-0">
+                        <span className={`block font-medium tracking-[-0.03em] text-fg ${big ? 'text-3xl md:text-4xl' : 'text-2xl'}`}>{p.project_name}</span>
+                        <span className="mt-1 block text-[13px] text-fg-2">
+                          {[p.developer_name && `by ${p.developer_name}`, p.available_units ? `${p.available_units} ${p.available_units === 1 ? 'unit' : 'units'} available` : null].filter(Boolean).join(' · ')}
+                        </span>
+                      </span>
+                      <span className="rx-arrow flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-fg backdrop-blur"><ArrowUpRight className="h-4 w-4" /></span>
+                    </span>
+                  </PageLink>
+                );
+              })}
             </div>
           </Container>
         </Section>
@@ -179,10 +249,10 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
       <Section>
         <Container>
           <SectionHeader eyebrow="What we promise" title={<>Three things we will <span className="em">never</span> compromise on.</>} />
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
             {PROMISES.map((p, i) => (
-              <div key={p.title} className="reveal spotlight rounded-2xl border-t border-line px-1 pb-4 pt-8" style={{ transitionDelay: `${i * 90}ms` }}>
-                <p className="font-serif text-5xl italic text-fg-3">0{i + 1}</p>
+              <div key={p.title} className="rx-glow-card reveal spotlight rounded-2xl border border-line p-6 md:p-8" style={{ transitionDelay: `${i * 90}ms` }}>
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-blue/25 to-flame/25 font-serif text-xl italic text-fg">0{i + 1}</span>
                 <h3 className="mt-6 text-xl font-medium tracking-[-0.015em] text-fg">{p.title}</h3>
                 <p className="mt-3 text-[15px] leading-relaxed text-fg-2">{p.text}</p>
               </div>

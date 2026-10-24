@@ -31,27 +31,30 @@ export default function SignInPage({ onNavigate }: { onNavigate: Nav }) {
   const desk = backOfficeUrl();
   if (desk) doors.push({ title: 'RealtorX team', text: 'The back office for RealtorX staff.', href: desk });
   return (
-    <div className="bg-ink pb-24">
-      <Container className="pt-16 md:pt-24">
+    <div className="relative overflow-hidden bg-ink pb-24">
+      <div className="rx-orbs" aria-hidden="true" />
+      <Container className="relative pt-16 md:pt-24">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_440px] lg:gap-20">
-          <div>
+          <div className="rx-stagger">
             <Eyebrow className="mb-6">Sign in</Eyebrow>
-            <h1 className="max-w-3xl text-balance text-[40px] font-medium leading-[1.04] tracking-[-0.035em] text-fg md:text-6xl">Your RealtorX <span className="em">account</span>.</h1>
+            <h1 className="max-w-3xl text-balance text-[40px] font-medium leading-[1.04] tracking-[-0.035em] text-fg md:text-6xl">Your RealtorX <span className="em rx-grad">account</span>.</h1>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-fg-2">
               Browsing is open to everyone. To send an enquiry, book a site visit or request a booking, sign in or create a free account:
               your details go with every request and you can follow them in My account.
             </p>
           </div>
-          <div className="rounded-2xl border border-line bg-panel p-6 md:p-8"><AuthForms onSignedIn={(b) => b && onNavigate('account')} /></div>
+          <div className="rx-glow-border rx-field-glow animate-rise rounded-2xl bg-panel p-6 shadow-[0_30px_80px_-30px_rgb(0_0_0/0.8)] md:p-8" style={{ animationDelay: '150ms' }}>
+            <AuthForms onSignedIn={(b) => b && onNavigate('account')} />
+          </div>
         </div>
         <h2 className="mt-24 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">Agents, developers and the RealtorX team</h2>
         <ul className="mt-6 border-t border-line">
           {doors.map((d) => (
             <li key={d.title}>
-              <a href={d.href} className="group grid grid-cols-1 items-center gap-3 border-b border-line py-8 md:grid-cols-[1fr_2fr_auto] md:gap-10">
+              <a href={d.href} className="rx-door group grid grid-cols-1 items-center gap-3 border-b border-line py-8 md:grid-cols-[1fr_2fr_auto] md:gap-10">
                 <span className="text-2xl font-medium tracking-[-0.02em] text-fg">{d.title}</span>
                 <span className="text-[15px] leading-relaxed text-fg-2">{d.text}</span>
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-line-2 text-fg transition-colors group-hover:border-fg group-hover:bg-fg group-hover:text-ink">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-line-2 text-fg transition-[background-color,border-color,color,transform] duration-500 group-hover:rotate-45 group-hover:border-fg group-hover:bg-fg group-hover:text-ink">
                   <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} />
                 </span>
               </a>

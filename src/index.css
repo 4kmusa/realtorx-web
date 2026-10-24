@@ -180,3 +180,75 @@ body {
     inset: -8px -6px;
   }
 }
+
+/* ── Sample A additions (2026-10-25) ───────────────────────────────────────── */
+
+/* Brand gradient on a word of a headline. */
+.rx-grad { background: linear-gradient(90deg, #6f98ff, #ff9a4a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Buttons: a soft light sweeps across on hover; the arrow nudges forward. */
+.rx-shine { position: relative; overflow: hidden; isolation: isolate; }
+.rx-shine::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+  transform: translateX(-120%); transition: transform 700ms var(--ease-out-soft);
+}
+.rx-shine:hover::before { transform: translateX(120%); }
+.rx-btn svg:last-child { transition: transform 300ms var(--ease-out-soft); }
+.rx-btn:hover svg:last-child { transform: translateX(3px); }
+
+/* Photo tiles (home page types and projects): the photo eases in, the arrow turns, the tile lifts a little. */
+.rx-tile { position: relative; overflow: hidden; isolation: isolate; transition: transform 500ms var(--ease-out-soft), box-shadow 500ms; }
+.rx-tile img { transition: transform 1100ms var(--ease-out-soft); }
+.rx-tile .rx-arrow { transition: transform 450ms var(--ease-out-soft), background-color 300ms, color 300ms; }
+@media (hover: hover) {
+  .rx-tile:hover { transform: translateY(-4px); box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.8); }
+  .rx-tile:hover img { transform: scale(1.06); }
+  .rx-tile:hover .rx-arrow { transform: rotate(45deg); background: var(--color-fg); color: var(--color-ink); }
+}
+
+/* Glow behind the hero (blue at the bottom left, flame at the top right). */
+.rx-hero-glow { background: radial-gradient(55% 45% at 12% 85%, rgb(45 108 246 / 0.28), transparent 70%), radial-gradient(40% 35% at 90% 10%, rgb(255 122 26 / 0.16), transparent 70%); }
+
+/* Cards with a soft brand light in one corner. */
+.rx-glow-card { background: radial-gradient(90% 120% at 0% 0%, rgb(45 108 246 / 0.12), transparent 60%), var(--color-panel); }
+
+/* ── Cursor (components/site/Cursor.tsx): mouse and trackpad only ─────────── */
+.rx-cursor-on, .rx-cursor-on a, .rx-cursor-on button, .rx-cursor-on [role='button'], .rx-cursor-on label { cursor: none; }
+.rx-cursor-on input, .rx-cursor-on textarea, .rx-cursor-on select, .rx-cursor-on iframe { cursor: auto; }
+.rx-cursor-dot, .rx-cursor-ring { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; border-radius: 999px; opacity: 0; transition: opacity 250ms, width 300ms var(--ease-out-soft), height 300ms var(--ease-out-soft), margin 300ms var(--ease-out-soft), background-color 300ms, border-color 300ms; }
+.rx-cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--color-fg); }
+.rx-cursor-ring { width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 1.5px solid rgb(255 255 255 / 0.45); }
+.rx-cursor-show .rx-cursor-dot, .rx-cursor-show .rx-cursor-ring { opacity: 1; }
+.rx-cursor-hover .rx-cursor-ring { width: 64px; height: 64px; margin: -32px 0 0 -32px; border-color: transparent; background: radial-gradient(circle, rgb(111 152 255 / 0.22), rgb(255 122 26 / 0.12) 60%, transparent 72%); }
+.rx-cursor-hover .rx-cursor-dot { background: #ff9a4a; }
+.rx-cursor-down .rx-cursor-ring { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+.rx-cursor-text .rx-cursor-dot, .rx-cursor-text .rx-cursor-ring { opacity: 0; }
+
+/* ── Sign-in: a slowly turning gradient edge around the form, a light that drifts behind it ── */
+@property --rx-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.rx-glow-border { position: relative; isolation: isolate; }
+.rx-glow-border::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; z-index: -1; padding: 1px;
+  background: conic-gradient(from var(--rx-angle), rgb(45 108 246 / 0.9), rgb(255 255 255 / 0.06) 25%, rgb(255 122 26 / 0.9) 50%, rgb(255 255 255 / 0.06) 75%, rgb(45 108 246 / 0.9));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: rx-turn 6s linear infinite;
+}
+@keyframes rx-turn { to { --rx-angle: 360deg; } }
+.rx-orbs { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.rx-orbs::before, .rx-orbs::after { content: ''; position: absolute; width: 520px; height: 520px; border-radius: 50%; filter: blur(40px); opacity: 0.55; }
+.rx-orbs::before { left: -160px; top: -120px; background: radial-gradient(circle, rgb(45 108 246 / 0.35), transparent 65%); animation: rx-drift 14s ease-in-out infinite alternate; }
+.rx-orbs::after { right: -180px; bottom: -160px; background: radial-gradient(circle, rgb(255 122 26 / 0.28), transparent 65%); animation: rx-drift 17s ease-in-out infinite alternate-reverse; }
+@keyframes rx-drift { to { transform: translate(80px, 60px) scale(1.12); } }
+.rx-field-glow input:focus, .rx-field-glow select:focus { box-shadow: 0 0 0 4px rgb(111 152 255 / 0.15); }
+.rx-door { transition: background-color 400ms, padding 400ms var(--ease-out-soft); }
+@media (hover: hover) { .rx-door:hover { background: rgb(255 255 255 / 0.025); padding-left: 1rem; padding-right: 1rem; } }
+.rx-stagger > * { animation: rx-rise 700ms var(--ease-out-soft) both; }
+.rx-stagger > *:nth-child(2) { animation-delay: 80ms; } .rx-stagger > *:nth-child(3) { animation-delay: 160ms; }
+.rx-stagger > *:nth-child(4) { animation-delay: 240ms; } .rx-stagger > *:nth-child(5) { animation-delay: 320ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rx-glow-border::before, .rx-orbs::before, .rx-orbs::after { animation: none; }
+  .rx-shine::before { display: none; }
+}
+.rx-tile.reveal { transition: opacity 500ms var(--ease-out-soft), transform 500ms var(--ease-out-soft), box-shadow 500ms; }
