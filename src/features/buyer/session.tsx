@@ -14,27 +14,37 @@ export interface Buyer {
   visits: BuyerRequest[];
   bookings: BuyerRequest[];
 }
-interface SessionInfo { user: string | null; allowed: boolean; full_name?: string; csrf_token?: string | null }
+interface SessionInfo { user: string | null; allowed: boolean; full_name?: string; csrf_token?: string | null; dashboards?: Dashboard[] }
+export type Dashboard = 'agent' | 'developer';
+/** Where each dashboard opens, and its name on buttons. */
+export const DASHBOARDS: Record<Dashboard, { href: string; label: string }> = {
+  agent: { href: '/agent/', label: 'Agent dashboard' },
+  developer: { href: '/developer/', label: 'Developer dashboard' },
+};
 
 interface BuyerContext {
   buyer: Buyer | null;
   /** Signed in with another kind of account (agent, developer, staff). */
   otherAccount: string | null;
+  /** Dashboards the signed-in account may open (an agent or developer signed in on this browser). */
+  dashboards: Dashboard[];
   loading: boolean;
   refresh: () => Promise<Buyer | null>;
   started: (session: SessionInfo) => Promise<Buyer | null>;
   signOut: () => Promise<void>;
 }
 
-const Ctx = createContext<BuyerContext>({ buyer: null, otherAccount: null, loading: true, refresh: async () => null, started: async () => null, signOut: async () => undefined });
+const Ctx = createContext<BuyerContext>({ buyer: null, otherAccount: null, dashboards: [], loading: true, refresh: async () => null, started: async () => null, signOut: async () => undefined });
 
 export function BuyerProvider({ children }: { children: React.ReactNode }) {
   const [buyer, setBuyer] = useState<Buyer | null>(null);
   const [otherAccount, setOther] = useState<string | null>(null);
+  const [dashboards, setDashboards] = useState<Dashboard[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async (session: SessionInfo | null): Promise<Buyer | null> => {
     setCsrfToken(session?.csrf_token);
+    setDashboards(session?.user ? session.dashboards || [] : []);
     if (!session?.user || !session.allowed) {
       setBuyer(null);
       setOther(session?.user && !session.allowed ? session.user : null);
@@ -67,9 +77,10 @@ export function BuyerProvider({ children }: { children: React.ReactNode }) {
     setCsrfToken(null);
     setBuyer(null);
     setOther(null);
+    setDashboards([]);
   }, []);
 
-  return <Ctx.Provider value={{ buyer, otherAccount, loading, refresh, started: load, signOut }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ buyer, otherAccount, dashboards, loading, refresh, started: load, signOut }}>{children}</Ctx.Provider>;
 }
 
 export const useBuyer = () => useContext(Ctx);

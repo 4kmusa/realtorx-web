@@ -1,9 +1,10 @@
 // Shared building blocks for the customer and dealer portals.
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { LogOut, Menu } from 'lucide-react';
+import { Globe, LogOut, Menu } from 'lucide-react';
 import { callGet } from '../../services/api/client';
 import { LANGS, setLang, t, useLang, type Lang } from '../i18n';
+import { WEBSITE_URL } from '../session';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -153,7 +154,9 @@ export function PortalShell({
       <div className="mb-8 flex items-center justify-between gap-4 border-b border-line pb-6">
         <div className="min-w-0">
           <div className="flex items-center gap-4">
-            <img src="/images/realtorx-logo-480.png" alt="RealtorX" className="hidden h-8 w-auto sm:block" />
+            <a href={WEBSITE_URL} title={t('Go to the website')} className="hidden shrink-0 sm:block">
+              <img src="/images/realtorx-logo-480.png" alt="RealtorX" className="h-8 w-auto" />
+            </a>
             <span className="hidden h-8 w-px bg-line-2 sm:block" />
             <div className="min-w-0">
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">{t(title)}</p>
@@ -162,6 +165,13 @@ export function PortalShell({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          <a
+            href={WEBSITE_URL}
+            aria-label={t('Go to the website')}
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-line-2 px-4 text-sm text-fg-2 hover:bg-white/[0.04] hover:text-fg"
+          >
+            <Globe className="h-4 w-4" /> <span className="hidden sm:inline">{t('Website')}</span>
+          </a>
           <LanguagePicker />
           <button
             onClick={onLogout}

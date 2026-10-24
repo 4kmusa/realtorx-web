@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { PageId } from '../types';
 import { RealtorXLogo } from './RealtorXLogo';
-import { Button } from './site/ui';
+import { Button, ButtonLink } from './site/ui';
 import { PageLink } from './site/PageLink';
 import { useDialogFocus } from './site/useDialogFocus';
-import { useBuyer } from '../features/buyer/session';
+import { DASHBOARDS, useBuyer } from '../features/buyer/session';
 
 const NAV: { id: PageId; label: string }[] = [
   { id: 'properties', label: 'Properties' },
@@ -18,7 +18,9 @@ const NAV: { id: PageId; label: string }[] = [
 
 export function Navbar({ currentPage, onNavigate }: { currentPage: PageId; onNavigate: (page: PageId, id?: string) => void }) {
   const [open, setOpen] = useState(false);
-  const { buyer } = useBuyer();
+  const { buyer, dashboards } = useBuyer();
+  // An agent or developer signed in on this browser goes back to their dashboard from here (no "Sign in" again).
+  const dashboardLinks = buyer ? [] : dashboards.map((d) => DASHBOARDS[d]);
   const [scrolled, setScrolled] = useState(false);
   const overHero = currentPage === 'home' && !scrolled;
 
@@ -67,8 +69,14 @@ export function Navbar({ currentPage, onNavigate }: { currentPage: PageId; onNav
             ))}
           </nav>
           <div className="hidden items-center gap-2 lg:flex">
-            <Button variant="ghost" size="sm" onClick={() => go(buyer ? 'account' : 'login')}>{buyer ? 'My account' : 'Sign in'}</Button>
-            <Button variant="secondary" size="sm" onClick={() => go('become-agent')}>Become an agent</Button>
+            {dashboardLinks.length ? (
+              dashboardLinks.map((d) => <ButtonLink key={d.href} href={d.href} variant="secondary" size="sm">{d.label}</ButtonLink>)
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => go(buyer ? 'account' : 'login')}>{buyer ? 'My account' : 'Sign in'}</Button>
+                <Button variant="secondary" size="sm" onClick={() => go('become-agent')}>Become an agent</Button>
+              </>
+            )}
           </div>
           <button onClick={() => setOpen(true)} className="-mr-2 rounded-full p-2 text-fg lg:hidden" aria-label="Open menu" aria-expanded={open}>
             <Menu className="h-6 w-6" strokeWidth={1.5} />
@@ -92,8 +100,14 @@ export function Navbar({ currentPage, onNavigate }: { currentPage: PageId; onNav
             ))}
           </nav>
           <div className="grid gap-3 px-5 pb-8">
-            <Button size="lg" onClick={() => go('become-agent')}>Become an agent</Button>
-            <Button size="lg" variant="secondary" onClick={() => go(buyer ? 'account' : 'login')}>{buyer ? 'My account' : 'Sign in'}</Button>
+            {dashboardLinks.length ? (
+              dashboardLinks.map((d) => <ButtonLink key={d.href} href={d.href} size="lg">{d.label}</ButtonLink>)
+            ) : (
+              <>
+                <Button size="lg" onClick={() => go('become-agent')}>Become an agent</Button>
+                <Button size="lg" variant="secondary" onClick={() => go(buyer ? 'account' : 'login')}>{buyer ? 'My account' : 'Sign in'}</Button>
+              </>
+            )}
           </div>
       </PhoneMenu>}
     </>
