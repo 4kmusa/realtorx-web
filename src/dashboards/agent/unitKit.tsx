@@ -72,7 +72,7 @@ export function UnitKitPanel({ unit, onBack }: { unit: string; onBack: () => voi
           return (
             <div className="space-y-6">
               <SectionHeader title={k.unit.property_title} description={[k.unit.project_name, k.unit.location_area, k.unit.city].filter(Boolean).join(' · ')} />
-              <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
+              <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.2fr_1fr]">
                 <div className="min-w-0 space-y-5">
                   <div className="overflow-hidden rounded-2xl border border-line bg-panel">
                     {k.unit.cover_image && <img src={imageUrl(k.unit.cover_image) || ''} alt="" className="aspect-[16/8] w-full object-cover" />}
@@ -104,7 +104,7 @@ export function UnitKitPanel({ unit, onBack }: { unit: string; onBack: () => voi
                       </div>
                     </div>
                     {k.plan && (
-                      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                      <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                         {k.plan.parts.map((p) => (
                           <li key={p.label} className="rounded-xl bg-white/[0.03] p-3">
                             <p className="text-xs text-fg-2">{p.label} · {p.percent}%</p>
@@ -118,7 +118,7 @@ export function UnitKitPanel({ unit, onBack }: { unit: string; onBack: () => voi
                       </ul>
                     )}
                     <div className="mt-4 overflow-x-auto">
-                      <table className="w-full min-w-[420px] text-sm">
+                      <table className="w-full text-sm">
                         <thead className="text-start text-[11px] uppercase tracking-[0.14em] text-fg-3">
                           <tr><th className="py-2 text-start font-medium">{t('Payment')}</th><th className="py-2 text-start font-medium">{t('Due')}</th><th className="py-2 text-end font-medium">{t('Amount')}</th></tr>
                         </thead>

@@ -27,6 +27,8 @@ const NAV: NavItem[] = [
   { section: 'notifications', label: 'Notifications', icon: Bell },
   { section: 'security', label: 'Security', icon: Lock },
 ];
+// Phones: the agent's daily work in the bottom tab bar; the rest under "More".
+const TABS = ['today', 'inventory', 'leads', 'deals'];
 
 /** The agent's notifications: deals and buyers open the record, the rest their section. */
 function agentTarget(n: NotificationRow): NotificationTarget {
@@ -55,7 +57,7 @@ function AgentDashboard({ session, logout }: { session: DashboardSession; logout
   const profile = useApi<AgentProfile>('realtor_x.api.portal.agent_profile', undefined, ['profile', 'commission'].includes(section) ? section : 'o');
   return (
     <div className="min-h-screen bg-ink text-fg">
-      <PortalShell title="RealtorX Agent" subtitle={session.full_name || session.user || ''} nav={NAV} active={section} onSelect={select} onLogout={logout} badges={{ notifications: unread }}>
+      <PortalShell title="RealtorX Agent" subtitle={session.full_name || session.user || ''} nav={NAV} active={section} onSelect={select} onLogout={logout} badges={{ notifications: unread }} tabs={TABS}>
         <React.Fragment key={visit}>
         {section === 'overview' && <AgentStats profile={profile.data} />}
         {section === 'overview' && profile.data?.agent && <AgentKpiCards onOpen={go} />}

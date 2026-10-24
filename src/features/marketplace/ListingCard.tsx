@@ -42,10 +42,10 @@ export function ListingCard({ item, onOpen, onInterest, featured }: { item: Publ
         <div className="flex items-baseline justify-between gap-3">
           <p className="text-xl font-medium tracking-[-0.02em] text-fg">{formatPrice(item.list_price, item.purpose, item.currency)}</p>
           {onInterest && (
-            <button onClick={onInterest} className="shrink-0 text-[13px] text-fg-2 underline-offset-4 transition-colors hover:text-fg hover:underline">Enquire</button>
+            <button onClick={onInterest} className="tap shrink-0 text-[13px] text-fg-2 underline-offset-4 transition-colors hover:text-fg hover:underline">Enquire</button>
           )}
         </div>
-        <a href={href} onClick={(e) => follow(e, onOpen)} className="mt-1 line-clamp-1 block text-left text-[15px] text-fg-2 transition-colors hover:text-fg">{item.property_title}</a>
+        <a href={href} onClick={(e) => follow(e, onOpen)} className="tap mt-1 line-clamp-1 block text-left text-[15px] text-fg-2 transition-colors hover:text-fg">{item.property_title}</a>
         <p className="mt-2 line-clamp-1 text-[13px] text-fg-3">{[facts.join(' · '), place].filter(Boolean).join('  —  ')}</p>
       </div>
     </article>

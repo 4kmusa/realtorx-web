@@ -118,7 +118,7 @@ export default function AccountPage({ onNavigate }: { onNavigate: Nav }) {
           </div>
         </div>
 
-        <div className="mt-14 grid gap-14 lg:grid-cols-[1fr_360px]">
+        <div className="mt-14 grid grid-cols-1 gap-14 lg:grid-cols-[1fr_360px]">
           <div className="space-y-12">
             <Requests title="Booking requests" icon={Home} rows={buyer.bookings} onOpen={open} empty="No booking requests yet."
               detail={(r) => (r.status === 'Pending Review' && r.expires_on ? `held until ${day(r.expires_on)}` : r.project || null)} />

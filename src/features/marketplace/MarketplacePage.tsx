@@ -156,7 +156,7 @@ export default function MarketplacePage({ onNavigate }: { onNavigate: Nav }) {
             </div>
 
             {showMore && (
-              <div className="mt-6 grid gap-6 rounded-2xl border border-line bg-panel p-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-6 grid grid-cols-1 gap-6 rounded-2xl border border-line bg-panel p-6 md:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="mb-2 text-[13px] text-fg-2">Price (PKR)</p>
                   <div className="flex gap-2">
@@ -216,7 +216,7 @@ export default function MarketplacePage({ onNavigate }: { onNavigate: Nav }) {
             <h2 className="text-2xl font-medium tracking-[-0.03em] text-fg md:text-[34px]">Featured <span className="em">listings</span></h2>
             <p className="hidden text-[13px] text-fg-3 sm:block">Picked by RealtorX</p>
           </div>
-          <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {featuredHere.map((item) => (
               <ListingCard key={item.name} item={item} featured onOpen={() => onNavigate('property-detail', item.name)} onInterest={() => setInterest(item)} />
             ))}
@@ -241,7 +241,7 @@ export default function MarketplacePage({ onNavigate }: { onNavigate: Nav }) {
         {error ? (
           <ErrorState message={error} onRetry={() => setFilters({ ...filters })} />
         ) : loading && !result ? (
-          <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="aspect-[4/3] rounded-xl" />)}
           </div>
         ) : result && result.items.length === 0 ? (

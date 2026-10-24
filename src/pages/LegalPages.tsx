@@ -30,7 +30,7 @@ function Layout({ eyebrow, title, intro, sections, onNavigate }: { eyebrow: stri
         <h1 className="max-w-4xl text-balance text-[38px] font-medium leading-[1.04] tracking-[-0.035em] text-fg md:text-[56px]">{title}</h1>
         <p className="mt-4 text-[13px] text-fg-3">Effective {EFFECTIVE}</p>
         <div className="mt-6 max-w-3xl text-[16px] leading-relaxed text-fg-2">{intro}</div>
-        <div className="mt-14 grid gap-12 lg:grid-cols-[240px_1fr]">
+        <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-[240px_1fr]">
           <nav aria-label="Contents" className="h-fit lg:sticky lg:top-28">
             <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">Contents</p>
             <ol className="space-y-2 text-[14px]">
@@ -81,7 +81,7 @@ export function LegalHubPage({ onNavigate }: { onNavigate: Nav }) {
         <ul className="mt-12 border-t border-line">
           {POLICIES.map((p) => (
             <li key={p.page}>
-              <button type="button" onClick={() => onNavigate(p.page)} className="group grid w-full items-center gap-3 border-b border-line py-7 text-left md:grid-cols-[1fr_2fr_auto] md:gap-10">
+              <button type="button" onClick={() => onNavigate(p.page)} className="group grid grid-cols-1 w-full items-center gap-3 border-b border-line py-7 text-left md:grid-cols-[1fr_2fr_auto] md:gap-10">
                 <span className="text-xl font-medium tracking-[-0.02em] text-fg">{p.title}</span>
                 <span className="text-[15px] leading-relaxed text-fg-2">{p.text}</span>
                 <span className="flex h-10 w-10 items-center justify-center rounded-full border border-line-2 text-fg transition-colors group-hover:border-fg group-hover:bg-fg group-hover:text-ink">

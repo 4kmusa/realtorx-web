@@ -104,7 +104,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
       {/* ── Statement ── */}
       <Section>
         <Container>
-          <div className="reveal grid gap-10 md:grid-cols-[1fr_2fr]">
+          <div className="reveal grid grid-cols-1 gap-10 md:grid-cols-[1fr_2fr]">
             <Eyebrow>Why RealtorX</Eyebrow>
             <div>
               <p className="text-balance text-[28px] font-medium leading-[1.2] tracking-[-0.025em] text-fg md:text-[42px]">
@@ -122,7 +122,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
           <Container>
             <SectionHeader eyebrow="Available now" title={<>Homes and plots, <span className="em">checked</span> before they go live.</>}
               action={<TextLink onClick={() => onNavigate('properties')}>All properties</TextLink>} />
-            <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {listings.map((item, i) => (
                 <div key={item.name} className="reveal" style={{ transitionDelay: `${(i % 3) * 80}ms` }}>
                   <ListingCard item={item} featured={item.featured_badge !== undefined} onOpen={() => onNavigate('property-detail', item.name)} onInterest={() => setInterest(item)} />
@@ -138,7 +138,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
         <Container>
           <SectionHeader eyebrow="How a deal works" title={<>From booking to the keys, with <span className="em">one</span> accountable partner.</>}
             intro="Every RealtorX deal moves through the same seven stages. Nothing moves forward until the documents and payments for that stage are in and checked." />
-          <ol ref={journey} className="relative grid gap-0 md:grid-cols-7">
+          <ol ref={journey} className="relative grid grid-cols-1 gap-0 md:grid-cols-7">
             <span className="absolute left-[7px] top-2 h-[calc(100%-1rem)] w-px bg-line-2 md:left-0 md:top-[7px] md:h-px md:w-full" aria-hidden="true">
               <span className="rx-journey-fill absolute inset-0 bg-gradient-to-b from-blue to-flame md:bg-gradient-to-r" />
             </span>
@@ -164,7 +164,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
           <Container>
             <SectionHeader eyebrow="Projects" title={<>Developments we <span className="em">sell</span> for our partners.</>}
               action={<TextLink onClick={() => onNavigate('projects')}>All projects</TextLink>} />
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {projects.slice(0, 4).map((p, i) => (
                 <div key={p.name} className={`reveal ${projects.length === 1 || (i === 0 && projects.length % 2 === 1) ? 'md:col-span-2' : ''}`}>
                   <ProjectCard project={p} large={projects.length === 1 || (i === 0 && projects.length % 2 === 1)} onOpen={() => onNavigate('project-details', p.name)} />
@@ -179,7 +179,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
       <Section>
         <Container>
           <SectionHeader eyebrow="What we promise" title={<>Three things we will <span className="em">never</span> compromise on.</>} />
-          <div className="grid gap-12 md:grid-cols-3 md:gap-10">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10">
             {PROMISES.map((p, i) => (
               <div key={p.title} className="reveal spotlight rounded-2xl border-t border-line px-1 pb-4 pt-8" style={{ transitionDelay: `${i * 90}ms` }}>
                 <p className="font-serif text-5xl italic text-fg-3">0{i + 1}</p>
@@ -193,7 +193,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
 
       {/* ── Agents and developers ── */}
       <Section tone="ink-2" className="!py-0">
-        <div className="grid md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2">
           {[
             { img: '/images/realtorx_hub_atrium_1790597209570.webp', eyebrow: 'For agents', title: <>Sell verified inventory with RealtorX <span className="em">behind</span> you.</>,
               text: 'Apply online with your ID and a short video. Once approved you get your own Agent ID, share links, a buyer pipeline and a clear record of every deal.', cta: 'Become an agent', page: 'become-agent' as PageId },
@@ -217,7 +217,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
       {/* ── Client services ── */}
       <Section>
         <Container>
-          <div className="reveal grid items-end gap-10 border-y border-line py-14 md:grid-cols-[2fr_1fr]">
+          <div className="reveal grid grid-cols-1 items-end gap-10 border-y border-line py-14 md:grid-cols-[2fr_1fr]">
             <div>
               <Eyebrow className="mb-5">Client services</Eyebrow>
               <p className="max-w-2xl text-balance text-[26px] font-medium leading-[1.2] tracking-[-0.025em] text-fg md:text-4xl">
@@ -236,7 +236,7 @@ export function HomePage({ onNavigate }: { onNavigate: Nav; language?: Language 
         <Container>
           <div className="reveal spotlight relative overflow-hidden rounded-3xl border border-line bg-panel px-8 py-14 md:px-16 md:py-20">
             <div className="x-rule absolute inset-x-0 top-0" />
-            <div className="grid items-end gap-10 md:grid-cols-[1.4fr_1fr]">
+            <div className="grid grid-cols-1 items-end gap-10 md:grid-cols-[1.4fr_1fr]">
               <div>
                 <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] text-fg md:text-[56px]"><Words onScroll>Talk to a RealtorX <span className="em">advisor</span>.</Words></h2>
                 <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-fg-2">Tell us what you are looking for and your budget. We will come back with units that fit, the payment plan, and a time to visit.</p>

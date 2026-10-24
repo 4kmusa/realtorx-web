@@ -44,7 +44,7 @@ function Steps({ p }: { p: Profile }) {
     { label: p.status === 'Rejected' ? 'Not approved' : 'Approved', done: decided, bad: p.status === 'Rejected', note: decided ? day(p.approved_on || p.updated_on) : '' },
   ];
   return (
-    <ol className="mt-8 grid gap-3 sm:grid-cols-3">
+    <ol className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
       {steps.map((s) => (
         <li key={s.label} className={`flex items-center gap-3 rounded-2xl border p-4 ${s.done ? 'border-line-2 bg-white/[0.04]' : 'border-line'}`}>
           {s.bad ? <XCircle className="h-5 w-5 text-bad" /> : s.done ? <CheckCircle2 className="h-5 w-5 text-good" /> : s.active ? <Clock className="h-5 w-5 text-amber" /> : <Circle className="h-5 w-5 text-fg-3" />}

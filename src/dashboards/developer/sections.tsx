@@ -41,7 +41,7 @@ export function ContractSection() {
                   <p className="font-semibold text-fg">{c.name} · {c.developer_name}</p>
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${c.status === 'Active' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-white/10 text-fg-2'}`}>{c.status}</span>
                 </div>
-                <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
+                <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
                   {new Set(c.projects.map((p) => p.commission_rate)).size <= 1 && (
                     <Item label="Commission" value={`${c.projects[0]?.commission_rate ?? c.commission_rate}% of the property value`} />
                   )}

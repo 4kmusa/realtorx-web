@@ -73,7 +73,7 @@ export function StatementView({ method, deal, documentMethod }: { method: string
     <DataView state={state}>
       {(s) => (
         <div className="space-y-4">
-          <div className="grid gap-3 text-sm sm:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-4">
             {[['Agreed price', formatMoney(s.agreed_price, s.currency)], ['Paid (verified)', formatMoney(s.total_paid, s.currency)], ['Balance', formatMoney(s.balance, s.currency)],
               ['Next due', s.next_due_date ? `${formatMoney(s.next_due_amount, s.currency)} · ${formatDate(s.next_due_date)}` : '—']].map(([k, v]) => (
               <div key={k} className="rounded-lg bg-white/[0.03] p-3"><p className="text-xs text-fg-2">{k}</p><p className="mt-0.5 font-semibold text-fg">{v}</p></div>

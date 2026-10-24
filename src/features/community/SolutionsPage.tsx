@@ -55,7 +55,7 @@ export default function SolutionsPage(_props: { onNavigate: Nav }) {
 
       <Section className="!pt-16">
         <Container>
-          <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
             {EXAMPLES.map(([title, text]) => (
               <div key={title} className="bg-ink p-8">
                 <h2 className="text-lg font-medium text-fg">{title}</h2>
@@ -64,7 +64,7 @@ export default function SolutionsPage(_props: { onNavigate: Nav }) {
             ))}
           </div>
 
-          <div className="mt-24 grid gap-12 lg:grid-cols-[1fr_1.2fr]">
+          <div className="mt-24 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.2fr]">
             <div>
               <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] text-fg md:text-5xl">Open a <span className="em">case</span>.</h2>
               <p className="mt-5 max-w-md text-[15px] leading-relaxed text-fg-2">A case manager will call you within two working days. You get a case reference and updates by phone or email until it is closed.</p>
@@ -78,7 +78,7 @@ export default function SolutionsPage(_props: { onNavigate: Nav }) {
                   <p className="mt-6 rounded-xl border border-line px-4 py-3 text-[13px] text-fg-2">Case reference <span className="ml-2 font-medium text-fg">{done}</span></p>
                 </div>
               ) : (
-                <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2">
+                <form onSubmit={submit} className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="What do you need help with?" htmlFor="cs-type" className="sm:col-span-2">
                     <select id="cs-type" required className={inputClass} value={form.case_type} onChange={(e) => setForm({ ...form, case_type: e.target.value })}>
                       <option value="">Choose…</option>

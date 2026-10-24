@@ -153,7 +153,7 @@ function AppContent() {
         <Suspense fallback={<PageLoader />}><div key={pageKey} className={navigated.current ? 'rx-page' : undefined}>{render()}</div></Suspense>
       </main>
       <Footer onNavigate={navigate} />
-      <WhatsAppWidget />
+      <WhatsAppWidget withBar={page === 'property-detail' || page === 'project-details'} />
     </div>
   );
 }

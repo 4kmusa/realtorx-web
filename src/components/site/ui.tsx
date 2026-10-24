@@ -111,7 +111,7 @@ export function ButtonLink({
 /** Quiet text link with an arrow that moves on hover. */
 export function TextLink({ children, onClick, className }: { children: React.ReactNode; onClick?: () => void; className?: string }) {
   return (
-    <button onClick={onClick} className={cx('group inline-flex items-center gap-2 text-sm font-medium text-fg', className)}>
+    <button onClick={onClick} className={cx('tap group inline-flex items-center gap-2 text-sm font-medium text-fg', className)}>
       <span className="border-b border-line-2 pb-0.5 transition-colors group-hover:border-fg">{children}</span>
       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.75} />
     </button>

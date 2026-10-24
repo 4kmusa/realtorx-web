@@ -26,7 +26,7 @@ export function AgentKpiCards({ onOpen }: { onOpen: (section: string) => void })
     <button type="button" onClick={() => onOpen(section)} className="h-full text-start transition hover:opacity-90">{el}</button>
   );
   return (
-    <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
       {card('leads', <StatCard label="Open buyers" value={k.buyers_open} hint={tf('{0} new this month', k.buyers_new_this_month)} />)}
       {card('today', <StatCard label="Follow-ups due" value={k.followups_due} tone={k.followups_due ? 'warn' : 'default'} hint="Today or earlier" />)}
       {card('deals', <StatCard label="Open deals" value={k.deals_open} hint={tf('{0} transferred', k.deals_transferred) + (k.buyers_open || k.conversion ? ` · ${tf('{0}% of buyers booked', k.conversion)}` : '')} />)}

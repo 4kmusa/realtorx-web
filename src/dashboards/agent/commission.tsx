@@ -40,7 +40,7 @@ export function CommissionSection({ profile, onProfile }: { profile: AgentProfil
       <DataView state={state} isEmpty={(d) => d.rows.length === 0} empty={{ icon: Wallet, title: 'No commission yet', description: 'Each deal of your buyers creates a commission here.' }}>
         {(d) => (
           <>
-            <div className="mb-5 grid gap-3 sm:grid-cols-3">
+            <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
               <StatCard label="Pending (net)" value={formatMoneyList(d.totals.pending)} />
               <StatCard label="Earned, to be paid (net)" value={formatMoneyList(d.totals.earned)} tone="good" />
               <StatCard label="Paid to you (net)" value={formatMoneyList(d.totals.paid)} />

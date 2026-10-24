@@ -180,7 +180,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
 
         {/* Gallery: one large image and up to four more; all photos open in the viewer. */}
         {photos.length > 0 && (
-          <div className="mt-8 grid gap-2 overflow-hidden rounded-2xl md:h-[520px] md:grid-cols-4 md:grid-rows-2">
+          <div className="mt-8 grid grid-cols-1 gap-2 overflow-hidden rounded-2xl md:h-[520px] md:grid-cols-4 md:grid-rows-2">
             {photos.slice(0, 5).map((p, i) => {
               // Fill the 4 x 2 grid whatever the number of photos: one large, the rest share the right half.
               const n = Math.min(photos.length, 5);
@@ -213,7 +213,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
       </div>
 
       <Container className="pt-12">
-        <div className="grid gap-14 lg:grid-cols-[1fr_360px]">
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_360px]">
           <div className="min-w-0 space-y-20">
             <section id="overview" className="scroll-mt-40">
               <h2 className={label}>Overview</h2>
@@ -237,7 +237,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
             {!!project.unit_types?.length && (
               <section id="types" className="scroll-mt-40">
                 <h2 className={label}>Unit types</h2>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {project.unit_types.map((t) => (
                     <TypeCard key={t.label} t={t} onUnits={() => showType(t)}
                       onPlan={t.floor_plan ? () => setViewer({ images: [{ src: imageUrl(t.floor_plan) || '', caption: `${t.label} floor plan` }], start: 0 }) : undefined} />
@@ -250,7 +250,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
             {FEATURES.tours3d && (project.has_3d || project.has_tour) && (
               <section id="in3d" className="scroll-mt-40">
                 <h2 className={label}>Explore in 3D</h2>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {project.has_3d && (
                     <button onClick={() => onNavigate('project-3d', projectId)} className="flex items-start gap-4 rounded-2xl border border-line-2 bg-ink-2 p-5 text-left transition-colors hover:border-fg-3">
                       <Box className="mt-0.5 h-6 w-6 shrink-0 text-blue-2" strokeWidth={1.5} />
@@ -272,7 +272,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
             {plans.length > 0 && (
               <section id="plans" className="scroll-mt-40">
                 <h2 className={label}>Floor plans</h2>
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {plans.map((p, i) => (
                     <button key={i} onClick={() => setViewer({ images: plans, start: i })} className="group overflow-hidden rounded-2xl border border-line bg-panel text-left">
                       <div className="aspect-[4/3] bg-white"><img src={p.src} alt={p.caption || ''} className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" /></div>
@@ -318,7 +318,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
             {!!project.amenities?.length && (
               <section id="amenities" className="scroll-mt-40">
                 <h2 className={label}>Amenities</h2>
-                <div className="grid gap-8 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                   {project.amenities.map((g) => (
                     <div key={g.group}>
                       <h3 className="mb-3 text-[15px] font-medium text-fg">{g.group}</h3>
@@ -343,7 +343,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
                   <a href={project.location.map_link} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-[13px] text-fg-2 underline underline-offset-4 hover:text-fg">Open in Google Maps</a>
                 )}
                 {!!project.nearby?.length && (
-                  <ul className="mt-8 grid gap-x-8 sm:grid-cols-2">
+                  <ul className="mt-8 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
                     {project.nearby.map((n, i) => (
                       <li key={i} className="flex items-center justify-between gap-4 border-b border-line py-3.5">
                         <span className="text-[15px] text-fg">{n.place}<span className="ml-2 text-[12px] text-fg-3">{n.kind}</span></span>
@@ -405,7 +405,7 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
                 {project.developer.projects.length > 0 && (
                   <>
                     <h3 className="mb-4 mt-8 text-[15px] font-medium text-fg">More from {project.developer.name}</h3>
-                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                       {project.developer.projects.map((p) => (
                         <button key={p.name} onClick={() => onNavigate('project-details', p.name)} className="group overflow-hidden rounded-2xl border border-line bg-panel text-left">
                           <div className="aspect-[16/10] bg-ink-2">{p.cover_image && <img src={imageUrl(p.cover_image) || ''} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" />}</div>
@@ -452,11 +452,11 @@ export default function ProjectDetailPage({ projectId, onNavigate }: { projectId
             )}
           </div>
           {!units ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="aspect-[4/3] rounded-xl" />)}</div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="aspect-[4/3] rounded-xl" />)}</div>
           ) : shownUnits.length === 0 ? (
             <EmptyState icon={Building2} title="No units on sale right now" description="The developer releases inventory in phases. Ask us to tell you when new units open." actionLabel="Contact RealtorX" onAction={() => onNavigate('contact')} />
           ) : (
-            <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {shownUnits.map((u) => (
                 <div key={u.name} className="reveal">
                   <ListingCard item={u} onOpen={() => onNavigate('property-detail', u.name)} onInterest={() => setInterest(u)} />

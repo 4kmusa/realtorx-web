@@ -202,7 +202,7 @@ function ProfileStep({ status, busy, onSave }: { status: Status; busy: boolean; 
   const idLabel = `${status.id_type || 'ID'} number`;
   return (
     <form onSubmit={(e) => { e.preventDefault(); onSave(d); }} className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field label="City" htmlFor="ap-city"><input id="ap-city" required value={d.city} onChange={set('city')} className={inputClass} /></Field>
         <Field label={idLabel} htmlFor="ap-id"><input id="ap-id" required value={d.id_number} onChange={set('id_number')} className={inputClass} /></Field>
         <Field label="Years in real estate" htmlFor="ap-years"><input id="ap-years" type="number" min={0} max={60} value={d.experience_years} onChange={set('experience_years')} className={inputClass} /></Field>
