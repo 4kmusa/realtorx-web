@@ -213,18 +213,6 @@ body {
 /* Cards with a soft brand light in one corner. */
 .rx-glow-card { background: radial-gradient(90% 120% at 0% 0%, rgb(45 108 246 / 0.12), transparent 60%), var(--color-panel); }
 
-/* ── Cursor (components/site/Cursor.tsx): mouse and trackpad only ─────────── */
-.rx-cursor-on, .rx-cursor-on a, .rx-cursor-on button, .rx-cursor-on [role='button'], .rx-cursor-on label { cursor: none; }
-.rx-cursor-on input, .rx-cursor-on textarea, .rx-cursor-on select, .rx-cursor-on iframe { cursor: auto; }
-.rx-cursor-dot, .rx-cursor-ring { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; border-radius: 999px; opacity: 0; transition: opacity 250ms, width 300ms var(--ease-out-soft), height 300ms var(--ease-out-soft), margin 300ms var(--ease-out-soft), background-color 300ms, border-color 300ms; }
-.rx-cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--color-fg); }
-.rx-cursor-ring { width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 1.5px solid rgb(255 255 255 / 0.45); }
-.rx-cursor-show .rx-cursor-dot, .rx-cursor-show .rx-cursor-ring { opacity: 1; }
-.rx-cursor-hover .rx-cursor-ring { width: 64px; height: 64px; margin: -32px 0 0 -32px; border-color: transparent; background: radial-gradient(circle, rgb(111 152 255 / 0.22), rgb(255 122 26 / 0.12) 60%, transparent 72%); }
-.rx-cursor-hover .rx-cursor-dot { background: #ff9a4a; }
-.rx-cursor-down .rx-cursor-ring { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
-.rx-cursor-text .rx-cursor-dot, .rx-cursor-text .rx-cursor-ring { opacity: 0; }
-
 /* ── Sign-in: a slowly turning gradient edge around the form, a light that drifts behind it ── */
 @property --rx-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 .rx-glow-border { position: relative; isolation: isolate; }
