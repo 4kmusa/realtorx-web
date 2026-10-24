@@ -86,7 +86,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
       <Section>
         <Container>
           <SectionHeader eyebrow="What you get" title={<>Everything after the contract is <span className="em">ours</span> to run.</>} />
-          <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {BENEFITS.map((b, i) => (
               <div key={b.title} className="reveal border-t border-line pt-7" style={{ transitionDelay: `${(i % 3) * 80}ms` }}>
                 <p className="text-[11px] tabular-nums tracking-[0.2em] text-fg-3">0{i + 1}</p>
@@ -102,7 +102,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
         <Section tone="ink-2">
           <Container>
             <SectionHeader eyebrow="Partners" title={<>Developers who sell <span className="em">with</span> RealtorX.</>} />
-            <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
               {developers.map((d) => (
                 <div key={d.name} className="bg-ink-2 p-8">
                   {d.logo ? <img src={imageUrl(d.logo) || ''} alt="" className="h-10 w-auto object-contain" /> : <p className="font-serif text-3xl italic text-fg-3">{d.company_owner_name.slice(0, 1)}</p>}
@@ -128,7 +128,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
 
       <Section id="partner" className="scroll-mt-20">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr]">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.1fr]">
             <div>
               <Eyebrow className="mb-5">Partnerships</Eyebrow>
               <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] text-fg md:text-5xl">Tell us about your <span className="em">project</span>.</h2>
@@ -141,7 +141,7 @@ export default function DeveloperProgramPage({ onNavigate }: { onNavigate: Nav }
                   <p className="mt-5 text-[15px] leading-relaxed text-fg-2">Our partnerships team will call you within two working days.</p>
                 </div>
               ) : (
-                <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2">
+                <form onSubmit={submit} className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="Company" htmlFor="dv-company" className="sm:col-span-2"><input id="dv-company" required className={inputClass} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></Field>
                   <Field label="Your name" htmlFor="dv-name"><input id="dv-name" required minLength={2} className={inputClass} autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
                   <Field label="Mobile" htmlFor="dv-phone"><PhoneInput id="dv-phone" required value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} /></Field>

@@ -28,11 +28,11 @@ export default function ProjectsPage({ onNavigate }: { onNavigate: (page: PageId
         {error ? (
           <ErrorState message={error} onRetry={() => setTick((t) => t + 1)} />
         ) : !projects ? (
-          <div className="grid gap-6 md:grid-cols-2">{[0, 1].map((i) => <Skeleton key={i} className="aspect-[16/11] rounded-2xl" />)}</div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">{[0, 1].map((i) => <Skeleton key={i} className="aspect-[16/11] rounded-2xl" />)}</div>
         ) : projects.length === 0 ? (
           <EmptyState icon={Building2} title="New projects are on the way" description="We publish a project once the developer has signed with RealtorX and the inventory is checked." />
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {projects.map((p, i) => {
               const wide = projects.length === 1 || (i === 0 && projects.length % 2 === 1);
               return (

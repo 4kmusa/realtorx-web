@@ -1,15 +1,15 @@
 // Buyer sign-in, account creation (with an emailed 6-digit code) and forgotten password. Used on /sign-in and inside
 // the enquiry, visit and booking forms, so a visitor can sign in without losing their place.
 import React, { useState } from 'react';
-import { Alert, Button, Checkbox, Field, inputClass } from '../../components/site/ui';
+import { Alert, Button, ButtonLink, Checkbox, Field, inputClass } from '../../components/site/ui';
 import { callPost } from '../../services/api/client';
-import { Buyer, useBuyer } from './session';
+import { Buyer, DASHBOARDS, useBuyer } from './session';
 import PhoneInput from '../../components/site/PhoneInput';
 
 type Step = 'signin' | 'signin-code' | 'signup' | 'signup-code' | 'reset' | 'reset-code';
 
 export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?: (b: Buyer | null) => void; intro?: string; compact?: boolean }) {
-  const { started, otherAccount, signOut } = useBuyer();
+  const { started, otherAccount, dashboards, signOut } = useBuyer();
   const [step, setStep] = useState<Step>('signin');
   const [f, setF] = useState({ name: '', email: '', phone: '', password: '', password2: '', code: '', agree: false });
   const [token, setToken] = useState('');
@@ -87,8 +87,13 @@ export default function AuthForms({ onSignedIn, intro, compact }: { onSignedIn?:
   if (otherAccount) {
     return (
       <div className="space-y-4">
-        <Alert tone="info">You are signed in as {otherAccount}, which is not a buyer account. Sign out to use a buyer account.</Alert>
-        <Button variant="secondary" onClick={() => signOut()}>Sign out</Button>
+        <Alert tone="info">
+          You are signed in as {otherAccount}{dashboards.length ? '' : ', which is not a buyer account'}. {dashboards.length ? 'Open your dashboard, or sign out to use a buyer account.' : 'Sign out to use a buyer account.'}
+        </Alert>
+        <div className="flex flex-wrap gap-2">
+          {dashboards.map((d) => <ButtonLink key={d} href={DASHBOARDS[d].href}>{`Open ${DASHBOARDS[d].label.toLowerCase()}`}</ButtonLink>)}
+          <Button variant="secondary" onClick={() => signOut()}>Sign out</Button>
+        </div>
       </div>
     );
   }

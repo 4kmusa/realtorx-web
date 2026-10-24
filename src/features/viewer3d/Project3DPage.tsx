@@ -161,7 +161,7 @@ export default function Project3DPage({ projectId, onNavigate }: { projectId: st
             <button onClick={() => onNavigate('project-details', projectId)} className="mt-5 rounded-full bg-fg px-5 py-2.5 text-sm font-medium text-ink hover:bg-white">View project</button>
           </div>
         ) : (
-          <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
             <div className="relative h-[62vh] min-h-[380px] overflow-hidden rounded-2xl border border-line bg-[#05070c] lg:h-[78vh]">
               {exterior && !viewerError && (exterior.size_mb || 0) > data.large_model_mb && !loadLarge[exterior.url] ? (
                 <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">

@@ -159,3 +159,24 @@ body {
 @media (max-width: 1023px) {
   body.rx-bottom-bar .rx-wa { display: none; }
 }
+
+/* Phones: form fields at 16px at least, so iPhones do not zoom the page when a field is tapped (bigger text kept). */
+@media (max-width: 639px) {
+  input:not([class*='text-lg']):not([class*='text-xl']):not([class*='text-2xl']):not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Touch screens: small text links get a larger invisible tap area (at least ~44px) without changing how they look. */
+@media (pointer: coarse) {
+  .tap {
+    position: relative;
+  }
+  .tap::after {
+    content: '';
+    position: absolute;
+    inset: -8px -6px;
+  }
+}

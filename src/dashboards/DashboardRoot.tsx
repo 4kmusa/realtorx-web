@@ -131,7 +131,10 @@ function LoginScreen({ app, notice, onSignedIn }: { app: DashboardApp; notice?: 
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink px-4 py-10 text-fg">
       <div className="w-full max-w-sm">
-        <div className="mb-6 flex justify-end"><LanguagePicker /></div>
+        <div className="mb-6 flex items-center justify-between">
+          <a href={WEBSITE_URL} className="text-sm text-fg-2 hover:text-fg"><span className="inline-block rtl:rotate-180">←</span> {t('Back to the website')}</a>
+          <LanguagePicker />
+        </div>
         <Brand app={app} />
         <p className="mt-2 text-center text-sm text-fg-2">{t(TITLES[app].tagline)}</p>
         <form onSubmit={submit} className="mt-10 space-y-5 rounded-3xl border border-line bg-panel p-7">

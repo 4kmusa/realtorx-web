@@ -93,7 +93,7 @@ function LeadPanel({ name, onBack }: { name: string; onBack: () => void }) {
         {(l) => {
           const closed = ['Booking', 'Won', 'Lost'].includes(l.status);
           return (
-            <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_1fr]">
               <div className="space-y-4">
                 <div className="rounded-xl border border-line bg-panel p-5">
                   <p className="text-lg font-semibold text-fg">{l.lead_name}</p>
@@ -297,7 +297,7 @@ function PaymentProof({ deal, onDone }: { deal: string; onDone: () => void }) {
     }
   };
   return (
-    <form onSubmit={submit} className="grid gap-3 rounded-lg bg-white/[0.03] p-4 sm:grid-cols-2">
+    <form onSubmit={submit} className="grid grid-cols-1 gap-3 rounded-lg bg-white/[0.03] p-4 sm:grid-cols-2">
       <p className="font-semibold text-fg sm:col-span-2">{t("Send the buyer's payment proof")}</p>
       <Field label="Amount" htmlFor={`pp-amt-${deal}`}><input id={`pp-amt-${deal}`} type="number" min={1} required value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputClass} /></Field>
       <Field label="Paid on" htmlFor={`pp-date-${deal}`}><input id={`pp-date-${deal}`} type="date" required value={form.paid_on} onChange={(e) => setForm({ ...form, paid_on: e.target.value })} className={inputClass} /></Field>

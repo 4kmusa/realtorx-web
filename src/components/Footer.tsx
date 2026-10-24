@@ -40,7 +40,7 @@ export function Footer({ onNavigate }: { onNavigate: Nav }) {
   return (
     <footer className="border-t border-line bg-ink">
       <Container>
-        <div className="grid gap-12 border-b border-line py-16 md:grid-cols-[1.2fr_1fr] md:py-20">
+        <div className="grid grid-cols-1 gap-12 border-b border-line py-16 md:grid-cols-[1.2fr_1fr] md:py-20">
           <div>
             <h2 className="max-w-md text-balance text-3xl font-medium leading-[1.1] tracking-[-0.03em] text-fg md:text-4xl">
               New projects, before they <span className="em">reach</span> the market.
@@ -57,25 +57,25 @@ export function Footer({ onNavigate }: { onNavigate: Nav }) {
           </form>
         </div>
 
-        <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div className="grid grid-cols-1 gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div className="max-w-xs">
             <RealtorXLogo height={40} />
             <p className="mt-6 text-[14px] leading-relaxed text-fg-2">
               Verified homes from contracted developers, sold by identity-checked agents.
             </p>
-            <div className="mt-6 space-y-1.5 text-[14px] text-fg-2">
-              <a href={`tel:${SITE.phoneTel}`} className="block hover:text-fg">{SITE.phoneDisplay}</a>
-              <a href={`mailto:${SITE.email}`} className="block hover:text-fg">{SITE.email}</a>
-              <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="block hover:text-fg">WhatsApp</a>
+            <div className="mt-6 space-y-4 text-[14px] text-fg-2 sm:space-y-1.5">
+              <a href={`tel:${SITE.phoneTel}`} className="tap block w-fit hover:text-fg">{SITE.phoneDisplay}</a>
+              <a href={`mailto:${SITE.email}`} className="tap block w-fit hover:text-fg">{SITE.email}</a>
+              <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="tap block w-fit hover:text-fg">WhatsApp</a>
             </div>
           </div>
           {COLUMNS.map((col) => (
             <div key={col.title}>
               <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">{col.title}</p>
-              <ul className="space-y-3">
+              <ul className="space-y-4 sm:space-y-3">
                 {col.links.map(([id, label]) => (
                   <li key={id}>
-                    <PageLink page={id} onNavigate={onNavigate} className="text-[14px] text-fg-2 transition-colors hover:text-fg">{label}</PageLink>
+                    <PageLink page={id} onNavigate={onNavigate} className="tap text-[14px] text-fg-2 transition-colors hover:text-fg">{label}</PageLink>
                   </li>
                 ))}
               </ul>
@@ -86,10 +86,10 @@ export function Footer({ onNavigate }: { onNavigate: Nav }) {
         <div className="flex flex-col gap-4 border-t border-line py-8 text-[12px] text-fg-3 md:flex-row md:items-center md:justify-between">
           <p className="flex items-center gap-2"><XMark className="h-2.5 w-2.5" /> © {new Date().getFullYear()} RealtorX. {SITE.address}</p>
           <div className="flex gap-6">
-            <PageLink page="terms" onNavigate={onNavigate} className="hover:text-fg">Terms</PageLink>
-            <PageLink page="privacy" onNavigate={onNavigate} className="hover:text-fg">Privacy</PageLink>
-            <PageLink page="cookies" onNavigate={onNavigate} className="hover:text-fg">Cookies</PageLink>
-            <PageLink page="legal" onNavigate={onNavigate} className="hover:text-fg">All policies</PageLink>
+            <PageLink page="terms" onNavigate={onNavigate} className="tap hover:text-fg">Terms</PageLink>
+            <PageLink page="privacy" onNavigate={onNavigate} className="tap hover:text-fg">Privacy</PageLink>
+            <PageLink page="cookies" onNavigate={onNavigate} className="tap hover:text-fg">Cookies</PageLink>
+            <PageLink page="legal" onNavigate={onNavigate} className="tap hover:text-fg">All policies</PageLink>
           </div>
         </div>
       </Container>

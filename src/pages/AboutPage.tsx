@@ -34,7 +34,7 @@ export default function AboutPage({ onNavigate }: { onNavigate: Nav }) {
           </p>
         </Container>
         <Container className="pb-4">
-          <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr]">
             <div className="aspect-[16/9] overflow-hidden rounded-2xl"><img src="/images/realtorx_hub_atrium_1790597209570.webp" alt="" className="h-full w-full object-cover" /></div>
             <div className="hidden aspect-auto overflow-hidden rounded-2xl md:block"><img src="/images/realtorx_engraved_wall_1790597184603.webp" alt="" className="h-full w-full object-cover" /></div>
           </div>
@@ -46,7 +46,7 @@ export default function AboutPage({ onNavigate }: { onNavigate: Nav }) {
           <SectionHeader eyebrow="How it works" title={<>Four parties, <span className="em">one</span> accountable team.</>} />
           <dl className="border-t border-line">
             {MODEL.map((m) => (
-              <div key={m.who} className="reveal grid gap-2 border-b border-line py-8 md:grid-cols-[1fr_2fr] md:gap-10">
+              <div key={m.who} className="reveal grid grid-cols-1 gap-2 border-b border-line py-8 md:grid-cols-[1fr_2fr] md:gap-10">
                 <dt className="text-2xl font-medium tracking-[-0.02em] text-fg">{m.who}</dt>
                 <dd className="text-[17px] leading-relaxed text-fg-2">{m.text}</dd>
               </div>
@@ -58,7 +58,7 @@ export default function AboutPage({ onNavigate }: { onNavigate: Nav }) {
       <Section tone="ink-2">
         <Container>
           <SectionHeader eyebrow="What we stand for" title={<>Principles we <span className="em">work</span> by.</>} />
-          <div className="grid gap-x-10 gap-y-12 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-2">
             {VALUES.map(([title, text], i) => (
               <div key={title} className="reveal border-t border-line pt-7">
                 <p className="font-serif text-4xl italic text-fg-3">0{i + 1}</p>

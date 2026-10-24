@@ -2,7 +2,7 @@
 // map with the project's nearby places, the enquiry panel (enquire, visit, booking request) and a card of its project.
 // No phone number is ever shown.
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Box, Building2, Check, ChevronLeft, ChevronRight, DoorOpen, Home, Maximize2, Rotate3d, Share2 } from 'lucide-react';
+import { ArrowLeft, Box, Building2, Check, ChevronLeft, ChevronRight, DoorOpen, Home, Maximize2, MessageCircle, Rotate3d, Share2 } from 'lucide-react';
 import Lightbox, { LightboxImage } from '../../components/ui/Lightbox';
 import { projectStage } from '../projects/api';
 import { PageId } from '../../types';
@@ -11,7 +11,7 @@ import RequestModal, { RequestMode } from '../requests/RequestModal';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { Button, Container, Eyebrow, Tag, XMark } from '../../components/site/ui';
-import { FEATURES } from '../../config/site';
+import { FEATURES, whatsappUrl } from '../../config/site';
 import { PublicListing, formatArea, formatPrice, getListing, imageUrl, mapEmbedUrl, planLineAmount, searchListings, youtubeId } from './api';
 import { ListingCard } from './ListingCard';
 import { markNotFound } from '../../utils/seo';
@@ -165,7 +165,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
           )}
         </div>
 
-        <div className="mt-14 grid gap-14 lg:grid-cols-[1fr_380px]">
+        <div className="mt-14 grid grid-cols-1 gap-14 lg:grid-cols-[1fr_380px]">
           <div className="space-y-14">
             <section>
               <h2 className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">Key facts</h2>
@@ -182,7 +182,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
             {FEATURES.tours3d && item.unit_3d && (
               <section>
                 <h2 className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">See it in 3D</h2>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <button onClick={() => onNavigate('project-3d', `${item.unit_3d!.project}?unit=${encodeURIComponent(item.name)}`)}
                     className="flex items-start gap-4 rounded-2xl border border-line-2 bg-ink-2 p-5 text-left transition-colors hover:border-fg-3">
                     <Building2 className="mt-0.5 h-6 w-6 shrink-0 text-blue-2" strokeWidth={1.5} />
@@ -260,7 +260,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
             {!!item.amenities?.length && (
               <section>
                 <h2 className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">Features and amenities</h2>
-                <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2 md:grid-cols-3">
+                <ul className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 md:grid-cols-3">
                   {item.amenities.map((a) => (
                     <li key={a} className="flex items-center gap-3 text-[15px] text-fg-2"><Check className="h-4 w-4 text-blue-2" strokeWidth={1.75} /> {a}</li>
                   ))}
@@ -271,7 +271,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
             {!!item.videos?.length && (
               <section>
                 <h2 className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">Videos</h2>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {item.videos.map((v) => {
                     const id = youtubeId(v);
                     return id ? (
@@ -295,7 +295,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
                   <a href={mapLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-[13px] text-fg-2 underline underline-offset-4 hover:text-fg">Open in Google Maps</a>
                 )}
                 {!!ctx?.nearby.length && (
-                  <ul className="mt-8 grid gap-x-8 sm:grid-cols-2">
+                  <ul className="mt-8 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
                     {ctx.nearby.map((n, i) => (
                       <li key={i} className="flex items-center justify-between gap-4 border-b border-line py-3.5">
                         <span className="text-[15px] text-fg">{n.place}<span className="ml-2 text-[12px] text-fg-3">{n.kind}</span></span>
@@ -368,7 +368,7 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
         {similar.length > 0 && (
           <section className="mt-24 border-t border-line pt-16">
             <h2 className="mb-10 text-3xl font-medium tracking-[-0.03em] text-fg">Similar <span className="em">homes</span></h2>
-            <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {similar.map((sm) => (
                 <ListingCard key={sm.name} item={sm} onOpen={() => onNavigate('property-detail', sm.name)} onInterest={() => setInterest(sm)} />
               ))}
@@ -377,6 +377,21 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
         )}
       </Container>
 
+      {/* Phones: price and the main actions stay at the bottom of the screen while the buyer scrolls. */}
+      {(item.status === 'Available' || item.status === 'Reserved') && (
+        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-line bg-ink/95 p-3 backdrop-blur lg:hidden">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[15px] font-medium text-fg">{formatPrice(item.list_price, item.purpose, item.currency)}</p>
+            <p className="truncate text-[12px] text-fg-3">{item.status === 'Reserved' ? 'Reserved at the moment' : item.property_title}</p>
+          </div>
+          {item.status === 'Available' && <Button size="sm" variant="secondary" className="h-11" onClick={() => setInterest(item)}>Enquire</Button>}
+          <Button size="sm" className="h-11" onClick={() => setRequest('visit')}>Site visit</Button>
+          <a href={whatsappUrl(`Hello RealtorX, I am interested in ${item.property_title} (${item.name}).`)} target="_blank" rel="noopener noreferrer"
+            aria-label="WhatsApp RealtorX" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line-2 text-fg">
+            <MessageCircle className="h-4 w-4" />
+          </a>
+        </div>
+      )}
       {request && (
         <RequestModal mode={request} unitId={item.name} projectId={item.project} title={item.property_title}
           onClose={() => {

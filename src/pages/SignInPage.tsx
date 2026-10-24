@@ -33,7 +33,7 @@ export default function SignInPage({ onNavigate }: { onNavigate: Nav }) {
   return (
     <div className="bg-ink pb-24">
       <Container className="pt-16 md:pt-24">
-        <div className="grid gap-12 lg:grid-cols-[1fr_440px] lg:gap-20">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_440px] lg:gap-20">
           <div>
             <Eyebrow className="mb-6">Sign in</Eyebrow>
             <h1 className="max-w-3xl text-balance text-[40px] font-medium leading-[1.04] tracking-[-0.035em] text-fg md:text-6xl">Your RealtorX <span className="em">account</span>.</h1>
@@ -48,7 +48,7 @@ export default function SignInPage({ onNavigate }: { onNavigate: Nav }) {
         <ul className="mt-6 border-t border-line">
           {doors.map((d) => (
             <li key={d.title}>
-              <a href={d.href} className="group grid items-center gap-3 border-b border-line py-8 md:grid-cols-[1fr_2fr_auto] md:gap-10">
+              <a href={d.href} className="group grid grid-cols-1 items-center gap-3 border-b border-line py-8 md:grid-cols-[1fr_2fr_auto] md:gap-10">
                 <span className="text-2xl font-medium tracking-[-0.02em] text-fg">{d.title}</span>
                 <span className="text-[15px] leading-relaxed text-fg-2">{d.text}</span>
                 <span className="flex h-11 w-11 items-center justify-center rounded-full border border-line-2 text-fg transition-colors group-hover:border-fg group-hover:bg-fg group-hover:text-ink">

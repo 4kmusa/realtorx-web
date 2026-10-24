@@ -49,6 +49,8 @@ const NAV: NavItem[] = [
   { section: 'notifications', label: 'Notifications', icon: Bell },
   { section: 'security', label: 'Security', icon: Lock },
 ];
+// Phones: the main sections in the bottom tab bar; the rest under "More".
+const TABS = ['overview', 'projects', 'sales', 'payments'];
 
 
 /** The developer's notifications: a sale opens the deal, the rest their section. */
@@ -102,7 +104,7 @@ function DeveloperDashboard({ session, logout }: { session: DashboardSession; lo
   };
   return (
     <div className="min-h-screen bg-ink text-fg">
-      <PortalShell title="RealtorX Developer" subtitle={companies || session.full_name || ''} nav={NAV} active={section} onSelect={select} onLogout={logout} badges={{ notifications: unread }}>
+      <PortalShell title="RealtorX Developer" subtitle={companies || session.full_name || ''} nav={NAV} active={section} onSelect={select} onLogout={logout} badges={{ notifications: unread }} tabs={TABS}>
         {section === 'overview' && (
           <>
             <SectionHeader title="Overview" description="Live from RealtorX. Unit status is updated by RealtorX as units are reserved, booked and sold." />
@@ -113,14 +115,14 @@ function DeveloperDashboard({ session, logout }: { session: DashboardSession; lo
             >
               {(d) => (
                 <>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <StatCard label="Projects" value={d.projects.length} />
                     <StatCard label="Units" value={d.totals.total} hint={tf('{0} live on the website', d.totals.live)} />
                     <StatCard label="Available" value={d.totals.Available} tone="good" />
                     <StatCard label="Reserved / booked / sold" value={d.totals.Reserved + d.totals.Booked + d.totals.Sold} />
                   </div>
                   {d.kpis && (
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
                       <button type="button" className="h-full text-start" onClick={() => go('sales')}><StatCard label="Sales by RealtorX" value={formatMoneyList(d.kpis.sales_value)} hint={`${tf('{0} open', d.kpis.deals_open)} · ${tf('{0} transferred', d.kpis.deals_transferred)}`} /></button>
                       <button type="button" className="h-full text-start" onClick={() => go('sales')}><StatCard label="Collected (verified)" value={formatMoneyList(d.kpis.collected)} tone="good" hint={tf('Balance {0}', formatMoneyList(d.kpis.balance))} /></button>
                       <button type="button" className="h-full text-start" onClick={() => go('sales')}><StatCard label="Buyer payments overdue" value={formatMoneyList(d.kpis.overdue)} tone={d.kpis.overdue_deals ? 'warn' : 'default'} hint={`${tn(d.kpis.overdue_deals, '{0} deal', '{0} deals')} · ${t('RealtorX follows up')}`} /></button>

@@ -31,7 +31,7 @@ export function ProfileSection({ state }: { state: ReturnType<typeof useApi<Agen
       <SectionHeader title="My profile" description="To change these details, contact the RealtorX agent team." />
       <DataView state={state} isEmpty={(p) => !p.agent} empty={{ icon: UserRound, title: 'No agent profile', description: 'This login is not linked to an approved RealtorX Agent.' }}>
         {(p) => (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <dl className="grid grid-cols-2 gap-4 rounded-xl border border-line bg-panel p-5 text-sm">
               {[
                 ['Agent ID', p.agent_id], ['Status', p.status], ['Name', p.full_name], ['Email', p.email], ['Mobile', p.mobile], ['City', p.city],
@@ -92,24 +92,25 @@ export function InventorySection() {
       setTimeout(() => setCopied(null), 1500);
     });
   };
-  const inputCls = 'rounded-lg border border-line bg-ink px-3 py-2 text-sm text-fg';
+  const inputCls = 'min-h-11 rounded-lg border border-line bg-ink px-3 py-2 text-base text-fg sm:min-h-0 sm:text-sm'; // 16px on phones: no zoom on focus
   if (kit) return <UnitKitPanel unit={kit} onBack={() => setKit(null)} />;
   return (
     <>
       <SectionHeader title="Inventory to sell" description="Live units from RealtorX. Share a unit's link: buyers who enquire through it are recorded as yours." />
-      <form onSubmit={(e) => { e.preventDefault(); setFilters(draft); setPage(1); }} className="mb-4 flex flex-wrap gap-2">
-        <input placeholder={t('Area, project or city')} value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} className={inputCls} aria-label="Location" />
+      {/* Phones: search box on its own line, then sale/rent and price side by side, then a full-width button. */}
+      <form onSubmit={(e) => { e.preventDefault(); setFilters(draft); setPage(1); }} className="mb-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        <input placeholder={t('Area, project or city')} value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} className={`${inputCls} col-span-2`} aria-label="Location" />
         <select value={draft.purpose} onChange={(e) => setDraft({ ...draft, purpose: e.target.value })} className={inputCls} aria-label="Purpose">
           <option value="">{t('Sale or rent')}</option><option value="Sell">{t('For sale')}</option><option value="Rent">{t('For rent')}</option>
         </select>
-        <input type="number" placeholder={t('Max price')} value={draft.max_price} onChange={(e) => setDraft({ ...draft, max_price: e.target.value })} className={`${inputCls} w-36`} aria-label="Maximum price" />
-        <button className="flex items-center gap-1.5 rounded-full bg-fg text-ink px-4 py-2 text-sm font-bold"><Search className="h-4 w-4" /> {t('Search')}</button>
+        <input type="number" inputMode="numeric" placeholder={t('Max price')} value={draft.max_price} onChange={(e) => setDraft({ ...draft, max_price: e.target.value })} className={`${inputCls} min-w-0 sm:w-36`} aria-label="Maximum price" />
+        <button className="col-span-2 flex h-11 items-center justify-center gap-1.5 rounded-full bg-fg px-5 text-sm font-bold text-ink sm:h-auto sm:py-2"><Search className="h-4 w-4" /> {t('Search')}</button>
       </form>
       <DataView state={state} isEmpty={(r) => r.items.length === 0} empty={{ icon: Building2, title: 'No units match', description: 'Try other filters.' }}>
         {(r) => (
           <>
             <p className="mb-3 text-xs text-fg-2">{t(r.total === 1 ? '{0} unit' : '{0} units').replace('{0}', String(r.total))}</p>
-            <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {r.items.map((u) => (
                 <li key={u.name} className="overflow-hidden rounded-xl border border-line bg-panel">
                   <div className="aspect-[16/9] bg-panel-2">{u.cover_image && <img src={imageUrl(u.cover_image) || ''} alt="" className="h-full w-full object-cover" loading="lazy" />}</div>
@@ -161,7 +162,7 @@ function Pager({ page, pages, loading, onPage }: { page: number; pages: number; 
 export function AgentStats({ profile }: { profile: AgentProfile | null }) {
   if (!profile?.agent) return null;
   return (
-    <div className="mb-5 grid gap-3 sm:grid-cols-3">
+    <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
       <StatCard label="Agent ID" value={profile.agent_id || '—'} />
       <StatCard label="Status" value={profile.status || '—'} tone={profile.status === 'Approved' ? 'good' : 'default'} />
       <StatCard label="City" value={profile.city || '—'} />

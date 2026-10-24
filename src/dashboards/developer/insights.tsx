@@ -57,7 +57,7 @@ export function InventoryMap({ project }: { project: string }) {
               </span>
             ))}
           </div>
-          <div className="grid gap-4 xl:grid-cols-[1fr_280px]">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_280px]">
             <div className="flex flex-wrap content-start gap-4">
               {d.blocks.map((b) => (
                 <div key={b.block || 'units'} className="min-w-[180px] rounded-2xl border border-line bg-panel p-3">
@@ -187,7 +187,7 @@ export function CashflowSection() {
               const next12 = c.months.reduce((s, m) => s + m.expected, 0);
               return (
                 <div key={c.currency} className="space-y-4">
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <StatCard label="Next 90 days" value={formatMoney(next90, c.currency)} />
                     <StatCard label="Next 12 months" value={formatMoney(next12, c.currency)} />
                     <StatCard label="Overdue now" value={formatMoney(c.overdue, c.currency)} tone={c.overdue ? 'warn' : 'default'} hint="RealtorX follows up with the buyers" />

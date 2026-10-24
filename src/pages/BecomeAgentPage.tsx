@@ -47,7 +47,7 @@ export default function BecomeAgentPage(_props: { onNavigate: Nav }) {
 
       <Section>
         <Container>
-          <div className="grid gap-12 md:grid-cols-3 md:gap-10">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10">
             {OFFER.map((o, i) => (
               <div key={o.title} className="reveal border-t border-line pt-8" style={{ transitionDelay: `${i * 80}ms` }}>
                 <p className="text-[64px] font-medium leading-none tracking-[-0.05em] text-fg tabular-nums"><CountUp value={o.figure} /></p>
@@ -62,7 +62,7 @@ export default function BecomeAgentPage(_props: { onNavigate: Nav }) {
       <Section tone="ink-2">
         <Container>
           <SectionHeader eyebrow="How approval works" title={<>From application to your first <span className="em">sale</span>.</>} />
-          <ol className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
+          <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
             {STEPS.map((s, i) => (
               <li key={s.title} className="reveal spotlight bg-ink-2 p-8" style={{ transitionDelay: `${i * 90}ms` }}>
                 <p className="font-serif text-4xl italic text-fg-3">{i + 1}</p>
@@ -76,7 +76,7 @@ export default function BecomeAgentPage(_props: { onNavigate: Nav }) {
 
       <Section id="apply" className="scroll-mt-20">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.25fr]">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.25fr]">
             <div className="lg:sticky lg:top-28 lg:h-fit">
               <Eyebrow className="mb-5">Apply</Eyebrow>
               <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] text-fg md:text-5xl">Ten minutes, <span className="em">once</span>.</h2>

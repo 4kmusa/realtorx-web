@@ -97,7 +97,7 @@ export function TodaySection({ onOpen }: { onOpen: (section: string) => void }) 
             ' Please pay into the account on your RealtorX booking documents and send me the receipt. Thank you.';
           return (
             <div className="space-y-6">
-              <div className="grid gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
                   ['Follow-ups due', d.followups.length, d.followups.some((f) => f.days_late > 0)],
                   ['New buyers to call', d.new_buyers.length, false],

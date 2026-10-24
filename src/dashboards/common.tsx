@@ -11,7 +11,7 @@ export function Welcome({ name, lines, next, onOpen }: { name?: string; lines: s
       <div className="space-y-2 rounded-xl border border-line bg-panel p-5 text-sm leading-relaxed text-fg-2">
         {lines.map((l) => <p key={l}>{t(l)}</p>)}
       </div>
-      <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+      <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {next.map((label) => (
           <li key={label}>
             <button onClick={() => onOpen(label)} className="flex w-full items-center justify-between rounded-xl border border-line bg-panel px-4 py-3 text-start text-sm text-fg hover:border-fg/40">

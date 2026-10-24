@@ -58,7 +58,7 @@ export function ContactPage({ onNavigate }: { onNavigate: (page: PageId) => void
       </PageIntro>
 
       <Container className="pt-16">
-        <div className="grid gap-14 lg:grid-cols-[1fr_1.2fr]">
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_1.2fr]">
           <dl className="border-t border-line">
             {details.map(([label, value]) => (
               <div key={label} className="grid grid-cols-[100px_1fr] gap-4 border-b border-line py-6 text-[15px]">
@@ -77,7 +77,7 @@ export function ContactPage({ onNavigate }: { onNavigate: (page: PageId) => void
                 </p>
               </div>
             ) : (
-              <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2">
+              <form onSubmit={submit} className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Field label="Your name" htmlFor="ct-name"><input id="ct-name" required minLength={2} className={inputClass} autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
                 <Field label="Mobile" htmlFor="ct-phone"><PhoneInput id="ct-phone" required value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} /></Field>
                 <Field label="Email (optional)" htmlFor="ct-email"><input id="ct-email" type="email" className={inputClass} autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
