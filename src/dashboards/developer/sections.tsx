@@ -213,7 +213,7 @@ interface SaleRow { name: string; unit: string; unit_title: string | null; proje
 
 export function SalesSection() {
   const state = useApi<SaleRow[]>('realtor_x.api.portal.developer_deals');
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(new URLSearchParams(window.location.search).get('deal'));
   if (open) {
     return (
       <>

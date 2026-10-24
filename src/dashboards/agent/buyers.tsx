@@ -6,6 +6,7 @@ import { DocumentLinks, StatementView } from '../money';
 import { t } from '../i18n';
 import { BackLink, DataTable, DataView, Field, Notice, PrimaryButton, SectionHeader, formatDate, formatMoney, inputClass, useApi } from '../kit/kit';
 import PhoneInput from '../../components/site/PhoneInput';
+import { localDate } from '../../utils/date';
 
 interface LeadRow {
   name: string;
@@ -196,7 +197,7 @@ interface DealRow {
 }
 
 export function DealsSection() {
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(new URLSearchParams(window.location.search).get('deal'));
   const [tick, setTick] = useState(0);
   const state = useApi<DealRow[]>('realtor_x.api.portal.agent_deals', undefined, String(tick));
   return (
@@ -274,7 +275,7 @@ function BuyerLink({ deal }: { deal: string }) {
 
 function PaymentProof({ deal, onDone }: { deal: string; onDone: () => void }) {
   const file = useRef<HTMLInputElement>(null);
-  const [form, setForm] = useState({ amount: '', paid_on: new Date().toISOString().slice(0, 10), method: 'Bank transfer', reference_no: '' });
+  const [form, setForm] = useState({ amount: '', paid_on: localDate(), method: 'Bank transfer', reference_no: '' });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
   const submit = async (e: React.FormEvent) => {

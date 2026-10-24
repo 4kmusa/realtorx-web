@@ -7,6 +7,7 @@ import { methodUrl } from '../../services/api/client';
 import { BackLink, DataView, Field, SectionHeader, formatDate, formatMoney, inputClass, useApi } from '../kit/kit';
 import { imageUrl } from '../../features/marketplace/api';
 import { t } from '../i18n';
+import { localDate } from '../../utils/date';
 
 interface PlanPart {
   label: string;
@@ -32,7 +33,7 @@ interface UnitKit {
   agent: { agent_id: string; full_name: string; mobile: string | null };
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => localDate();
 
 function every(months?: number) {
   return months === 1 ? t('monthly') : months === 3 ? t('quarterly') : `${t('every')} ${months} ${t('months')}`;

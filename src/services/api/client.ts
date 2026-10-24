@@ -31,6 +31,11 @@ export class ApiError extends Error {
   }
 }
 
+/** Fired when the server refuses a call (401/403). The session may have ended (expired, or signed out elsewhere):
+ * Frappe answers 403 to a guest calling a signed-in method, so listeners check the session before signing out. */
+export const AUTH_ERROR_EVENT = 'rx:auth-error';
+const SIGN_IN_METHODS = ['realtor_x.api.portal.login'];  // also matches portal.login_code: a wrong password or code is not a lost session
+
 const GENERIC_ERROR = 'Something went wrong. Please try again.';
 
 function stripTags(text: string): string {
@@ -74,6 +79,9 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
     throw new ApiError('Cannot reach the server. Check your connection and try again.', 0);
   }
   const payload = await response.json().catch(() => ({}));
+  if ((response.status === 401 || response.status === 403) && !SIGN_IN_METHODS.some((m) => path.includes(m))) {
+    window.dispatchEvent(new Event(AUTH_ERROR_EVENT));
+  }
   if (!response.ok || payload?.exception) {
     throw new ApiError(extractErrorMessage(payload, response.status), response.status, payload?.exc_type);
   }

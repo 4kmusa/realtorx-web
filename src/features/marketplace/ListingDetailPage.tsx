@@ -226,9 +226,9 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
                 <h2 className="mb-2 text-[11px] font-medium uppercase tracking-[0.22em] text-fg-3">Payment plan</h2>
                 <p className="mb-6 text-[15px] text-fg-2">{item.payment_plan.name} · {item.payment_plan.summary}</p>
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[520px] text-[14px]">
+                  <table className="w-full text-[14px]">
                     <thead className="text-left text-[12px] text-fg-3">
-                      <tr className="border-b border-line"><th className="py-3 pr-4 font-normal">Payment</th><th className="py-3 pr-4 font-normal">When</th><th className="py-3 pr-4 text-right font-normal">Share</th><th className="py-3 text-right font-normal">Amount</th></tr>
+                      <tr className="border-b border-line"><th className="py-3 pr-4 font-normal">Payment</th><th className="hidden py-3 pr-4 font-normal sm:table-cell">When</th><th className="py-3 pr-4 text-right font-normal">Share</th><th className="py-3 text-right font-normal">Amount</th></tr>
                     </thead>
                     <tbody className="text-fg">
                       {item.payment_plan.lines.map((l, i) => {
@@ -238,8 +238,8 @@ export default function ListingDetailPage({ propertyId, onNavigate }: { property
                           : l.on_possession ? 'On possession' : l.due_after_days ? `${l.due_after_days} days after booking` : 'On booking';
                         return (
                           <tr key={i} className="border-b border-line">
-                            <td className="py-4 pr-4">{l.label}</td>
-                            <td className="py-4 pr-4 text-fg-2">{when}</td>
+                            <td className="py-4 pr-4">{l.label}<span className="mt-1 block text-[12px] text-fg-3 sm:hidden">{when}</span></td>
+                            <td className="hidden py-4 pr-4 text-fg-2 sm:table-cell">{when}</td>
                             <td className="py-4 pr-4 text-right tabular-nums text-fg-2">{l.percent}%</td>
                             <td className="py-4 text-right tabular-nums">{amount ? `${formatPrice(Math.round(amount))}${l.kind === 'Installments' ? ' each' : ''}` : '—'}</td>
                           </tr>

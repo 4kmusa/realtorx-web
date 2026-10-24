@@ -8,7 +8,7 @@ import {
 } from './kit';
 import { t } from '../i18n';
 
-interface NotificationRow {
+export interface NotificationRow {
   name: string;
   subject: string;
   type: string;
@@ -24,7 +24,22 @@ export function useUnreadCount(key: string): number {
   return state.data?.filter((n) => !n.read).length || 0;
 }
 
-export function NotificationsSection({ openLink }: { openLink: (link: string) => void }) {
+/** Where a notification leads inside a dashboard: a section, and optionally a query that opens one record. */
+export type NotificationTarget = { section: string; query?: string } | null;
+
+/** Opens the section a notification is about. `targetFor` maps the record type to a section of this dashboard;
+ * a link that already points into this dashboard (e.g. /agent/leads?lead=…) is followed as it is. */
+export function NotificationsSection({ app, targetFor, onOpen }: {
+  app: 'agent' | 'developer';
+  targetFor: (n: NotificationRow) => NotificationTarget;
+  onOpen: (section: string, query?: string) => void;
+}) {
+  const open = (n: NotificationRow) => {
+    const own = n.link?.match(new RegExp(`^/${app}/([\\w-]+)/?(?:\\?(.*))?$`));
+    const target: NotificationTarget = own ? { section: own[1], query: own[2] } : targetFor(n);
+    if (target) onOpen(target.section, target.query);
+    return !!target;
+  };
   const state = useApi<NotificationRow[]>('realtor_x.api.account.my_notifications');
   const [busy, setBusy] = useState(false);
   const markAll = async () => {
@@ -56,8 +71,7 @@ export function NotificationsSection({ openLink }: { openLink: (link: string) =>
                 <button
                   onClick={async () => {
                     if (!n.read) await callPost('realtor_x.api.account.mark_notifications_read', { names: JSON.stringify([n.name]) }).catch(() => undefined);
-                    if (n.link) openLink(n.link);
-                    else state.reload();
+                    if (!open(n)) state.reload();
                   }}
                   className="flex w-full items-start gap-3 p-4 text-left hover:bg-white/[0.03]"
                 >

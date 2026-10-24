@@ -8,6 +8,7 @@ import { callPost } from '../../services/api/client';
 import { agentRef } from '../../utils/agentRef';
 import AuthForms from '../buyer/AuthForms';
 import { useBuyer } from '../buyer/session';
+import { localDate } from '../../utils/date';
 
 export type RequestMode = 'visit' | 'booking';
 
@@ -39,7 +40,7 @@ export default function RequestModal({ mode, unitId, projectId, title, onClose, 
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ reference: string; hours?: number } | null>(null);
   const first = useRef<HTMLTextAreaElement>(null);
-  const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+  const tomorrow = localDate(1);
 
   useEffect(() => {
     first.current?.focus();

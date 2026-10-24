@@ -1,10 +1,11 @@
 // Shared frame of the Agent and Developer dashboards: loads the session, shows the dashboard's own
 // sign-in screen, refuses accounts of another kind, and hands the signed-in session to the app.
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Eye, EyeOff, Loader2, LogOut } from 'lucide-react';
 import { CodeChallenge, DashboardApp, DashboardSession, WEBSITE_URL, getSession, signIn, signOut, verifyCode } from './session';
 import { adoptAccountLanguage, t, useLang } from './i18n';
 import { LanguagePicker } from './kit/kit';
+import { AUTH_ERROR_EVENT, setCsrfToken } from '../services/api/client';
 
 const TITLES: Record<DashboardApp, { name: string; tagline: string }> = {
   agent: { name: 'RealtorX Agent', tagline: 'Sell RealtorX inventory, track your buyers, deals and commission.' },
@@ -28,6 +29,32 @@ export default function DashboardRoot({ app, children }: { app: DashboardApp; ch
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app]);
 
+  // A refused call may mean the session has ended: if so, go back to the sign-in screen instead of leaving errors on screen.
+  const [expired, setExpired] = useState(false);
+  const signedIn = useRef(false);
+  signedIn.current = !!session?.user;
+  useEffect(() => {
+    let checking = false;
+    const onAuthError = async () => {
+      if (!signedIn.current || checking) return;
+      checking = true;
+      try {
+        const now = await getSession(app);
+        if (signedIn.current && !now.user) {
+          setCsrfToken(null);
+          setExpired(true);
+          setSession(now);
+        }
+      } catch {
+        /* offline: keep the screen; the section shows its own error */
+      } finally {
+        checking = false;
+      }
+    };
+    window.addEventListener(AUTH_ERROR_EVENT, onAuthError);
+    return () => window.removeEventListener(AUTH_ERROR_EVENT, onAuthError);
+  }, [app]);
+
   const logout = async () => {
     await signOut().catch(() => undefined);
     setSession({ app, user: null, allowed: false });
@@ -48,7 +75,7 @@ export default function DashboardRoot({ app, children }: { app: DashboardApp; ch
       </Centered>
     );
   }
-  if (!session.user) return <LoginScreen app={app} onSignedIn={setSession} />;
+  if (!session.user) return <LoginScreen app={app} notice={expired ? t('Your session has ended. Please sign in again.') : null} onSignedIn={(s) => { setExpired(false); setSession(s); }} />;
   return <React.Fragment key={lang}>{children(session, logout)}</React.Fragment>; // a language change redraws every screen
 }
 
@@ -66,7 +93,7 @@ function Brand({ app }: { app: DashboardApp }) {
   );
 }
 
-function LoginScreen({ app, onSignedIn }: { app: DashboardApp; onSignedIn: (s: DashboardSession) => void }) {
+function LoginScreen({ app, notice, onSignedIn }: { app: DashboardApp; notice?: string | null; onSignedIn: (s: DashboardSession) => void }) {
   const [usr, setUsr] = useState('');
   const [pwd, setPwd] = useState('');
   const [show, setShow] = useState(false);
@@ -140,6 +167,7 @@ function LoginScreen({ app, onSignedIn }: { app: DashboardApp; onSignedIn: (s: D
               </label>
             </>
           )}
+          {notice && !error && <p role="status" className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm text-amber-200">{notice}</p>}
           {error && <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
           <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-full bg-fg text-ink h-11 text-sm font-medium hover:bg-white disabled:opacity-60">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} {t(challenge ? 'Verify code' : 'Sign in')}
