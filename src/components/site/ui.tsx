@@ -72,16 +72,18 @@ export function PageIntro({ eyebrow, title, intro, image, children }: { eyebrow:
   );
 }
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'accent';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'gradient';
 const buttonClass = (variant: ButtonVariant, size: 'sm' | 'md' | 'lg', className?: string, arrow?: boolean) =>
   cx(
-    'inline-flex select-none items-center justify-center gap-2 rounded-full font-medium transition-[background-color,border-color,color,transform] duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+    'rx-btn inline-flex select-none items-center justify-center gap-2 rounded-full font-medium transition-[background-color,border-color,color,transform,box-shadow] duration-300 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50',
     size === 'sm' ? 'h-9 px-4 text-[13px]' : size === 'lg' ? 'h-[52px] px-7 text-[15px]' : 'h-11 px-5 text-sm',
     variant === 'primary' && 'bg-fg text-ink hover:bg-white',
     arrow && 'magnetic',
     variant === 'secondary' && 'border border-line-2 text-fg hover:border-fg/40 hover:bg-white/[0.04]',
     variant === 'ghost' && 'text-fg-2 hover:text-fg',
     variant === 'accent' && 'bg-blue text-white hover:bg-[#3c78ff]',
+    variant === 'gradient' && 'rx-shine bg-gradient-to-r from-blue to-flame text-white hover:shadow-[0_8px_30px_-6px_rgb(255_122_26/0.55)]',
+    (variant === 'primary' || variant === 'accent') && 'rx-shine',
     className
   );
 

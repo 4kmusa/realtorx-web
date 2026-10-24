@@ -129,15 +129,16 @@ function LoginScreen({ app, notice, onSignedIn }: { app: DashboardApp; notice?: 
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink px-4 py-10 text-fg">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink px-4 py-10 text-fg">
+      <div className="rx-orbs" aria-hidden="true" />
+      <div className="relative w-full max-w-sm animate-rise">
         <div className="mb-6 flex items-center justify-between">
           <a href={WEBSITE_URL} className="text-sm text-fg-2 hover:text-fg"><span className="inline-block rtl:rotate-180">←</span> {t('Back to the website')}</a>
           <LanguagePicker />
         </div>
         <Brand app={app} />
         <p className="mt-2 text-center text-sm text-fg-2">{t(TITLES[app].tagline)}</p>
-        <form onSubmit={submit} className="mt-10 space-y-5 rounded-3xl border border-line bg-panel p-7">
+        <form onSubmit={submit} className="rx-glow-border rx-field-glow mt-10 space-y-5 rounded-3xl bg-panel p-7 shadow-[0_30px_80px_-30px_rgb(0_0_0/0.8)]">
           {challenge ? (
             <label className="block text-sm">
               <span className="mb-1.5 block text-fg-2">{t('Sign-in code')}</span>
@@ -172,7 +173,7 @@ function LoginScreen({ app, notice, onSignedIn }: { app: DashboardApp; notice?: 
           )}
           {notice && !error && <p role="status" className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm text-amber-200">{notice}</p>}
           {error && <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
-          <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-full bg-fg text-ink h-11 text-sm font-medium hover:bg-white disabled:opacity-60">
+          <button type="submit" disabled={busy} className="rx-shine flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue to-flame text-sm font-medium text-white transition-[box-shadow,transform] duration-300 hover:shadow-[0_8px_30px_-6px_rgb(255_122_26/0.55)] active:scale-[0.98] disabled:opacity-60">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} {t(challenge ? 'Verify code' : 'Sign in')}
           </button>
           {challenge ? (

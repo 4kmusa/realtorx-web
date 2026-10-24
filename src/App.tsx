@@ -5,6 +5,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { SEO } from './components/SEO';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
+import { Cursor } from './components/site/Cursor';
 import { useMotion } from './components/site/motion';
 import { Route, parseLegacyHash, parsePath, pathFor } from './app/routes';
 import { HomePage } from './pages/HomePage';
@@ -154,6 +155,7 @@ function AppContent() {
       </main>
       <Footer onNavigate={navigate} />
       <WhatsAppWidget withBar={page === 'property-detail' || page === 'project-details'} />
+      <Cursor />
     </div>
   );
 }
