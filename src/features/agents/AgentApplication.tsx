@@ -1,4 +1,4 @@
-// RealtorX Agent application: details → email code and a password for "My application" → profile and ID number → ID
+// RealtorX Agent application: details → email code → profile and ID number → ID
 // documents → selfie video saying a code phrase → terms and submit. The application key is kept in this browser; on
 // another device the applicant signs in on "My application" (/my-application) to continue. No dashboard account yet.
 import React, { useEffect, useRef, useState } from 'react';
@@ -130,9 +130,9 @@ export default function AgentApplication() {
       })} />}
 
       {step === 1 && status && <CodeStep email={status.email} busy={busy}
-        onVerify={(code, password) => run(async () => {
-          await callPost(`${API}.apply_verify_code`, { ...args(), code, password });
-          setNotice('Email verified. Use this email and password on "My application" to follow your application or continue it on another device.');
+        onVerify={(code) => run(async () => {
+          await callPost(`${API}.apply_verify_code`, { ...args(), code });
+          setNotice('Email verified. To follow your application or continue it on another device, open "My application" and sign in with a code sent to this email.');
           await refresh();
         })}
         onResend={() => run(async () => { await callPost(`${API}.apply_resend_code`, args()); })} />}
@@ -170,22 +170,13 @@ function DetailsStep({ busy, onSubmit }: { busy: boolean; onSubmit: (d: Record<s
   );
 }
 
-function CodeStep({ email, busy, onVerify, onResend }: { email: string; busy: boolean; onVerify: (code: string, password: string) => void; onResend: () => void }) {
+function CodeStep({ email, busy, onVerify, onResend }: { email: string; busy: boolean; onVerify: (code: string) => void; onResend: () => void }) {
   const [code, setCode] = useState('');
-  const [pwd, setPwd] = useState('');
-  const [pwd2, setPwd2] = useState('');
-  const [mismatch, setMismatch] = useState(false);
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (pwd !== pwd2) return setMismatch(true); onVerify(code, pwd); }} className="space-y-5">
-      <p className="text-[15px] leading-relaxed text-fg-2">We sent a 6-digit code to <span className="text-fg">{email}</span>. Enter it and choose a password for "My application", where you follow your application on this website. (Approved agents get a separate Agent dashboard password from RealtorX.)</p>
+    <form onSubmit={(e) => { e.preventDefault(); onVerify(code); }} className="space-y-5">
+      <p className="text-[15px] leading-relaxed text-fg-2">We sent a 6-digit code to <span className="text-fg">{email}</span>. Enter it to confirm your email. (It can take a minute; check the spam folder too.)</p>
       <Field label="Verification code" htmlFor="ap-code">
-        <input id="ap-code" required inputMode="numeric" pattern="[0-9 ]{6,7}" maxLength={7} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value)} className={`${inputClass} text-center text-xl tracking-[0.5em]`} autoComplete="one-time-code" />
-      </Field>
-      <Field label="Choose a password" htmlFor="ap-pwd" hint="At least 8 characters. A few words with a number works well.">
-        <input id="ap-pwd" type="password" value={pwd} onChange={(e) => { setPwd(e.target.value); setMismatch(false); }} className={inputClass} autoComplete="new-password" />
-      </Field>
-      <Field label="Repeat the password" htmlFor="ap-pwd2" error={mismatch ? 'The passwords do not match.' : null}>
-        <input id="ap-pwd2" type="password" value={pwd2} onChange={(e) => { setPwd2(e.target.value); setMismatch(false); }} className={inputClass} autoComplete="new-password" />
+        <input id="ap-code" required autoFocus inputMode="numeric" pattern="[0-9 ]{6,7}" maxLength={7} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value)} className={`${inputClass} text-center text-xl tracking-[0.5em]`} autoComplete="one-time-code" />
       </Field>
       <Button type="submit" size="lg" busy={busy} className="w-full">Verify email</Button>
       <button type="button" onClick={onResend} className="flex items-center gap-1.5 text-[13px] text-fg-3 hover:text-fg"><RefreshCw className="h-3.5 w-3.5" /> Send a new code</button>
