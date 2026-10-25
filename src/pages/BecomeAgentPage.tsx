@@ -81,10 +81,9 @@ export default function BecomeAgentPage(_props: { onNavigate: Nav }) {
               <Eyebrow className="mb-5">Apply</Eyebrow>
               <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] text-fg md:text-5xl">Ten minutes, <span className="em">once</span>.</h2>
               <p className="mt-5 max-w-md text-[15px] leading-relaxed text-fg-2">
-                Keep your ID card and a phone or laptop camera ready. When you verify your email you choose a password for "My application", so you can stop at any point and continue later, on any device.
-              </p>
+                Keep your ID card and a phone or laptop camera ready. You can stop at any point and continue later, on any device: "My application" opens with a code sent to your email.</p>
               <ul className="mt-8 space-y-3 border-t border-line pt-6 text-[14px] text-fg-2">
-                <li>Email verification and a password for following your application</li>
+                <li>Email verification with a 6-digit code</li>
                 <li>ID card photos, front and back</li>
                 <li>A 15-second selfie video saying a code phrase</li>
               </ul>
